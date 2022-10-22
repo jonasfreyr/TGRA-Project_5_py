@@ -69,6 +69,11 @@ class Shader3D:
 
         self.lightAmountLoc = glGetUniformLocation(self.renderingProgramID, "light_amount")
 
+        self.textureDifLoc = glGetUniformLocation(self.renderingProgramID, "u_tex01")
+
+        self.textureSpecLoc = glGetUniformLocation(self.renderingProgramID, "u_tex02")
+
+
     def use(self):
         try:
             glUseProgram(self.renderingProgramID)
@@ -98,8 +103,6 @@ class Shader3D:
         glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer_id)
         glVertexAttribPointer(self.positionLoc,3,GL_FLOAT, False, 6*sizeof(GLfloat),None)
         glVertexAttribPointer(self.normalLoc, 3,GL_FLOAT, False, 6*sizeof(GLfloat),None)
-
-
 
     def set_uv_attribute(self, vertex_array):
         glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 0, vertex_array)
@@ -140,3 +143,9 @@ class Shader3D:
 
     def set_light_amount(self, amount):
         glUniform1i(self.lightAmountLoc, amount)
+
+    def set_texture_diffuse(self, number):
+        glUniform1i(self.textureDifLoc, number)
+
+    def set_texture_specular(self, number):
+        glUniform1i(self.textureSpecLoc, number)
