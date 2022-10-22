@@ -107,9 +107,11 @@ class ModelMatrix:
         return ret_str
 
 
+
 # The ViewMatrix class holds the camera's coordinate frame and
 # set's up a transformation concerning the camera's position
 # and orientation
+
 class ViewMatrix:
     def __init__(self):
         self.eye = Point(0, 0, 0)
@@ -117,11 +119,12 @@ class ViewMatrix:
         self.v = Vector(0, 1, 0)
         self.n = Vector(0, 0, 1)
 
+    ## MAKE OPERATIONS TO ADD LOOK, SLIDE, PITCH, YAW and ROLL ##
+    # ---
+
     def look(self, eye, center, up):
         self.eye = eye
         self.n = eye - center
-        self.n.normalize()
-
         self.u = up.cross(self.n)
         self.v = self.n.cross(self.u)
 
@@ -136,7 +139,7 @@ class ViewMatrix:
         angSin = sin(angle)
 
 
-        t = self.u.copy()
+        t = self.u * 1
         self.u = (t * angCos) + (self.v * angSin)
         self.v = (t * -angSin) + (self.v * angCos)
 
@@ -145,7 +148,7 @@ class ViewMatrix:
         angCos = cos(angle)
         angSin = sin(angle)
 
-        t = self.u.copy()
+        t = self.u * 1
         self.u = (t * angCos) + (self.n * angSin)
         self.n = (t * -angSin) + (self.n * angCos)
 
@@ -154,7 +157,7 @@ class ViewMatrix:
         angCos = cos(angle)
         angSin = sin(angle)
 
-        t = self.v.copy()
+        t = self.v * 1
         self.v = (t * angCos) + (self.n * angSin)
         self.n = (t * -angSin) + (self.n * angCos)
 
