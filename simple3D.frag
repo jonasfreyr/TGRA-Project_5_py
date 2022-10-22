@@ -41,6 +41,10 @@ void main(void)
         color += diffuse_color + specular_color + ambient_color;
     }
 
+    color.x = min(color.x, 1.0f);
+    color.y = min(color.y, 1.0f);
+    color.z = min(color.z, 1.0f);
+    color.a = min(color.a, 1.0f);
 
     gl_FragColor = color;
 }
