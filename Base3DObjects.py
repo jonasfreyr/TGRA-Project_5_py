@@ -2,6 +2,7 @@
 import random
 from random import *
 
+import numpy
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -175,6 +176,7 @@ class Sphere:
                 self.vertex_array.append(cos(stack_angle + stack_interval))
                 self.vertex_array.append(sin(stack_angle + stack_interval) * sin(slice_angle))
                 self.vertex_count += 2
+        
 
     def set_vertices(self, shader):
         shader.set_position_attribute(self.vertex_array)
