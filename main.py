@@ -1,16 +1,12 @@
 
 # from OpenGL.GL import *
 # from OpenGL.GLU import *
-from math import *
 
 import pygame
 from pygame.locals import *
 
-import sys
-import time
-
 from Shaders import *
-from Matrices import *
+from Core.Matrices import *
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -35,6 +31,7 @@ class GraphicsProgram3D:
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.cube = Cube()
+        self.sphere = Sphere()
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -93,25 +90,7 @@ class GraphicsProgram3D:
 
         self.rotation += 100 * delta_time
 
-    def testing(self):
-        # self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(0, 0, -3)
-        self.model_matrix.add_scale(2, 2, 2)
-        self.model_matrix.add_rotation(45, 0, 0)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
-
-
-        self.shader.set_material_diffuse(1, 0, 0)
-        self.shader.set_material_specular(1, 1, 1)
-        self.shader.set_material_ambient(.1, 0, 0)
-        self.cube.draw(self.shader)
-        # self.model_matrix.pop_matrix()
-
     def pyramid(self):
-        self.shader.set_view_matrix(self.view_matrix.get_matrix())
-
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(0, -3, 0)
         self.model_matrix.add_scale(10, 0.1, 10)
@@ -121,7 +100,7 @@ class GraphicsProgram3D:
         self.shader.set_material_ambient(.1, 0, 0)
         self.shader.set_shininess(10)
 
-        self.cube.draw(self.shader)
+        self.cube.draw()
         self.model_matrix.pop_matrix()
 
         self.model_matrix.push_matrix()
@@ -147,12 +126,30 @@ class GraphicsProgram3D:
                 self.shader.set_material_specular(*level_colors[level])
                 self.shader.set_material_ambient(*amcol)
                 self.shader.set_shininess(3)
-                self.cube.draw(self.shader)
+                self.cube.draw()
                 self.model_matrix.pop_matrix()
 
             self.model_matrix.add_translation(-0.5, 0, 0)
 
         self.model_matrix.pop_matrix()
+
+    def draw_cube_objects(self):
+        self.cube.set_vertices(self.shader)
+        self.pyramid()
+
+    def draw_sphere_objects(self):
+        self.sphere.set_vertices(self.shader)
+
+        self.model_matrix.push_matrix()
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_material_diffuse(1, 1, 0)
+        self.shader.set_material_specular(1, 1, 1)
+        self.shader.set_material_ambient(.1, .1, 0)
+        self.shader.set_shininess(50)
+
+        self.sphere.draw()
+        self.model_matrix.pop_matrix()
+
 
     def display(self):
         glEnable(
@@ -166,8 +163,10 @@ class GraphicsProgram3D:
             GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
         glViewport(0, 0, 800, 600)
-        self.shader.set_camera_position(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
 
+        self.shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        self.shader.set_camera_position(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
 
         self.shader.set_light_position(0, 5, 5, 0)
         self.shader.set_light_diffuse(1, 1, 1, 0)
@@ -178,7 +177,9 @@ class GraphicsProgram3D:
 
         # self.model_matrix.load_identity()
 
-        self.pyramid()
+        self.draw_cube_objects()
+        self.draw_sphere_objects()
+
         # self.testing()
 
         # print(self.model_matrix)
