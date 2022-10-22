@@ -40,6 +40,9 @@ class Shader3D:
         self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal")
         glEnableVertexAttribArray(self.normalLoc)
 
+        self.uvLoc = glGetAttribLocation(self.renderingProgramID, "a_uv")
+        glEnableVertexAttribArray(self.uvLoc)
+
         ## ADD CODE HERE ##
 
         self.modelMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
@@ -88,6 +91,9 @@ class Shader3D:
     ## ADD CODE HERE ##
     def set_normal_attribute(self, vertex_array):
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
+
+    def set_uv_attribute(self, vertex_array):
+        glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 0, vertex_array)
 
     ## Diffuse
     def set_light_position(self, x, y, z, i):

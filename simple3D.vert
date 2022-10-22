@@ -1,7 +1,6 @@
 attribute vec3 a_position;
-//## ADD CODE HERE ##
-
 attribute vec3 a_normal;
+attribute vec2 a_uv;
 
 uniform vec4 u_camera_position;
 
@@ -25,11 +24,13 @@ varying vec4 lights_h[u_NUM_OF_LIGHTS];
 
 uniform int light_amount;
 
+varying vec2 v_uv;
+
 void main(void)
 {
 	vec4 position = vec4(a_position.x, a_position.y, a_position.z, 1.0);
-	//## ADD CODE HERE ##
 	vec4 normal = vec4(a_normal.x, a_normal.y, a_normal.z, 0.0);
+	v_uv = a_uv;
 
 
 	position = u_model_matrix * position;

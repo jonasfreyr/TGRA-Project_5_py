@@ -18,9 +18,11 @@ uniform vec4 u_light_ambients[u_NUM_OF_LIGHTS];
 
 uniform int light_amount;
 
+varying vec2 v_uv;
+
 void main(void)
 {
-    vec4 color;
+    vec4 color = vec4(0, 0, 0, 0);
     float lambert;
     vec4 diffuse_color;
     float phong;
@@ -41,10 +43,7 @@ void main(void)
         color += diffuse_color + specular_color + ambient_color;
     }
 
-    color.x = min(color.x, 1.0f);
-    color.y = min(color.y, 1.0f);
-    color.z = min(color.z, 1.0f);
-    color.a = min(color.a, 1.0f);
+    color.r = color.r * v_uv.x;
 
     gl_FragColor = color;
 }

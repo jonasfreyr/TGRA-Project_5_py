@@ -12,7 +12,7 @@ class GraphicsProgram3D:
     def __init__(self):
 
         pygame.init()
-        pygame.display.set_mode((800 ,600), pygame.OPENGL |pygame.DOUBLEBUF)
+        pygame.display.set_mode((800 ,600), pygame.OPENGL |pygame.DOUBLEBUF, vsync=60)
 
         self.shader = Shader3D()
         self.shader.use()
@@ -122,7 +122,7 @@ class GraphicsProgram3D:
                 self.shader.set_model_matrix(self.model_matrix.matrix)
                 self.shader.set_material_diffuse(*level_colors[level])
 
-                amcol = list(map(lambda x: x/ 10, level_colors[level]))
+                amcol = list(map(lambda x: x/10, level_colors[level]))
                 self.shader.set_material_specular(*level_colors[level])
                 self.shader.set_material_ambient(*amcol)
                 self.shader.set_shininess(3)
@@ -150,7 +150,6 @@ class GraphicsProgram3D:
         self.sphere.draw()
         self.model_matrix.pop_matrix()
 
-
     def display(self):
         glEnable(
             GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
@@ -175,16 +174,8 @@ class GraphicsProgram3D:
 
         self.shader.set_light_amount(1)
 
-        # self.model_matrix.load_identity()
-
         self.draw_cube_objects()
         self.draw_sphere_objects()
-
-        # self.testing()
-
-        # print(self.model_matrix)
-        # print(self.view_matrix)
-        # print(self.projection_matrix)
 
         pygame.display.flip()
 
