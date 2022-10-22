@@ -185,6 +185,8 @@ class Sphere:
     def set_vertices(self, shader):
         shader.set_attribute_buffers(self.vertex_buffer_id) # sending both normal and vertex this only works for a sphere
 
-    def draw(self):
+    def draw(self, shader):
         for i in range(0, self.vertex_count, (self.slices + 1) * 2):
             glDrawArrays(GL_TRIANGLE_STRIP, i, (self.slices + 1) * 2)
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0)

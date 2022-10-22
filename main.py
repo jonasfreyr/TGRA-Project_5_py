@@ -57,6 +57,17 @@ class GraphicsProgram3D:
 
         self.rotation = 0
 
+        '''
+        surface = pygame.image.load("Textures/test.png")
+        tex_string = pygame.image.tostring(surface, "RGBA", True)
+        width = surface.get_width()
+        height = surface.get_height()
+        self.tex_id = glGenTextures(1)
+        glBindTextures(GL_TEXTURE_2D, self.tex_id)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_string)
+        '''
+
+
     def update(self):
         delta_time = self.clock.tick() / 1000.0
 
@@ -135,14 +146,29 @@ class GraphicsProgram3D:
 
     def draw_cube_objects(self):
         self.cube.set_vertices(self.shader)
-        self.pyramid()
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(0, 0, -3)
+        self.model_matrix.add_scale(1, 1, 1)
+        self.model_matrix.add_rotation(self.rotation, self.rotation, 0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_material_diffuse(1, 0, 0)
+        self.shader.set_material_specular(1, 1, 1)
+        self.shader.set_material_ambient(0.1, 0.1, 0.1)
+        self.shader.set_shininess(10)
+
+        self.cube.draw()
+        self.model_matrix.pop_matrix()
+
+
+        # self.pyramid()
 
     def draw_rotating_spheres(self):
         for i in range(8):
             self.model_matrix.push_matrix()
-            self.model_matrix.add_rotation_x(self.angle * 0.73 +i * pi/4.0)
+            self.model_matrix.add_rotation(self.rotation * 0.73 +i * pi/4.0, 0, 0)
             self.model_matrix.add_translation(0,5,0)
-            self.model_matrix.add_rotation_x(-(self.angle *0.73 +i * pi/4.0))
+            self.model_matrix.add_rotation(-(self.rotation *0.73 +i * pi/4.0), 0, 0)
             self.model_matrix.add_scale(3.0,3.0,3.0)
             self.shader.set_model_matrix(self.model_matrix.matrix)
 
@@ -153,6 +179,7 @@ class GraphicsProgram3D:
     def draw_sphere_objects(self):
         self.sphere.set_vertices(self.shader)
 
+        '''
         self.model_matrix.push_matrix()
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(1, 1, 0)
@@ -160,8 +187,11 @@ class GraphicsProgram3D:
         self.shader.set_material_ambient(.1, .1, 0)
         self.shader.set_shininess(50)
 
-        self.sphere.draw()
+        self.sphere.draw(self.shader)
+        
         self.model_matrix.pop_matrix()
+        '''
+        self.draw_rotating_spheres()
 
     def display(self):
         glEnable(
@@ -180,14 +210,14 @@ class GraphicsProgram3D:
 
         self.shader.set_camera_position(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
 
-        self.shader.set_light_position(0, 5, 5, 0)
+        self.shader.set_light_position(0, 0, 0, 0)
         self.shader.set_light_diffuse(1, 1, 1, 0)
         self.shader.set_light_specular(1, 1, 1, 0)
         self.shader.set_light_ambient(0.5, 0.5, 0.5, 0)
 
         self.shader.set_light_amount(1)
 
-        self.draw_cube_objects()
+        # self.draw_cube_objects()
         self.draw_sphere_objects()
 
         pygame.display.flip()
