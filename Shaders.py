@@ -85,12 +85,21 @@ class Shader3D:
     def set_view_matrix(self, matrix_array):
         glUniformMatrix4fv(self.viewMatrixLoc, 1, True, matrix_array)
 
+
+    ## remove
     def set_position_attribute(self, vertex_array):
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 0, vertex_array)
 
-    ## ADD CODE HERE ##
     def set_normal_attribute(self, vertex_array):
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
+    ##
+
+    def set_attribute_buffers(self, vertex_buffer_id):
+        glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer_id)
+        glVertexAttribPointer(self.positionLoc,3,GL_FLOAT, False, 6*sizeof(GLfloat),None)
+        glVertexAttribPointer(self.normalLoc, 3,GL_FLOAT, False, 6*sizeof(GLfloat),None)
+
+
 
     def set_uv_attribute(self, vertex_array):
         glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 0, vertex_array)

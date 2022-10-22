@@ -12,7 +12,7 @@ class GraphicsProgram3D:
     def __init__(self):
 
         pygame.init()
-        pygame.display.set_mode((800 ,600), pygame.OPENGL |pygame.DOUBLEBUF, vsync=60)
+        pygame.display.set_mode((800 ,600), pygame.OPENGL |pygame.DOUBLEBUF)
 
         self.shader = Shader3D()
         self.shader.use()
@@ -31,7 +31,7 @@ class GraphicsProgram3D:
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.cube = Cube()
-        self.sphere = Sphere()
+        self.sphere = Sphere(12,24)
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -136,6 +136,19 @@ class GraphicsProgram3D:
     def draw_cube_objects(self):
         self.cube.set_vertices(self.shader)
         self.pyramid()
+
+    def draw_rotating_spheres(self):
+        for i in range(8):
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_rotation_x(self.angle * 0.73 +i * pi/4.0)
+            self.model_matrix.add_translation(0,5,0)
+            self.model_matrix.add_rotation_x(-(self.angle *0.73 +i * pi/4.0))
+            self.model_matrix.add_scale(3.0,3.0,3.0)
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+
+            self.shader.set_material_diffuse(1.0,1.0,1.0)
+            self.sphere.draw(self.shader)
+            self.model_matrix.pop_matrix()
 
     def draw_sphere_objects(self):
         self.sphere.set_vertices(self.shader)
