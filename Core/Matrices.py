@@ -1,7 +1,6 @@
 import math
 from math import * # trigonometry
-
-from Base3DObjects import *
+from Core.Vector import *
 
 
 class ModelMatrix:
