@@ -23,6 +23,8 @@ def load_mtl_file(file_location, file_name, mesh_model):
             mtl.ambient = Color(float(tokens[1]), float(tokens[2]), float(tokens[3]))
         elif tokens[0] == "Ns":
             mtl.shininess = float(tokens[1])
+
+
     print("  Finished loading MTL: " + file_name)
 
 
