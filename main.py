@@ -32,7 +32,7 @@ class GraphicsProgram3D:
         self.projection_matrix.set_perspective(90, 16/9, .1, 100)
 
         v = Vector(-8, 0, 0)
-        look_v = v + Vector(1, 0, 0)
+        look_v = v + Vector(1, 0, 0.3)
         self.view_matrix.look(v, look_v, Vector(0, 1, 0))
 
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -174,8 +174,9 @@ class GraphicsProgram3D:
 
     def draw_models(self):
         self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(-5, 0, 5)
         self.model_matrix.add_scale(20, 20, 20)
-        self.model_matrix.add_rotation(0, -90, 0)
+        self.model_matrix.add_rotation(0, self.rotation*0.2, 0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.object_model.draw(self.shader)
         self.model_matrix.pop_matrix()
@@ -203,14 +204,14 @@ class GraphicsProgram3D:
         self.sphere.draw(self.shader)
         self.model_matrix.pop_matrix()
 
-        # self.draw_rotating_spheres()
+        self.draw_rotating_spheres()
 
     def display(self):
         glEnable(
             GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
 
 
-        glClearColor(1.0, 1.0, 1.0, 1.0)
+        glClearColor(0.0, 0.0, 0.0, 1.0)
         glClear(
             GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
@@ -228,7 +229,7 @@ class GraphicsProgram3D:
         self.shader.set_light_amount(1)
 
         self.draw_cube_objects()
-        # self.draw_sphere_objects()
+        self.draw_sphere_objects()
         self.draw_models()
 
 

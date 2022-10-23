@@ -27,7 +27,11 @@ void main(void)
 {
     vec4 material_diffuse = u_material_diffuse;
     vec4 material_specular = u_material_specular;
-    if (u_using_diffuse_texture == 1.0) material_diffuse  *= texture2D(u_tex01, v_uv);
+    vec4 material_ambient = u_material_ambient;
+    if (u_using_diffuse_texture == 1.0){
+        material_diffuse  *= texture2D(u_tex01, v_uv);
+        material_ambient *= texture2D(u_tex01, v_uv);
+    }
     if (u_using_specular_texture == 1.0) material_specular *= texture2D(u_tex02, v_uv);
 
     vec4 color = vec4(0, 0, 0, 0);
@@ -47,7 +51,7 @@ void main(void)
         specular_color =  material_specular * u_light_speculars[i] * pow(phong, u_shininess);
 
         // Ambient
-        ambient_color = u_light_ambients[i] * u_material_ambient;
+        ambient_color = u_light_ambients[i] * material_ambient;
 
         color += diffuse_color + specular_color + ambient_color;
     }
