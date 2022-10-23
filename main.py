@@ -5,15 +5,18 @@
 import pygame
 from pygame.locals import *
 
-from Shaders import *
+from OpenGLCore.Shaders import *
 from Core.Matrices import *
-import ojb_3D_loading
+from OpenGLCore import ojb_3D_loading
+from Core.Constants import *
+from Core.Color import Color
+
 
 class GraphicsProgram3D:
     def __init__(self):
 
         pygame.init()
-        pygame.display.set_mode((800, 600), pygame.OPENGL |pygame.DOUBLEBUF)
+        pygame.display.set_mode((800, 600), pygame.OPENGL | pygame.DOUBLEBUF)
 
         self.shader = Shader3D()
         self.shader.use()
@@ -33,7 +36,7 @@ class GraphicsProgram3D:
 
         self.cube = OptiCube()
         self.sphere = OptiSphere(24,48)
-        self.object_model = ojb_3D_loading.load_obj_file("./models", "cock.obj")
+        self.object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "cock.obj")
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -59,13 +62,13 @@ class GraphicsProgram3D:
 
         self.rotation = 0
 
-        self.tex_id_cock = self.load_texture("Textures/test.png")
-        self.tex_id_vag = self.load_texture("Textures/test2.png")
-        self.tex_id_tits = self.load_texture("Textures/test3.png")
-        self.tex_id_aids = self.load_texture("Textures/test4.png")
-        self.tex_id_phobos = self.load_texture("Textures/phobos.png")
-        self.tex_id_earth = self.load_texture("Textures/earth.jpg")
-        self.tex_id_earth_spec = self.load_texture("Textures/earth_spec.png")
+        self.tex_id_cock = self.load_texture(TEXTURES_PATH + "/test.png")
+        self.tex_id_vag = self.load_texture(TEXTURES_PATH + "/test2.png")
+        self.tex_id_tits = self.load_texture(TEXTURES_PATH + "/test3.png")
+        self.tex_id_aids = self.load_texture(TEXTURES_PATH + "/test4.png")
+        self.tex_id_phobos = self.load_texture(TEXTURES_PATH + "/phobos.png")
+        self.tex_id_earth = self.load_texture(TEXTURES_PATH + "/earth.jpg")
+        self.tex_id_earth_spec = self.load_texture(TEXTURES_PATH + "/earth_spec.png")
 
         self.fr_ticker = 0
         self.fr_sum = 0

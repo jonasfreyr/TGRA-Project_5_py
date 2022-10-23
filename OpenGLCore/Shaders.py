@@ -6,12 +6,13 @@ from math import * # trigonometry
 
 import sys
 
-from Base3DObjects import *
+from OpenGLCore.Base3DObjects import *
+from Core.Constants import *
 
 class Shader3D:
     def __init__(self):
         vert_shader = glCreateShader(GL_VERTEX_SHADER)
-        shader_file = open(sys.path[0] + "/simple3D.vert")
+        shader_file = open(SHADERS_PATH + "/simple3D.vert")
         glShaderSource(vert_shader,shader_file.read())
         shader_file.close()
         glCompileShader(vert_shader)
@@ -20,7 +21,7 @@ class Shader3D:
             print("Couldn't compile vertex shader\nShader compilation Log:\n" + str(glGetShaderInfoLog(vert_shader)))
 
         frag_shader = glCreateShader(GL_FRAGMENT_SHADER)
-        shader_file = open(sys.path[0] + "/simple3D.frag")
+        shader_file = open(SHADERS_PATH + "/simple3D.frag")
         glShaderSource(frag_shader,shader_file.read())
         shader_file.close()
         glCompileShader(frag_shader)

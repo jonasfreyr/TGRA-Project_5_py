@@ -1,4 +1,7 @@
-from Base3DObjects import *
+from OpenGLCore.Base3DObjects import *
+from Core.Color import Color, Material
+from Core.Vector import Vector, Point
+
 
 def load_mtl_file(file_location, file_name, mesh_model):
     print("  Start loading MTL: " + file_name)
@@ -21,6 +24,7 @@ def load_mtl_file(file_location, file_name, mesh_model):
         elif tokens[0] == "Ns":
             mtl.shininess = float(tokens[1])
     print("  Finished loading MTL: " + file_name)
+
 
 def load_obj_file(file_location, file_name):
     print("Start loading OBJ: " + file_name)
