@@ -1,3 +1,5 @@
+#version 110
+
 attribute vec3 a_position;
 attribute vec3 a_normal;
 attribute vec2 a_uv;

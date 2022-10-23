@@ -1,5 +1,7 @@
 
 from OpenGL.GL import *
+import OpenGL.GLU
+
 from math import * # trigonometry
 
 import sys
@@ -70,9 +72,9 @@ class Shader3D:
         self.lightAmountLoc = glGetUniformLocation(self.renderingProgramID, "light_amount")
 
         self.textureDifLoc = glGetUniformLocation(self.renderingProgramID, "u_tex01")
-
         self.textureSpecLoc = glGetUniformLocation(self.renderingProgramID, "u_tex02")
 
+        self.usingTexLoc = glGetUniformLocation(self.renderingProgramID, "u_using_texture")
 
     def use(self):
         try:
@@ -93,6 +95,7 @@ class Shader3D:
 
     ## remove
     def set_position_attribute(self, vertex_array):
+        # glUniform1f(self.usingTexLoc, 0.0)
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 0, vertex_array)
 
     def set_normal_attribute(self, vertex_array):
@@ -100,9 +103,13 @@ class Shader3D:
     ##
 
     def set_attribute_buffers(self, vertex_buffer_id):
-        glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer_id)
-        glVertexAttribPointer(self.positionLoc,3,GL_FLOAT, False, 6*sizeof(GLfloat),None)
-        glVertexAttribPointer(self.normalLoc, 3,GL_FLOAT, False, 6*sizeof(GLfloat),None)
+        # glUniform1f(self.usingTexLoc, 0.0)
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id)
+        glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 6 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(0))
+        glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 6 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
+
+    def set_using_texture(self, using):
+        glUniform1f(self.usingTexLoc, using)
 
     def set_uv_attribute(self, vertex_array):
         glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 0, vertex_array)

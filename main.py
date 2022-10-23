@@ -30,8 +30,8 @@ class GraphicsProgram3D:
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
-        self.cube = Cube()
-        self.sphere = Sphere(12,24)
+        self.cube = OptiCube()
+        self.sphere = OptiSphere(24,48)
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -62,6 +62,9 @@ class GraphicsProgram3D:
         self.tex_id_tits = self.load_texture("Textures/test3.png")
         self.tex_id_aids = self.load_texture("Textures/test4.png")
 
+        self.fr_ticker = 0
+        self.fr_sum = 0
+
     def load_texture(self, path):
         surface = pygame.image.load(path)
         tex_string = pygame.image.tostring(surface, "RGBA", True)
@@ -77,6 +80,12 @@ class GraphicsProgram3D:
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
+        self.fr_sum += delta_time
+        self.fr_ticker += 1
+        if self.fr_sum > 1.0:
+            print(self.fr_ticker / self.fr_sum)
+            self.fr_sum = 0
+            self.fr_ticker = 0
 
         if self.UP_key_down:
             self.view_matrix.pitch(100 * delta_time)
@@ -108,53 +117,9 @@ class GraphicsProgram3D:
 
         self.rotation += 100 * delta_time
 
-    def pyramid(self):
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(0, -3, 0)
-        self.model_matrix.add_scale(10, 0.1, 10)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(1, 0, 0)
-        self.shader.set_material_specular(1, 1, 1)
-        self.shader.set_material_ambient(.1, 0, 0)
-        self.shader.set_shininess(10)
-
-        self.cube.draw()
-        self.model_matrix.pop_matrix()
-
-        self.model_matrix.push_matrix()
-
-        self.model_matrix.add_translation(0, 2, 0)
-
-        level_colors = [(1, 1, 1),
-                        (0, 1, 1),
-                        (1, 0, 1),
-                        (1, 1, 0),
-                        (0, 0, 1)]
-
-        cube_amount = 5
-        self.model_matrix.add_rotation(self.rotation, 0, 0)
-        for level in range(cube_amount):
-            for cube in range(level +1):
-                self.model_matrix.push_matrix()
-                self.model_matrix.add_translation(cube, -level, 0)
-                self.shader.set_model_matrix(self.model_matrix.matrix)
-                self.shader.set_material_diffuse(*level_colors[level])
-
-                amcol = list(map(lambda x: x/10, level_colors[level]))
-                self.shader.set_material_specular(*level_colors[level])
-                self.shader.set_material_ambient(*amcol)
-                self.shader.set_shininess(3)
-                self.cube.draw()
-                self.model_matrix.pop_matrix()
-
-            self.model_matrix.add_translation(-0.5, 0, 0)
-
-        self.model_matrix.pop_matrix()
-
     def draw_cube_objects(self):
         self.cube.set_vertices(self.shader)
-
-        # self.shader.set_texture_diffuse(self.tex_id)
+        self.shader.set_using_texture(1.0)
 
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_cock)
@@ -163,9 +128,8 @@ class GraphicsProgram3D:
         glBindTexture(GL_TEXTURE_2D, self.tex_id_aids)
         self.shader.set_texture_specular(1)
 
-
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(0, 0, -3)
+        self.model_matrix.add_translation(-3, 0, -3)
         self.model_matrix.add_scale(1, 1, 1)
         self.model_matrix.add_rotation(self.rotation, self.rotation, 0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
@@ -173,7 +137,7 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(1, 1, 1)
         self.shader.set_material_ambient(0.1, 0.1, 0.1)
         self.shader.set_shininess(10)
-        self.cube.draw()
+        self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 
         glActiveTexture(GL_TEXTURE0)
@@ -184,7 +148,7 @@ class GraphicsProgram3D:
         self.shader.set_texture_specular(1)
 
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(0, 3, -3)
+        self.model_matrix.add_translation(-3, 3, -3)
         self.model_matrix.add_scale(1, 1, 1)
         self.model_matrix.add_rotation(self.rotation, self.rotation, 0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
@@ -192,7 +156,7 @@ class GraphicsProgram3D:
         self.shader.set_material_specular(1, 1, 1)
         self.shader.set_material_ambient(0.1, 0.1, 0.1)
         self.shader.set_shininess(10)
-        self.cube.draw()
+        self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 
         # self.pyramid()
@@ -200,28 +164,25 @@ class GraphicsProgram3D:
     def draw_rotating_spheres(self):
         for i in range(8):
             self.model_matrix.push_matrix()
-            self.model_matrix.add_rotation(self.rotation * 0.73 +i * pi/4.0, 0, 0)
-            self.model_matrix.add_translation(0,5,0)
-            self.model_matrix.add_rotation(-(self.rotation *0.73 +i * pi/4.0), 0, 0)
-            self.model_matrix.add_scale(3.0,3.0,3.0)
+            self.model_matrix.add_rotation(self.rotation * 0.73 + (i*100) * pi / 4.0, 0, 0)
+            self.model_matrix.add_translation(0, 5, 0)
+            self.model_matrix.add_rotation(-(self.rotation * 0.73 + (i*100) * pi / 4.0), 0, 0)
+            self.model_matrix.add_scale(3.0, 3.0, 3.0)
             self.shader.set_model_matrix(self.model_matrix.matrix)
 
-            self.shader.set_material_diffuse(1.0,1.0,1.0)
+            self.shader.set_material_diffuse(1.0, 1.0, 1.0)
             self.sphere.draw(self.shader)
             self.model_matrix.pop_matrix()
 
     def draw_sphere_objects(self):
-        self.sphere.set_vertices(self.shader)
-
+        self.shader.set_using_texture(0.0)
         self.model_matrix.push_matrix()
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(1, 1, 0)
         self.shader.set_material_specular(1, 1, 1)
         self.shader.set_material_ambient(.1, .1, 0)
         self.shader.set_shininess(50)
-
         self.sphere.draw(self.shader)
-        
         self.model_matrix.pop_matrix()
 
         self.draw_rotating_spheres()
@@ -251,7 +212,7 @@ class GraphicsProgram3D:
         self.shader.set_light_amount(1)
 
         self.draw_cube_objects()
-        # self.draw_sphere_objects()
+        self.draw_sphere_objects()
 
         pygame.display.flip()
 
