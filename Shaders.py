@@ -120,11 +120,13 @@ class Shader3D:
         glUniform4f(loc, x, y, z, 1.0)
 
     def set_material_diffuse(self, r, g, b):
-        glUniform4f(self.matDifLoc, r, g, b, 0.0)
+        glUniform4f(self.matDifLoc, r, g, b, 1.0)
+    def set_material_diffuse_color(self, color):
+        glUniform4f(self.matDifLoc, color.r, color.g, color.b, 1.0)
 
     def set_light_diffuse(self, r, g, b, i):
         loc = glGetUniformLocation(self.renderingProgramID, f"u_light_diffuses[{i}]")
-        glUniform4f(loc, r, g, b, 0.0)
+        glUniform4f(loc, r, g, b, 1.0)
 
     ## Specular
     def set_camera_position(self, x, y, z):
@@ -132,10 +134,12 @@ class Shader3D:
 
     def set_light_specular(self, r, g, b, i):
         loc = glGetUniformLocation(self.renderingProgramID, f"u_light_speculars[{i}]")
-        glUniform4f(loc, r, g, b, 0.0)
+        glUniform4f(loc, r, g, b, 1.0)
 
     def set_material_specular(self, r, g, b):
-        glUniform4f(self.matSpecLoc, r, g, b, 0.0)
+        glUniform4f(self.matSpecLoc, r, g, b, 1.0)
+    def set_material_specular_color(self, color):
+        glUniform4f(self.matSpecLoc, color.r, color.g, color.b, 1.0)
 
     def set_shininess(self, shininess):
         glUniform1f(self.shininessLoc, shininess)
@@ -143,10 +147,13 @@ class Shader3D:
     ## Ambient
     def set_light_ambient(self, r, g, b, i):
         loc = glGetUniformLocation(self.renderingProgramID, f"u_light_ambients[{i}]")
-        glUniform4f(loc, r, g, b, 0.0)
+        glUniform4f(loc, r, g, b, 1.0)
 
     def set_material_ambient(self, r, g, b):
-        glUniform4f(self.matAmbientLoc, r, g, b, 0.0)
+        glUniform4f(self.matAmbientLoc, r, g, b, 1.0)
+
+    def set_material_ambient_color(self, color):
+        glUniform4f(self.matAmbientLoc, color.r, color.g, color.b, 1.0)
 
     def set_light_amount(self, amount):
         glUniform1i(self.lightAmountLoc, amount)
