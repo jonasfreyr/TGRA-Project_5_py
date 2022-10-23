@@ -16,6 +16,8 @@ def load_mtl_file(file_location, file_name, mesh_model):
             mtl.diffuse = Color(float(tokens[1]), float(tokens[2]), float(tokens[3]))
         elif tokens[0] == "Ks":
             mtl.specular = Color(float(tokens[1]), float(tokens[2]), float(tokens[3]))
+        elif tokens[0] == "Ka":
+            mtl.ambient = Color(float(tokens[1]), float(tokens[2]), float(tokens[3]))
         elif tokens[0] == "Ns":
             mtl.shininess = float(tokens[1])
     print("  Finished loading MTL: " + file_name)
@@ -26,6 +28,7 @@ def load_obj_file(file_location, file_name):
     current_object_id = None
     current_position_list = []
     current_normal_list = []
+    current_uv_list = []
     fin = open(file_location + "/" + file_name)
     for line in fin.readlines():
         tokens = line.split()
@@ -42,6 +45,8 @@ def load_obj_file(file_location, file_name):
             current_position_list.append(Point(float(tokens[1]), float(tokens[2]), float(tokens[3])))
         elif tokens[0] == "vn":
             current_normal_list.append(Vector(float(tokens[1]), float(tokens[2]), float(tokens[3])))
+        elif tokens[0] == "vt":
+            current_uv_list.append(Vector(float(tokens[1]), float(tokens[2]), 0.0))
         elif tokens[0] == "usemtl":
             mesh_model.set_mesh_material(current_object_id, tokens[1])
         elif tokens[0] == "f":
@@ -60,9 +65,9 @@ def load_obj_file(file_location, file_name):
                 # print("size: " + str(len(current_normal_list)))
                 # print(int(tokens[1][0])-1)
                 # print(int(tokens[1][2])-1)
-                mesh_model.add_vertex(current_object_id, current_position_list[int(tokens[1][0])-1], current_normal_list[int(tokens[1][2])-1])
-                mesh_model.add_vertex(current_object_id, current_position_list[int(tokens[i+2][0])-1], current_normal_list[int(tokens[i+2][2])-1])
-                mesh_model.add_vertex(current_object_id, current_position_list[int(tokens[i+3][0])-1], current_normal_list[int(tokens[i+3][2])-1])
+                mesh_model.add_vertex(current_object_id, current_position_list[int(tokens[1][0])-1], current_normal_list[int(tokens[1][2])-1], current_uv_list[int(tokens[1][1])-1])
+                mesh_model.add_vertex(current_object_id, current_position_list[int(tokens[i+2][0])-1], current_normal_list[int(tokens[i+2][2])-1], current_uv_list[int(tokens[i+2][1])-1])
+                mesh_model.add_vertex(current_object_id, current_position_list[int(tokens[i+3][0])-1], current_normal_list[int(tokens[i+3][2])-1], current_uv_list[int(tokens[i+3][1])-1])
     mesh_model.set_opengl_buffers()
     print("Finished loading OBJ: " + file_name)
     return mesh_model

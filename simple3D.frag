@@ -37,13 +37,14 @@ void main(void)
     float phong;
     vec4 specular_color;
     vec4 ambient_color;
+    vec4 normal_normal_normal = normalize(normal_normal);
     for(int i = 0; i < light_amount; i++){
         // Diffuse
-        lambert = max(dot(normalize(normal_normal), normalize(lights_s[i])), 0.0);
+        lambert = max(dot(normal_normal_normal, normalize(lights_s[i])), 0.0);
         diffuse_color = lambert * u_light_diffuses[i] * material_diffuse;
 
         // Specular
-        phong = max(dot(normalize(normal_normal), normalize(lights_h[i])), 0.0);
+        phong = max(dot(normal_normal_normal, normalize(lights_h[i])), 0.0);
         specular_color =  material_specular * u_light_speculars[i] * pow(phong, u_shininess);
 
         // Ambient

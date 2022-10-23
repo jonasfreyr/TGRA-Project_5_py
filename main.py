@@ -7,12 +7,13 @@ from pygame.locals import *
 
 from Shaders import *
 from Core.Matrices import *
+import ojb_3D_loading
 
 class GraphicsProgram3D:
     def __init__(self):
 
         pygame.init()
-        pygame.display.set_mode((800 ,600), pygame.OPENGL |pygame.DOUBLEBUF)
+        pygame.display.set_mode((800, 600), pygame.OPENGL |pygame.DOUBLEBUF)
 
         self.shader = Shader3D()
         self.shader.use()
@@ -25,13 +26,14 @@ class GraphicsProgram3D:
         self.view_matrix = ViewMatrix()
         self.projection_matrix = ProjectionMatrix()
 
-        self.projection_matrix.set_perspective(90, 16/9, 1, 100)
+        self.projection_matrix.set_perspective(90, 16/9, .1, 100)
 
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.cube = OptiCube()
         self.sphere = OptiSphere(24,48)
+        self.object_model = ojb_3D_loading.load_obj_file("./models", "cock.obj")
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -61,9 +63,14 @@ class GraphicsProgram3D:
         self.tex_id_vag = self.load_texture("Textures/test2.png")
         self.tex_id_tits = self.load_texture("Textures/test3.png")
         self.tex_id_aids = self.load_texture("Textures/test4.png")
+        self.tex_id_phobos = self.load_texture("Textures/phobos.png")
+        self.tex_id_earth = self.load_texture("Textures/earth.jpg")
+        self.tex_id_earth_spec = self.load_texture("Textures/earth_spec.png")
 
         self.fr_ticker = 0
         self.fr_sum = 0
+
+        self.shader.set_using_texture(1.0)
 
     def load_texture(self, path):
         surface = pygame.image.load(path)
@@ -97,13 +104,13 @@ class GraphicsProgram3D:
             self.view_matrix.yaw(100 * delta_time)
 
         if self.W_key_down:
-            self.view_matrix.slide(0, 0, -1 * delta_time)
+            self.view_matrix.slide(0, 0, -10 * delta_time)
         elif self.S_key_down:
-            self.view_matrix.slide(0, 0, 1 * delta_time)
+            self.view_matrix.slide(0, 0, 10 * delta_time)
         if self.A_key_down:
-            self.view_matrix.slide(-1 * delta_time, 0, 0)
+            self.view_matrix.slide(-10 * delta_time, 0, 0)
         elif self.D_key_down:
-            self.view_matrix.slide(1 * delta_time, 0, 0)
+            self.view_matrix.slide(10 * delta_time, 0, 0)
 
         if self.K_q:
             self.view_matrix.roll(100 * delta_time)
@@ -111,15 +118,14 @@ class GraphicsProgram3D:
             self.view_matrix.roll(-100 * delta_time)
 
         if self.K_r:
-            self.view_matrix.slide(0, 1 * delta_time, 0)
+            self.view_matrix.slide(0, 10 * delta_time, 0)
         elif self.K_f:
-            self.view_matrix.slide(0, -1 * delta_time, 0)
+            self.view_matrix.slide(0, -10 * delta_time, 0)
 
         self.rotation += 100 * delta_time
 
     def draw_cube_objects(self):
         self.cube.set_vertices(self.shader)
-        self.shader.set_using_texture(1.0)
 
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_cock)
@@ -133,9 +139,9 @@ class GraphicsProgram3D:
         self.model_matrix.add_scale(1, 1, 1)
         self.model_matrix.add_rotation(self.rotation, self.rotation, 0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(1, 1, 1)
-        self.shader.set_material_specular(1, 1, 1)
-        self.shader.set_material_ambient(0.1, 0.1, 0.1)
+        self.shader.set_material_diffuse_color(Color(1, 1, 1))
+        self.shader.set_material_specular_color(Color(1, 1, 1))
+        self.shader.set_material_ambient_color(Color(0.1, 0.1, 0.1))
         self.shader.set_shininess(10)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
@@ -152,9 +158,9 @@ class GraphicsProgram3D:
         self.model_matrix.add_scale(1, 1, 1)
         self.model_matrix.add_rotation(self.rotation, self.rotation, 0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(1, 1, 1)
-        self.shader.set_material_specular(1, 1, 1)
-        self.shader.set_material_ambient(0.1, 0.1, 0.1)
+        self.shader.set_material_diffuse_color(Color(1, 1, 1))
+        self.shader.set_material_specular_color(Color(1, 1, 1))
+        self.shader.set_material_ambient_color(Color(0.1, 0.1, 0.1))
         self.shader.set_shininess(10)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
@@ -166,22 +172,32 @@ class GraphicsProgram3D:
             self.model_matrix.push_matrix()
             self.model_matrix.add_rotation(self.rotation * 0.73 + (i*100) * pi / 4.0, 0, 0)
             self.model_matrix.add_translation(0, 5, 0)
+            self.model_matrix.add_scale(1.0, 1.0, 1.0)
             self.model_matrix.add_rotation(-(self.rotation * 0.73 + (i*100) * pi / 4.0), 0, 0)
-            self.model_matrix.add_scale(3.0, 3.0, 3.0)
             self.shader.set_model_matrix(self.model_matrix.matrix)
 
-            self.shader.set_material_diffuse(1.0, 1.0, 1.0)
+            self.shader.set_material_diffuse_color(Color(1.0, 1.0, 1.0))
+            self.shader.set_material_ambient_color(Color(0.1, 0.1, 0.1))
             self.sphere.draw(self.shader)
             self.model_matrix.pop_matrix()
 
     def draw_sphere_objects(self):
-        self.shader.set_using_texture(0.0)
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_earth)
+        self.shader.set_texture_diffuse(0)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_earth_spec)
+        self.shader.set_texture_specular(1)
+
         self.model_matrix.push_matrix()
+        self.model_matrix.add_scale(3, 3, 3)
+        self.model_matrix.add_rotation(0, self.rotation * 0.2, 180)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(1, 1, 0)
-        self.shader.set_material_specular(1, 1, 1)
-        self.shader.set_material_ambient(.1, .1, 0)
+        self.shader.set_material_diffuse_color(Color(1, 1, 1))
+        # self.shader.set_material_specular_color(Color(1, 1, 1))
+        self.shader.set_material_ambient_color(Color(0, 0, 0))
         self.shader.set_shininess(50)
+        # self.object_model.draw(self.shader)
         self.sphere.draw(self.shader)
         self.model_matrix.pop_matrix()
 
@@ -204,7 +220,7 @@ class GraphicsProgram3D:
 
         self.shader.set_camera_position(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
 
-        self.shader.set_light_position(0, 0, 0, 0)
+        self.shader.set_light_position(-5, 0, 0, 0)
         self.shader.set_light_diffuse(1, 1, 1, 0)
         self.shader.set_light_specular(1, 1, 1, 0)
         self.shader.set_light_ambient(0.5, 0.5, 0.5, 0)
