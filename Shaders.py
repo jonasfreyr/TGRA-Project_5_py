@@ -1,29 +1,30 @@
-
 from OpenGL.GL import *
-from math import * # trigonometry
+import OpenGL.GLU
+from math import *  # trigonometry
 
 import sys
 
 from Base3DObjects import *
 
+
 class Shader3D:
     def __init__(self):
         vert_shader = glCreateShader(GL_VERTEX_SHADER)
         shader_file = open(sys.path[0] + "/simple3D.vert")
-        glShaderSource(vert_shader,shader_file.read())
+        glShaderSource(vert_shader, shader_file.read())
         shader_file.close()
         glCompileShader(vert_shader)
         result = glGetShaderiv(vert_shader, GL_COMPILE_STATUS)
-        if (result != 1): # shader didn't compile
+        if (result != 1):  # shader didn't compile
             print("Couldn't compile vertex shader\nShader compilation Log:\n" + str(glGetShaderInfoLog(vert_shader)))
 
         frag_shader = glCreateShader(GL_FRAGMENT_SHADER)
         shader_file = open(sys.path[0] + "/simple3D.frag")
-        glShaderSource(frag_shader,shader_file.read())
+        glShaderSource(frag_shader, shader_file.read())
         shader_file.close()
         glCompileShader(frag_shader)
         result = glGetShaderiv(frag_shader, GL_COMPILE_STATUS)
-        if (result != 1): # shader didn't compile
+        if (result != 1):  # shader didn't compile
             print("Couldn't compile fragment shader\nShader compilation Log:\n" + str(glGetShaderInfoLog(frag_shader)))
 
         self.renderingProgramID = glCreateProgram()
@@ -33,8 +34,7 @@ class Shader3D:
         if (result != None):
             print("Couldn't link program\nProgram link Log:\n" + str(glGetProgramInfoLog(self.renderingProgramID)))
 
-
-        self.positionLoc			= glGetAttribLocation(self.renderingProgramID, "a_position")
+        self.positionLoc = glGetAttribLocation(self.renderingProgramID, "a_position")
         glEnableVertexAttribArray(self.positionLoc)
 
         self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal")
@@ -45,7 +45,7 @@ class Shader3D:
 
         ## ADD CODE HERE ##
 
-        self.modelMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
+        self.modelMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
         # self.projectionViewMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_projection_view_matrix")
 
         self.projectionMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_projection_matrix")
@@ -85,21 +85,20 @@ class Shader3D:
     def set_view_matrix(self, matrix_array):
         glUniformMatrix4fv(self.viewMatrixLoc, 1, True, matrix_array)
 
-
     ## remove
     def set_position_attribute(self, vertex_array):
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 0, vertex_array)
 
     def set_normal_attribute(self, vertex_array):
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
+
     ##
 
     def set_attribute_buffers(self, vertex_buffer_id):
-        glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer_id)
-        glVertexAttribPointer(self.positionLoc,3,GL_FLOAT, False, 6*sizeof(GLfloat),None)
-        glVertexAttribPointer(self.normalLoc, 3,GL_FLOAT, False, 6*sizeof(GLfloat),None)
-
-
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id)
+        glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 6 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(0))
+        glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 6 * sizeof(GLfloat),
+                              OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
 
     def set_uv_attribute(self, vertex_array):
         glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 0, vertex_array)
