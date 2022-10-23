@@ -14,3 +14,5 @@ class Material:
         self.specular = Color(0.0, 0.0, 0.0) if specular is None else specular
         self.shininess = 1 if shininess is None else shininess
         self.ambient = Color(0.0, 0.0, 0.0) if ambient is None else ambient
+        self.diffuse_tex_id = None
+        self.specular_tex_id = None

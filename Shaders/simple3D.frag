@@ -3,7 +3,8 @@
 uniform sampler2D u_tex01;
 uniform sampler2D u_tex02;
 
-uniform float u_using_texture;
+uniform float u_using_diffuse_texture;
+uniform float u_using_specular_texture;
 
 const int u_NUM_OF_LIGHTS = 10;
 
@@ -26,10 +27,8 @@ void main(void)
 {
     vec4 material_diffuse = u_material_diffuse;
     vec4 material_specular = u_material_specular;
-    if (u_using_texture == 1.0){
-        material_diffuse  *= texture2D(u_tex01, v_uv);
-        material_specular *= texture2D(u_tex02, v_uv);
-    }
+    if (u_using_diffuse_texture == 1.0) material_diffuse  *= texture2D(u_tex01, v_uv);
+    if (u_using_specular_texture == 1.0) material_specular *= texture2D(u_tex02, v_uv);
 
     vec4 color = vec4(0, 0, 0, 0);
     float lambert;

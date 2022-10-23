@@ -64,31 +64,16 @@ class GraphicsProgram3D:
 
         self.rotation = 0
 
-        self.tex_id_cock = self.load_texture(TEXTURES_PATH + "/test.png")
-        self.tex_id_vag = self.load_texture(TEXTURES_PATH + "/test2.png")
-        self.tex_id_tits = self.load_texture(TEXTURES_PATH + "/test3.png")
-        self.tex_id_aids = self.load_texture(TEXTURES_PATH + "/test4.png")
-        self.tex_id_phobos = self.load_texture(TEXTURES_PATH + "/phobos.png")
-        self.tex_id_earth = self.load_texture(TEXTURES_PATH + "/earth.jpg")
-        self.tex_id_earth_spec = self.load_texture(TEXTURES_PATH + "/earth_spec.png")
+        self.tex_id_cock = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test.png")
+        self.tex_id_vag = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test2.png")
+        self.tex_id_tits = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test3.png")
+        self.tex_id_aids = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test4.png")
+        self.tex_id_phobos = ojb_3D_loading.load_texture(TEXTURES_PATH + "/phobos.png")
+        self.tex_id_earth = ojb_3D_loading.load_texture(TEXTURES_PATH + "/earth.jpg")
+        self.tex_id_earth_spec = ojb_3D_loading.load_texture(TEXTURES_PATH + "/earth_spec.png")
 
         self.fr_ticker = 0
         self.fr_sum = 0
-
-        self.shader.set_using_texture(1.0)
-
-    def load_texture(self, path):
-        surface = pygame.image.load(path)
-        tex_string = pygame.image.tostring(surface, "RGBA", True)
-        width = surface.get_width()
-        height = surface.get_height()
-        tex_id = glGenTextures(1)
-        glBindTexture(GL_TEXTURE_2D, tex_id)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_string)
-
-        return tex_id
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -130,6 +115,9 @@ class GraphicsProgram3D:
         self.rotation += 100 * delta_time
 
     def draw_cube_objects(self):
+        self.shader.set_using_diffuse_texture(1.0)
+        self.shader.set_using_specular_texture(1.0)
+
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.tex_id_cock)
         self.shader.set_texture_diffuse(0)
@@ -184,21 +172,17 @@ class GraphicsProgram3D:
             self.sphere.draw(self.shader)
             self.model_matrix.pop_matrix()
 
-    def draw_teeth(self):
+    def draw_models(self):
         self.model_matrix.push_matrix()
         self.model_matrix.add_scale(20, 20, 20)
-        self.model_matrix.add_rotation(0, self.rotation * 0.2, 0)
+        self.model_matrix.add_rotation(0, -90, 0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.object_model.draw(self.shader)
         self.model_matrix.pop_matrix()
 
     def draw_sphere_objects(self):
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_earth)
-        self.shader.set_texture_diffuse(0)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_earth_spec)
-        self.shader.set_texture_specular(1)
+        self.shader.set_using_diffuse_texture(1.0)
+        self.shader.set_using_specular_texture(1.0)
 
         self.model_matrix.push_matrix()
         self.model_matrix.add_scale(3, 3, 3)
@@ -208,6 +192,13 @@ class GraphicsProgram3D:
         # self.shader.set_material_specular_color(Color(1, 1, 1))
         self.shader.set_material_ambient_color(Color(0, 0, 0))
         self.shader.set_shininess(50)
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_earth)
+        self.shader.set_texture_diffuse(0)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.tex_id_earth_spec)
+        self.shader.set_texture_specular(1)
 
         self.sphere.draw(self.shader)
         self.model_matrix.pop_matrix()
@@ -238,7 +229,7 @@ class GraphicsProgram3D:
 
         self.draw_cube_objects()
         # self.draw_sphere_objects()
-        self.draw_teeth()
+        self.draw_models()
 
 
         pygame.display.flip()

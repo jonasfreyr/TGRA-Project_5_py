@@ -2,7 +2,7 @@ from math import *
 
 import numpy
 from OpenGL.GL import *
-
+from Core.Color import Material
 
 class Cube:
     def __init__(self):
@@ -123,7 +123,24 @@ class MeshModel:
 
     def draw(self, shader):
         for mesh_id, mesh_material in self.mesh_materials.items():
-            material = self.materials[mesh_material]
+            material: Material = self.materials[mesh_material]
+
+            if material.diffuse_tex_id is not None:
+                shader.set_using_diffuse_texture(1.0)
+                glActiveTexture(GL_TEXTURE0)
+                glBindTexture(GL_TEXTURE_2D, material.diffuse_tex_id)
+                shader.set_texture_diffuse(0)
+            else:
+                shader.set_using_diffuse_texture(0.0)
+
+            if material.specular_tex_id is not None:
+                shader.set_using_specular_texture(1.0)
+                glActiveTexture(GL_TEXTURE1)
+                glBindTexture(GL_TEXTURE_2D, material.specular_tex_id)
+                shader.set_texture_specular(1)
+            else:
+                shader.set_using_specular_texture(0.0)
+
             shader.set_material_diffuse_color(material.diffuse)
             shader.set_material_specular_color(material.specular)
             # shader.set_material_ambient_color(material.ambient)
