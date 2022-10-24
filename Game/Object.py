@@ -7,24 +7,36 @@ from OpenGLCore.Base3DObjects import Cube
 
 
 class Object:
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, static=False):
         self.pos = pos
         self.rotation = rotation
         self.scale = scale
         self.object_model = object_model
         self.model_matrix = ModelMatrix()
 
+        self.static = static
+
+        if static:
+            self.model_matrix.add_translation(*self.pos.to_array())
+            self.model_matrix.add_scale(*self.scale.to_array())
+            self.model_matrix.add_rotation(*self.rotation.to_array())
+
+
     def update(self, delta_time):
         pass
 
     def draw(self, shader):
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(*self.pos.to_array())
-        self.model_matrix.add_scale(*self.scale.to_array())
-        self.model_matrix.add_rotation(*self.rotation.to_array())
-        shader.set_model_matrix(self.model_matrix.matrix)
-        self.object_model.draw(shader)
-        self.model_matrix.pop_matrix()
+        if not self.static:
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(*self.pos.to_array())
+            self.model_matrix.add_scale(*self.scale.to_array())
+            self.model_matrix.add_rotation(*self.rotation.to_array())
+            shader.set_model_matrix(self.model_matrix.matrix)
+            self.object_model.draw(shader)
+            self.model_matrix.pop_matrix()
+        else:
+            shader.set_model_matrix(self.model_matrix.matrix)
+            self.object_model.draw(shader)
 
 
 class Teeth(Object):

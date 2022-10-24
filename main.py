@@ -7,6 +7,7 @@ from pygame.locals import *
 
 from collections import defaultdict
 
+from Game.Level import Level
 from Game.Object import Teeth, RotatingCube, Object
 from Game.Player import FlyingPlayer, Player
 from OpenGLCore.Shaders import *
@@ -37,7 +38,7 @@ class GraphicsProgram3D:
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
         # self.player = Player(Vector(0, 0, 0), 1, 1)
-        self.player = Player(Vector(0, 0, 0), 1, 1)
+        self.player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
         self.shader.set_projection_matrix(self.player.projection_matrix.get_matrix())
 
         self.player.draw(self.shader)
@@ -73,8 +74,10 @@ class GraphicsProgram3D:
 
         self.sphere = Sphere(24, 48)
 
-        self.grass = [Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(1, 1, 1), self.grass_patch_model)]
-        self.ground = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(10, 10, 10), self.ground_model)
+        # self.grass = [Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(1, 1, 1), self.grass_patch_model)]
+        # self.ground = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(10, 10, 10), self.ground_model)
+
+        self.level = Level(self.grass_patch_model, self.ground_model)
 
         self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
@@ -113,11 +116,7 @@ class GraphicsProgram3D:
             self.model_matrix.pop_matrix()
 
     def draw_models(self):
-        self.ground.draw(self.shader)
-
-        for object in self.grass:
-            object.draw(self.shader)
-
+        self.level.draw(self.shader)
         self.teeth.draw(self.shader)
         self.rock.draw(self.shader)
         self.rpg.draw(self.shader)

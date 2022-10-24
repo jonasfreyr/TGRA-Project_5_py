@@ -19,7 +19,13 @@ class FlyingPlayer:
 
         self.view_matrix.slide(pos.x, pos.y + height, pos.z)
         self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
-    
+
+    @property
+    def top_pos(self):
+        temp = self.pos.copy()
+        temp.y += self.height
+        return temp
+
     def update(self, delta_time, keys):
         if keys[K_UP]:
             self.view_matrix.pitch(100 * delta_time)
@@ -70,6 +76,8 @@ class Player:
         self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
 
         self.__landed = True
+
+        self.health = 100
 
     @property
     def top_pos(self):
