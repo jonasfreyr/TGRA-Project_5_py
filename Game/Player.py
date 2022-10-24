@@ -1,3 +1,4 @@
+import pygame.mouse
 from pygame.constants import *
 
 from Core.Vector import Vector
@@ -68,39 +69,40 @@ class Player:
         self.view_matrix.slide(pos.x, pos.y + height, pos.z)
         self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
 
-    def update(self, delta_time, keys):
-        # if keys[K_UP]: self.view_matrix.pitch(100 * delta_time)
-        # elif keys[K_DOWN]: self.view_matrix.pitch(-100 * delta_time)
+        self.__landed = True
 
+    @property
+    def top_pos(self):
+        temp = self.pos.copy()
+        temp.y += self.height
+        return temp
+
+    def update(self, delta_time, keys):
         move_vec = Vector(0, 0, 0)
 
-        if keys[K_LEFT]:
-            # self.view_matrix.yaw(-100 * delta_time)
-            self.x_rotation += -100 * delta_time
+        del_x, del_y = pygame.mouse.get_rel()
 
-        elif keys[K_RIGHT]:
-            # self.view_matrix.yaw(100 * delta_time)
-            self.x_rotation += 100 * delta_time
+        self.x_rotation += del_x * PLAYER_MOUSE_SPEED * delta_time
+        self.y_rotation -= del_y * PLAYER_MOUSE_SPEED * delta_time
+
+        if self.y_rotation > PLAYER_MOUSE_MAX_MIN_Y_VALUE:
+            self.y_rotation = PLAYER_MOUSE_MAX_MIN_Y_VALUE
+        elif self.y_rotation < -PLAYER_MOUSE_MAX_MIN_Y_VALUE:
+            self.y_rotation = -PLAYER_MOUSE_MAX_MIN_Y_VALUE
 
         if keys[K_w]:
-            # self.view_matrix.slide(0, 0, -10 * delta_time)
             move_vec.z += -10 * delta_time
         elif keys[K_s]:
-            # self.view_matrix.slide(0, 0, 10 * delta_time)
             move_vec.z += 10 * delta_time
 
         if keys[K_a]:
-            # self.view_matrix.slide(-10 * delta_time, 0, 0)
             move_vec.x += -10 * delta_time
         elif keys[K_d]:
-            # self.view_matrix.slide(10 * delta_time, 0, 0)
             move_vec.x += 10 * delta_time
 
-        # if keys[K_q]: self.view_matrix.roll(100 * delta_time)
-        # elif keys[K_e]: self.view_matrix.roll(-100 * delta_time)
-
-        # if keys[K_r]: self.view_matrix.slide(0, 10 * delta_time, 0)
-        # elif keys[K_f]: self.view_matrix.slide(0, -10 * delta_time, 0)
+        if keys[K_SPACE] and self.__landed:
+            self.__landed = False
+            move_vec.y += PLAYER_JUMP_FORCE * delta_time
 
         move_vec.rotate2d(self.x_rotation)
 
@@ -109,12 +111,12 @@ class Player:
 
         if self.pos.y <= 0:
             self.pos.y = 0
+            self.__landed = True
 
         self.update_camera()
 
     def update_camera(self):
-        temp = self.pos.copy()
-        temp.y += self.height
+        temp = self.top_pos
 
         look_pos = Vector(0, 0, -1)
         look_pos.rotate2dXAxis(self.y_rotation)
