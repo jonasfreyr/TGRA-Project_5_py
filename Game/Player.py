@@ -76,6 +76,7 @@ class Player:
         self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
 
         self.__landed = True
+        self.jump_vel = 0
 
         self.health = 100
 
@@ -110,12 +111,20 @@ class Player:
 
         if keys[K_SPACE] and self.__landed:
             self.__landed = False
-            move_vec.y += PLAYER_JUMP_FORCE * delta_time
+            self.jump_vel = PLAYER_JUMP_FORCE
 
         move_vec.rotate2d(self.x_rotation)
 
         self.pos += move_vec
+        self.jump_vel -= GRAVITY * delta_time
+
+        if self.jump_vel <= 0:
+            self.jump_vel = 0
+
+        # print(self.jump_vel)
+
         self.pos.y -= GRAVITY * delta_time
+        self.pos.y += self.jump_vel
 
         if self.pos.y <= 0:
             self.pos.y = 0

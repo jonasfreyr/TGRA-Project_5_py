@@ -37,8 +37,8 @@ class GraphicsProgram3D:
         # self.projection_view_matrix = ProjectionViewMatrix()
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
-        # self.player = Player(Vector(0, 0, 0), 1, 1)
-        self.player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
+        self.player = Player(Vector(0, 0, 0), 1, 1)
+        # self.player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
         self.shader.set_projection_matrix(self.player.projection_matrix.get_matrix())
 
         self.player.draw(self.shader)
