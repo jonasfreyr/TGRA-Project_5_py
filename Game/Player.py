@@ -1,0 +1,128 @@
+from pygame.constants import *
+
+from Core.Vector import Vector
+from Core.Constants import *
+from Core.Matrices import ViewMatrix, ProjectionMatrix
+
+
+class FlyingPlayer:
+    def __init__(self, pos: Vector, height: float, radius: float):
+        self.pos = pos
+        self.height = height
+        self.x_rotation = 0
+        self.y_rotation = 0
+        self.radius = radius
+
+        self.view_matrix = ViewMatrix()
+        self.projection_matrix = ProjectionMatrix()
+
+        self.view_matrix.slide(pos.x, pos.y + height, pos.z)
+        self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
+    
+    def update(self, delta_time, keys):
+        if keys[K_UP]:
+            self.view_matrix.pitch(100 * delta_time)
+        elif keys[K_DOWN]:
+            self.view_matrix.pitch(-100 * delta_time)
+        if keys[K_LEFT]:
+            self.view_matrix.yaw(-100 * delta_time)
+        elif keys[K_RIGHT]:
+            self.view_matrix.yaw(100 * delta_time)
+
+        if keys[K_w]:
+            self.view_matrix.slide(0, 0, -10 * delta_time)
+        elif keys[K_s]:
+            self.view_matrix.slide(0, 0, 10 * delta_time)
+        if keys[K_a]:
+            self.view_matrix.slide(-10 * delta_time, 0, 0)
+        elif keys[K_d]:
+            self.view_matrix.slide(10 * delta_time, 0, 0)
+
+        if keys[K_q]:
+            self.view_matrix.roll(100 * delta_time)
+        elif keys[K_e]:
+            self.view_matrix.roll(-100 * delta_time)
+
+        if keys[K_r]:
+            self.view_matrix.slide(0, 10 * delta_time, 0)
+        elif keys[K_f]:
+            self.view_matrix.slide(0, -10 * delta_time, 0)
+    
+    def draw(self, shader):
+        self.pos = Vector(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
+        shader.set_camera_position(self.pos.x, self.pos.y, self.pos.z)
+        shader.set_view_matrix(self.view_matrix.get_matrix())
+
+
+class Player:
+    def __init__(self, pos: Vector, height: float, radius: float):
+        self.pos = pos
+        self.height = height
+        self.x_rotation = 0
+        self.y_rotation = 0
+        self.radius = radius
+
+        self.view_matrix = ViewMatrix()
+        self.projection_matrix = ProjectionMatrix()
+
+        self.view_matrix.slide(pos.x, pos.y + height, pos.z)
+        self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
+
+    def update(self, delta_time, keys):
+        # if keys[K_UP]: self.view_matrix.pitch(100 * delta_time)
+        # elif keys[K_DOWN]: self.view_matrix.pitch(-100 * delta_time)
+
+        move_vec = Vector(0, 0, 0)
+
+        if keys[K_LEFT]:
+            # self.view_matrix.yaw(-100 * delta_time)
+            self.x_rotation += -100 * delta_time
+
+        elif keys[K_RIGHT]:
+            # self.view_matrix.yaw(100 * delta_time)
+            self.x_rotation += 100 * delta_time
+
+        if keys[K_w]:
+            # self.view_matrix.slide(0, 0, -10 * delta_time)
+            move_vec.z += -10 * delta_time
+        elif keys[K_s]:
+            # self.view_matrix.slide(0, 0, 10 * delta_time)
+            move_vec.z += 10 * delta_time
+
+        if keys[K_a]:
+            # self.view_matrix.slide(-10 * delta_time, 0, 0)
+            move_vec.x += -10 * delta_time
+        elif keys[K_d]:
+            # self.view_matrix.slide(10 * delta_time, 0, 0)
+            move_vec.x += 10 * delta_time
+
+        # if keys[K_q]: self.view_matrix.roll(100 * delta_time)
+        # elif keys[K_e]: self.view_matrix.roll(-100 * delta_time)
+
+        # if keys[K_r]: self.view_matrix.slide(0, 10 * delta_time, 0)
+        # elif keys[K_f]: self.view_matrix.slide(0, -10 * delta_time, 0)
+
+        move_vec.rotate2d(self.x_rotation)
+
+        self.pos += move_vec
+        self.pos.y -= GRAVITY * delta_time
+
+        if self.pos.y <= 0:
+            self.pos.y = 0
+
+        self.update_camera()
+
+    def update_camera(self):
+        temp = self.pos.copy()
+        temp.y += self.height
+
+        look_pos = Vector(0, 0, -1)
+        look_pos.rotate2dXAxis(self.y_rotation)
+        look_pos.rotate2d(self.x_rotation)
+
+        self.view_matrix.look(temp, temp+look_pos, Vector(0, 1, 0))
+
+    def draw(self, shader):
+        pos = self.view_matrix.eye
+        shader.set_camera_position(pos.x, pos.y, pos.z)
+        shader.set_view_matrix(self.view_matrix.get_matrix())

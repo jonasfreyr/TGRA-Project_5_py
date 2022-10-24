@@ -1,3 +1,4 @@
+import math
 from math import sqrt
 
 class Point:
@@ -12,6 +13,8 @@ class Point:
     def __sub__(self, other):
         return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
 
+    def __str__(self):
+        return f"P({self.x}, {self.y}, {self.z})"
 
 class Vector:
     def __init__(self, x, y, z):
@@ -34,6 +37,41 @@ class Vector:
     def __str__(self):
         return f"V(x: {self.x}, y: {self.y}, z: {self.z})"
 
+    def copy(self):
+        return Vector(self.x, self.y, self.z)
+
+    def length2D(self):
+        return sqrt(self.x * self.x + self.z * self.z)
+
+    def rotate2dXAxis(self, angle):
+        rad = math.radians(angle)
+
+        cs = math.cos(rad)
+        sn = math.sin(rad)
+
+        py = self.y * cs - self.z * sn
+        pz = self.y * sn + self.z * cs
+
+        self.y = py
+        self.z = pz
+
+    def rotate2d(self, angle):
+        rad = math.radians(angle)
+
+        cs = math.cos(rad)
+        sn = math.sin(rad)
+
+        px = self.x * cs - self.z * sn
+        pz = self.x * sn + self.z * cs
+
+        self.x = px
+        self.z = pz
+
+    def normalize2D(self):
+        length = self.length2D()
+        self.x /= length
+        self.z /= length
+
     def normalize(self):
         length = self.__len__()
         self.x /= length
@@ -47,6 +85,9 @@ class Vector:
 
     def dot(self, other):
         return self.x * other.x + self.y * other.y + self.z * other.z
+
+    def to_array(self):
+        return self.x, self.y, self.z
 
     def cross(self, other):
         return Vector(self.y * other.z - self.z * other.y, self.z * other.x - self.x * other.z,

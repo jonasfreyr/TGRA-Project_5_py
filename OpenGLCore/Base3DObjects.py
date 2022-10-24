@@ -143,7 +143,7 @@ class MeshModel:
 
             shader.set_material_diffuse_color(material.diffuse)
             shader.set_material_specular_color(material.specular)
-            shader.set_material_ambient_color(material.ambient)
+            # shader.set_material_ambient_color(material.ambient)  # Can add but can look weird
             shader.set_shininess(material.shininess)
             shader.set_attribute_buffer_with_uv(self.vertex_buffer_ids[mesh_id])
             glDrawArrays(GL_TRIANGLES, 0, self.vertex_counts[mesh_id])
