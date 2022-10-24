@@ -22,6 +22,9 @@ class GraphicsProgram3D:
         pygame.init()
         pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF)
 
+        pygame.mouse.set_visible(False)
+        pygame.event.set_grab(True)
+
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_BLEND)
 
@@ -34,7 +37,7 @@ class GraphicsProgram3D:
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
         # self.player = Player(Vector(0, 0, 0), 1, 1)
-        self.player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
+        self.player = Player(Vector(0, 0, 0), 1, 1)
         self.shader.set_projection_matrix(self.player.projection_matrix.get_matrix())
 
         self.player.draw(self.shader)
@@ -71,8 +74,8 @@ class GraphicsProgram3D:
         self.sphere = Sphere(24, 48)
 
         self.grass = [Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(1, 1, 1), self.grass_patch_model)]
-
         self.ground = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(10, 10, 10), self.ground_model)
+
         self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
         self.rpg = Object(Vector(5, 0, 0), Vector(0, 0, 0), Vector(1, 1, 1), self.rpg_model)
@@ -89,6 +92,8 @@ class GraphicsProgram3D:
         self.cube.update(delta_time)
         self.teeth.update(delta_time)
         self.player.update(delta_time, self.keys)
+
+        # pygame.mouse.set_pos((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
 
     def draw_cube_objects(self):
         self.cube.draw(self.shader)
@@ -148,14 +153,14 @@ class GraphicsProgram3D:
         glClearColor(0.0, 0.0, 0.0, 1.0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        glViewport(0, 0, 800, 600)
+        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
         # self.shader.set_view_matrix(self.view_matrix.get_matrix())
         # self.shader.set_camera_position(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
 
         self.player.draw(self.shader)
 
-        self.shader.set_light_position(*self.player.pos.to_array(), 0)
+        self.shader.set_light_position(*self.player.top_pos.to_array(), 0)
         self.shader.set_light_diffuse(1, 1, 1, 0)
         self.shader.set_light_specular(1, 1, 1, 0)
         self.shader.set_light_ambient(0.5, 0.5, 0.5, 0)
