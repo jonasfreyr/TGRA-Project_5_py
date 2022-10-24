@@ -1,7 +1,22 @@
+import pygame
+
 from OpenGLCore.Base3DObjects import *
 from Core.Color import Color, Material
 from Core.Vector import Vector, Point
 
+
+def load_texture(path):
+    surface = pygame.image.load(path)
+    tex_string = pygame.image.tostring(surface, "RGBA", True)
+    width = surface.get_width()
+    height = surface.get_height()
+    tex_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, tex_id)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_string)
+
+    return tex_id
 
 def load_mtl_file(file_location, file_name, mesh_model):
     print("  Start loading MTL: " + file_name)
@@ -23,7 +38,12 @@ def load_mtl_file(file_location, file_name, mesh_model):
             mtl.ambient = Color(float(tokens[1]), float(tokens[2]), float(tokens[3]))
         elif tokens[0] == "Ns":
             mtl.shininess = float(tokens[1])
-
+        elif tokens[0] == "map_Kd":
+            print("        Diffuse Texture: " + tokens[1])
+            mtl.diffuse_tex_id = load_texture(tokens[1])
+        elif tokens[0] == "map_Ks":
+            print("        Specular Texture: " + tokens[1])
+            mtl.specular_tex_id = load_texture(tokens[1])
 
     print("  Finished loading MTL: " + file_name)
 

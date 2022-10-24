@@ -75,7 +75,8 @@ class Shader3D:
         self.textureDifLoc = glGetUniformLocation(self.renderingProgramID, "u_tex01")
         self.textureSpecLoc = glGetUniformLocation(self.renderingProgramID, "u_tex02")
 
-        self.usingTexLoc = glGetUniformLocation(self.renderingProgramID, "u_using_texture")
+        self.usingDifTexLoc = glGetUniformLocation(self.renderingProgramID, "u_using_diffuse_texture")
+        self.usingSpecTexLoc = glGetUniformLocation(self.renderingProgramID, "u_using_specular_texture")
 
     def use(self):
         try:
@@ -115,8 +116,12 @@ class Shader3D:
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 8 * sizeof(GLfloat),
                               OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
         glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 8 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(6 * sizeof(GLfloat)))
-    def set_using_texture(self, using):
-        glUniform1f(self.usingTexLoc, using)
+
+    def set_using_diffuse_texture(self, using):
+        glUniform1f(self.usingDifTexLoc, using)
+
+    def set_using_specular_texture(self, using):
+        glUniform1f(self.usingSpecTexLoc, using)
 
     def set_uv_attribute(self, vertex_array):
         glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 0, vertex_array)

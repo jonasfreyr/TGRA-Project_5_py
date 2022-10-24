@@ -10,16 +10,19 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd ./Textures/teeth/mouth_Base_color.png
+map_Ks ./Textures/teeth/mouth_Roughness.png
 
 newmtl teeth
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 1.000000 1.000000 1.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd C:/Users/jonas/Downloads/textures/teeth_Base_color.png
-map_Ns C:/Users/jonas/Downloads/substance/textures/teeth_Roughness.png
+map_Kd ./Textures/teeth/teeth_Base_color.png
+map_Ks ./Textures/teeth/teeth_Roughness.png
 
 newmtl wet
 Ns 360.000000
