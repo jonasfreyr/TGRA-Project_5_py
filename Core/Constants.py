@@ -2,6 +2,8 @@ SHADERS_PATH = "Shaders"
 MODELS_PATH = "Models"
 TEXTURES_PATH = "Textures"
 
+WORLD_WIDTH = 10
+WORLD_DEPTH = 10
 
 # World
 FOV = 75
