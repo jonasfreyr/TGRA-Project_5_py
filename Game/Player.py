@@ -118,9 +118,6 @@ class Player:
         self.pos += move_vec
         self.jump_vel -= GRAVITY * delta_time
 
-        # print(self.jump_vel)
-
-        # self.pos.y -= GRAVITY * delta_time
         self.pos.y += self.jump_vel * delta_time
 
         if self.pos.y <= 0:

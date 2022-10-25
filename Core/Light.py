@@ -11,8 +11,8 @@ class Light:
         self.distance = distance
 
     def draw(self, shader, i):
-        shader.set_light_position(*self.pos.to_array(), 0)
-        shader.set_light_diffuse(*self.diffuse.to_array(), 0)
-        shader.set_light_specular(*self.specular.to_array(), 0)
-        shader.set_light_ambient(*self.ambient.to_array(), 0)
-        shader.set_light_dist(self.distance, 0)
+        shader.set_light_position(*self.pos.to_array(), i)
+        shader.set_light_diffuse(*self.diffuse.to_array(), i)
+        shader.set_light_specular(*self.specular.to_array(), i)
+        shader.set_light_ambient(*self.ambient.to_array(), i)
+        shader.set_light_dist(self.distance, i)

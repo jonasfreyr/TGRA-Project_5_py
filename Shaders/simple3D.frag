@@ -6,7 +6,6 @@ uniform sampler2D u_tex02;
 uniform float u_using_diffuse_texture;
 uniform float u_using_specular_texture;
 
-const float MAX_LIGHT_DIST = 10.0;
 const int u_NUM_OF_LIGHTS = 10;
 
 uniform vec4 u_material_diffuse;
@@ -58,7 +57,7 @@ void main(void)
             color += diffuse_color + specular_color + ambient_color;
 
             float a = color.a;
-            color *= (1.0 - (length(lights_s[i]) / MAX_LIGHT_DIST));
+            color *= (1.0 - (length(lights_s[i]) / u_light_dists[i]));
             color.a = a;
         }
 

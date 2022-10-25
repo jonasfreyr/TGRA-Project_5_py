@@ -75,10 +75,8 @@ class GraphicsProgram3D:
 
         self.sphere = Sphere(24, 48)
 
-        self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 10.0)
-
-        # self.grass = [Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(1, 1, 1), self.grass_patch_model)]
-        # self.ground = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(10, 10, 10), self.ground_model)
+        self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
+        self.sun = Light(Vector(-3, 50, -3), Color(2, 2, 0.5), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0)
 
         self.level = Level(self.grass_patch_model, self.ground_model)
 
@@ -163,7 +161,8 @@ class GraphicsProgram3D:
 
         self.player.draw(self.shader)
         self.player_light.draw(self.shader, 0)
-        self.shader.set_light_amount(1)
+        self.sun.draw(self.shader, 1)
+        self.shader.set_light_amount(2)
 
 
         '''
@@ -174,8 +173,6 @@ class GraphicsProgram3D:
         self.shader.set_light_dist(10.0, 0)
         self.shader.set_light_amount(1)
         '''
-
-        self.shader.set_light_amount(1)
 
         self.draw_cube_objects()
         # self.draw_sphere_objects()
