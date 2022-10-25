@@ -1,4 +1,4 @@
-#version 110
+#version 120
 
 uniform sampler2D u_tex01;
 uniform sampler2D u_tex02;
@@ -54,11 +54,13 @@ void main(void)
 
             // Ambient
             ambient_color = u_light_ambients[i] * material_ambient;
-            color += diffuse_color + specular_color + ambient_color;
+            vec4 add_color = diffuse_color + specular_color + ambient_color;
 
-            float a = color.a;
-            color *= (1.0 - (length(lights_s[i]) / u_light_dists[i]));
-            color.a = a;
+            float a = add_color.a;
+            add_color *= (1.0 - (length(lights_s[i]) / u_light_dists[i]));
+            add_color.a = a;
+
+            color += add_color;
         }
 
     }

@@ -62,7 +62,7 @@ class FlyingPlayer:
 
 
 class Player:
-    def __init__(self, pos: Vector, height: float, radius: float):
+    def __init__(self, pos: Vector, height: float, radius: float, gun):
         self.pos = pos
         self.height = height
         self.x_rotation = 0
@@ -79,6 +79,8 @@ class Player:
         self.jump_vel = 0
 
         self.health = 100
+
+        self.gun = gun
 
     @property
     def top_pos(self):
@@ -126,6 +128,7 @@ class Player:
             self.__landed = True
 
         self.update_camera()
+        self.update_gun()
 
     def update_camera(self):
         temp = self.top_pos
@@ -136,7 +139,33 @@ class Player:
 
         self.view_matrix.look(temp, temp+look_pos, Vector(0, 1, 0))
 
+    def update_gun(self):
+        '''
+        temp = self.top_pos
+        # look_pos = Vector(0.5, -0.1, 0)
+        _pos = Vector(0, 0, -1)
+        _pos.rotate2d(self.x_rotation)
+        self.gun.pos = temp+_pos
+
+        look_pos = Vector(0, 0, -1)
+        look_pos.rotate2dXAxis(self.y_rotation)
+        look_pos.rotate2d(self.x_rotation)
+
+        x_rots = look_pos.angle(Vector(1, 0, 0))
+        y_rots = look_pos.angle(Vector(0, 1, 0))
+        z_rots = look_pos.angle(Vector(0, 0, 1))
+
+        # print(x_rots, y_rots,z_rots)
+
+        self.gun.rotation = Vector(x_rots, y_rots, z_rots)
+        '''
+
     def draw(self, shader):
         pos = self.view_matrix.eye
         shader.set_camera_position(pos.x, pos.y, pos.z)
         shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        if self.gun:
+            shader.set_no_view(0.0)
+            self.gun.draw(shader)
+            shader.set_no_view(1.0)

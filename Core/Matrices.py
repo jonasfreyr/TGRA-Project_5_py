@@ -91,7 +91,9 @@ class ModelMatrix:
         self.stack.append(self.copy_matrix())
 
     def pop_matrix(self):
-        self.matrix = self.stack.pop()
+        matrix = self.stack.pop()
+        del self.matrix
+        self.matrix = matrix
 
     # This operation mainly for debugging
     def __str__(self):
@@ -118,8 +120,24 @@ class ViewMatrix:
         self.v = Vector(0, 1, 0)
         self.n = Vector(0, 0, 1)
 
-    ## MAKE OPERATIONS TO ADD LOOK, SLIDE, PITCH, YAW and ROLL ##
-    # ---
+        self.stack = []
+
+    def push_matrix(self):
+        eye = self.eye.copy()
+        u = self.u.copy()
+        v = self.v.copy()
+        n = self.n.copy()
+
+        self.stack.append((eye, u, v, n))
+
+    def pop_matrix(self):
+        self.eye, self.u, self.v, self.n = self.stack.pop()
+
+    def load_identity(self):
+        self.eye = Point(0, 0, 0)
+        self.u = Vector(1, 0, 0)
+        self.v = Vector(0, 1, 0)
+        self.n = Vector(0, 0, 1)
 
     def look(self, eye, center, up):
         self.eye = eye

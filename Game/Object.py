@@ -7,20 +7,25 @@ from OpenGLCore.Base3DObjects import Cube
 
 
 class Object:
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, static=False):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, static=False, do_rotation_first=False):
         self.pos = pos
         self.rotation = rotation
         self.scale = scale
         self.object_model = object_model
         self.model_matrix = ModelMatrix()
 
+        self.do_rotation_first = do_rotation_first
         self.static = static
 
         if static:
-            self.model_matrix.add_translation(*self.pos.to_array())
-            self.model_matrix.add_scale(*self.scale.to_array())
-            self.model_matrix.add_rotation(*self.rotation.to_array())
-
+            if not do_rotation_first:
+                self.model_matrix.add_translation(*self.pos.to_array())
+                self.model_matrix.add_scale(*self.scale.to_array())
+                self.model_matrix.add_rotation(*self.rotation.to_array())
+            else:
+                self.model_matrix.add_rotation(*self.rotation.to_array())
+                self.model_matrix.add_translation(*self.pos.to_array())
+                self.model_matrix.add_scale(*self.scale.to_array())
 
     def update(self, delta_time):
         pass
@@ -28,9 +33,15 @@ class Object:
     def draw(self, shader):
         if not self.static:
             self.model_matrix.push_matrix()
-            self.model_matrix.add_translation(*self.pos.to_array())
-            self.model_matrix.add_scale(*self.scale.to_array())
-            self.model_matrix.add_rotation(*self.rotation.to_array())
+            if not self.do_rotation_first:
+                self.model_matrix.add_translation(*self.pos.to_array())
+                self.model_matrix.add_scale(*self.scale.to_array())
+                self.model_matrix.add_rotation(*self.rotation.to_array())
+            else:
+                self.model_matrix.add_rotation(*self.rotation.to_array())
+                self.model_matrix.add_translation(*self.pos.to_array())
+                self.model_matrix.add_scale(*self.scale.to_array())
+
             shader.set_model_matrix(self.model_matrix.matrix)
             self.object_model.draw(shader)
             self.model_matrix.pop_matrix()

@@ -38,7 +38,7 @@ class GraphicsProgram3D:
         # self.projection_view_matrix = ProjectionViewMatrix()
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
-        self.player = Player(Vector(0, 0, 0), 1, 1)
+        self.player = Player(Vector(0, 0, 0), 1, 1, None)
         # self.player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
         self.shader.set_projection_matrix(self.player.projection_matrix.get_matrix())
 
@@ -75,14 +75,16 @@ class GraphicsProgram3D:
 
         self.sphere = Sphere(24, 48)
 
+        self.lights = [Light(Vector(-3, 50, -3), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(-0.3, 0, -0.3), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0)]
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
-        self.sun = Light(Vector(-3, 50, -3), Color(2, 2, 0.5), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0)
 
         self.level = Level(self.grass_patch_model, self.ground_model)
 
         self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
-        self.rpg = Object(Vector(5, 0, 0), Vector(0, 0, 0), Vector(1, 1, 1), self.rpg_model)
+        rpg = Object(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
+        self.player.gun = rpg
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -121,7 +123,7 @@ class GraphicsProgram3D:
         self.level.draw(self.shader)
         self.teeth.draw(self.shader)
         self.rock.draw(self.shader)
-        self.rpg.draw(self.shader)
+        # self.rpg.draw(self.shader)
 
     def draw_sphere_objects(self):
         self.shader.set_using_diffuse_texture(1.0)
@@ -160,10 +162,13 @@ class GraphicsProgram3D:
         # self.shader.set_camera_position(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
 
         self.player.draw(self.shader)
-        self.player_light.draw(self.shader, 0)
-        self.sun.draw(self.shader, 1)
-        self.shader.set_light_amount(2)
 
+
+        lights = [*self.lights, self.player_light]
+        for i, light in enumerate(lights):
+            light.draw(self.shader, i)
+
+        self.shader.set_light_amount(len(lights))
 
         '''
         self.shader.set_light_position(*self.player.top_pos.to_array(), 0)

@@ -1,4 +1,4 @@
-#version 110
+#version 120
 
 attribute vec3 a_position;
 attribute vec3 a_normal;
@@ -16,6 +16,8 @@ const int u_NUM_OF_LIGHTS = 10;
 
 uniform vec4 u_light_positions[u_NUM_OF_LIGHTS];
 uniform int light_amount;
+
+uniform float u_draw_view_mat = 1.0;
 
 
 varying vec4 lights_s[u_NUM_OF_LIGHTS];
@@ -50,7 +52,9 @@ void main(void)
 		lights_h[i] = normalize(s + v);
 	}
 
-	position = u_view_matrix * position;
+	if (u_draw_view_mat == 1.0)
+		position = u_view_matrix * position;
+
 	position = u_projection_matrix * position;
 
 	gl_Position = position;

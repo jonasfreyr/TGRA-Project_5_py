@@ -16,6 +16,9 @@ class Point:
     def __str__(self):
         return f"P({self.x}, {self.y}, {self.z})"
 
+    def copy(self):
+        return Point(self.x, self.y, self.z)
+
 class Vector:
     def __init__(self, x, y, z):
         self.x = x
@@ -36,6 +39,9 @@ class Vector:
 
     def __str__(self):
         return f"V(x: {self.x}, y: {self.y}, z: {self.z})"
+
+    def angle(self, other: "Vector"):
+        return math.degrees(math.acos((self.x * other.x + self.y * other.y + self.z * other.z) / (math.sqrt(self.x**2 + self.y**2 + self.z**2) * math.sqrt(other.x**2 + other.y**2 + other.z**2))))
 
     def copy(self):
         return Vector(self.x, self.y, self.z)
