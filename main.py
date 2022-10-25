@@ -1,3 +1,5 @@
+import _thread
+import json
 
 # from OpenGL.GL import *
 # from OpenGL.GLU import *
@@ -17,6 +19,7 @@ from Core.Matrices import *
 from OpenGLCore import ojb_3D_loading
 from Core.Constants import *
 from Core.Color import Color
+import socket
 
 
 class GraphicsProgram3D:
@@ -70,6 +73,9 @@ class GraphicsProgram3D:
         self.fr_ticker = 0
         self.fr_sum = 0
 
+        self.id = None
+        self.exiting = False
+
     def init_objects(self):
         cube = Cube()
         self.cube = RotatingCube(Vector(-3, 0, -3), Vector(1, 1, 1), self.tex_id_cock, self.tex_id_aids, cube)
@@ -88,10 +94,41 @@ class GraphicsProgram3D:
         self.player.gun = rpg
 
         self.bullets = []
+        self.fired = False
 
     def create_rocket(self, look_pos):
         new_rocket = Rocket(self.player.top_pos, look_pos, Vector(5, 5, 5), self.rock_model)
         self.bullets.append(new_rocket)
+
+        self.fired = True
+
+    def listeningTCP(self):
+        tcp_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp_s.connect((HOST, PORT))
+
+        self.id = int(tcp_s.recv(1024).decode())
+        while True:
+            data = tcp_s.recv(204888)
+
+            data = json.load(data)
+
+            if data['command'] == "dc":
+                self.exiting = True
+
+            elif data['command'] == 'reset':
+                self.player.pos = data['args']['pos']
+                self.player.health = data['args']['health']
+
+    def listeningUDP(self):
+        udp_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_s.bind(('', PLAYER_PORT))
+        udp_s.sendto("Yo".encode(), (HOST, PORT))
+        while True:
+            data, address = udp_s.recvfrom(262144)
+
+            print(data)
+
+            udp_s.sendto("Yo".encode(), (HOST, PORT))
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -116,6 +153,7 @@ class GraphicsProgram3D:
                 bullet.update(delta_time)
 
         # pygame.mouse.set_pos((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
+        self.fired = False
 
     def draw_cube_objects(self):
         self.cube.draw(self.shader)
@@ -175,26 +213,13 @@ class GraphicsProgram3D:
 
         glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-        # self.shader.set_view_matrix(self.view_matrix.get_matrix())
-        # self.shader.set_camera_position(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
-
         self.player.draw(self.shader)
-
 
         lights = [*self.lights, self.player_light]
         for i, light in enumerate(lights):
             light.draw(self.shader, i)
 
         self.shader.set_light_amount(len(lights))
-
-        '''
-        self.shader.set_light_position(*self.player.top_pos.to_array(), 0)
-        self.shader.set_light_diffuse(1, 1, 1, 0)
-        self.shader.set_light_specular(1, 1, 1, 0)
-        self.shader.set_light_ambient(0.5, 0.5, 0.5, 0)
-        self.shader.set_light_dist(10.0, 0)
-        self.shader.set_light_amount(1)
-        '''
 
         self.draw_cube_objects()
         # self.draw_sphere_objects()
@@ -217,8 +242,8 @@ class GraphicsProgram3D:
                 self.keys[event.key] = False
 
     def program_loop(self):
-        self.exiting = False
         self.init_objects()
+        _thread.start_new_thread(self.listeningUDP, ())
         while not self.exiting:
 
             self.events()

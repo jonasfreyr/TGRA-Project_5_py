@@ -81,7 +81,7 @@ class Player:
         self.__landed = True
         self.jump_vel = 0
 
-        self.health = 100
+        self.health = PLAYER_HEALTH
 
         self.gun = gun
         self.fire_time = ROCKET_FIRE_RATE
