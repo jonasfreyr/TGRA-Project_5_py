@@ -100,14 +100,14 @@ class Player:
             self.y_rotation = -PLAYER_MOUSE_MAX_MIN_Y_VALUE
 
         if keys[K_w]:
-            move_vec.z += -10 * delta_time
+            move_vec.z += -PLAYER_MOVEMENT_SPEED * delta_time
         elif keys[K_s]:
-            move_vec.z += 10 * delta_time
+            move_vec.z += PLAYER_MOVEMENT_SPEED * delta_time
 
         if keys[K_a]:
-            move_vec.x += -10 * delta_time
+            move_vec.x += -PLAYER_MOVEMENT_SPEED * delta_time
         elif keys[K_d]:
-            move_vec.x += 10 * delta_time
+            move_vec.x += PLAYER_MOVEMENT_SPEED * delta_time
 
         if keys[K_SPACE] and self.__landed:
             self.__landed = False
@@ -118,16 +118,14 @@ class Player:
         self.pos += move_vec
         self.jump_vel -= GRAVITY * delta_time
 
-        if self.jump_vel <= 0:
-            self.jump_vel = 0
-
         # print(self.jump_vel)
 
-        self.pos.y -= GRAVITY * delta_time
-        self.pos.y += self.jump_vel
+        # self.pos.y -= GRAVITY * delta_time
+        self.pos.y += self.jump_vel * delta_time
 
         if self.pos.y <= 0:
             self.pos.y = 0
+            self.jump_vel = 0
             self.__landed = True
 
         self.update_camera()
