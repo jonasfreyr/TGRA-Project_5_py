@@ -33,9 +33,8 @@ class Shader3D:
         glAttachShader(self.renderingProgramID, vert_shader)
         glAttachShader(self.renderingProgramID, frag_shader)
         result = glLinkProgram(self.renderingProgramID)
-        if (result != None):
-            print("Couldn't link program\nProgram link Log:\n" + str(glGetProgramInfoLog(self.renderingProgramID)))
-
+        # if (result != None):
+        print("Couldn't link program\nProgram link Log:\n" + str(glGetProgramInfoLog(self.renderingProgramID)))
 
         self.positionLoc			= glGetAttribLocation(self.renderingProgramID, "a_position")
         glEnableVertexAttribArray(self.positionLoc)
@@ -169,6 +168,10 @@ class Shader3D:
 
     def set_light_amount(self, amount):
         glUniform1i(self.lightAmountLoc, amount)
+
+    def set_light_dist(self, distance, i):
+        loc = glGetUniformLocation(self.renderingProgramID, f"u_light_dists[{i}]")
+        glUniform1f(loc, distance)
 
     def set_texture_diffuse(self, number):
         glUniform1i(self.textureDifLoc, number)

@@ -7,6 +7,8 @@ class Color:
     def __str__(self):
         return f"C({self.r}, {self.g}, {self.b})"
 
+    def to_array(self):
+        return self.r, self.g, self.b
 
 class Material:
     def __init__(self, diffuse=None, specular=None, ambient=None, shininess=None):
