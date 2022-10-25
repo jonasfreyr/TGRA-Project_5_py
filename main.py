@@ -8,6 +8,7 @@ from pygame.locals import *
 from collections import defaultdict
 
 from Core.Light import Light
+from Game.Gun import Gun, Rocket
 from Game.Level import Level
 from Game.Object import Teeth, RotatingCube, Object
 from Game.Player import FlyingPlayer, Player
@@ -38,7 +39,7 @@ class GraphicsProgram3D:
         # self.projection_view_matrix = ProjectionViewMatrix()
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
-        self.player = Player(Vector(0, 0, 0), 1, 1, None)
+        self.player = Player(Vector(0, 0, 0), 1, 1, None, self)
         # self.player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
         self.shader.set_projection_matrix(self.player.projection_matrix.get_matrix())
 
@@ -76,18 +77,25 @@ class GraphicsProgram3D:
         self.sphere = Sphere(24, 48)
 
         self.lights = [Light(Vector(-3, 50, -3), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
-                       Light(Vector(-0.3, 0, -0.3), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0)]
+                       Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0)]
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
 
         self.level = Level(self.grass_patch_model, self.ground_model)
 
         self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
-        rpg = Object(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
+        rpg = Gun(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
         self.player.gun = rpg
+
+        self.bullets = []
+
+    def create_rocket(self, look_pos):
+        new_rocket = Rocket(self.player.top_pos, look_pos, Vector(5, 5, 5), self.rock_model)
+        self.bullets.append(new_rocket)
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
+
         self.fr_sum += delta_time
         self.fr_ticker += 1
         if self.fr_sum > 1.0:
@@ -99,6 +107,13 @@ class GraphicsProgram3D:
         self.teeth.update(delta_time)
         self.player.update(delta_time, self.keys)
         self.player_light.pos = self.player.top_pos
+
+        temp = self.bullets.copy()
+        for bullet in temp:
+            if bullet.kill:
+                self.bullets.remove(bullet)
+            else:
+                bullet.update(delta_time)
 
         # pygame.mouse.set_pos((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
 
@@ -123,7 +138,9 @@ class GraphicsProgram3D:
         self.level.draw(self.shader)
         self.teeth.draw(self.shader)
         self.rock.draw(self.shader)
-        # self.rpg.draw(self.shader)
+
+        for bullet in self.bullets:
+            bullet.draw(self.shader)
 
     def draw_sphere_objects(self):
         self.shader.set_using_diffuse_texture(1.0)

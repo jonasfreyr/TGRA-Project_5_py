@@ -181,5 +181,5 @@ class Shader3D:
     def set_texture_specular(self, number):
         glUniform1i(self.textureSpecLoc, number)
 
-    def set_no_view(self, i):
+    def set_view(self, i):
         glUniform1f(self.setViewLoc, i)
