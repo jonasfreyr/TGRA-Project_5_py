@@ -25,8 +25,3 @@ PLAYER_HEALTH = 100
 ROCKET_SPEED = 20
 ROCKET_FIRE_RATE = 1
 ROCKET_LIFE_TIME = 5
-
-# Server
-HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-PORT = 65432
-PLAYER_PORT = 22222

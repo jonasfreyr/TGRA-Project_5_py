@@ -14,6 +14,7 @@ from Game.Gun import Gun, Rocket
 from Game.Level import Level
 from Game.Object import Teeth, RotatingCube, Object
 from Game.Player import FlyingPlayer, Player
+from Networking.Networking import Networking
 from OpenGLCore.Shaders import *
 from Core.Matrices import *
 from OpenGLCore import ojb_3D_loading
@@ -76,6 +77,8 @@ class GraphicsProgram3D:
         self.id = None
         self.exiting = False
 
+        self.networking = Networking(self)
+
     def init_objects(self):
         cube = Cube()
         self.cube = RotatingCube(Vector(-3, 0, -3), Vector(1, 1, 1), self.tex_id_cock, self.tex_id_aids, cube)
@@ -96,39 +99,15 @@ class GraphicsProgram3D:
         self.bullets = []
         self.fired = False
 
+        self.networking.start()
+
     def create_rocket(self, look_pos):
-        new_rocket = Rocket(self.player.top_pos, look_pos, Vector(5, 5, 5), self.rock_model)
-        self.bullets.append(new_rocket)
+        if not self.networking.active:
+            new_rocket = Rocket(self.player.top_pos, look_pos, Vector(5, 5, 5), self.rock_model)
+            self.bullets.append(new_rocket)
 
         self.fired = True
 
-    def listeningTCP(self):
-        tcp_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tcp_s.connect((HOST, PORT))
-
-        self.id = int(tcp_s.recv(1024).decode())
-        while True:
-            data = tcp_s.recv(204888)
-
-            data = json.load(data)
-
-            if data['command'] == "dc":
-                self.exiting = True
-
-            elif data['command'] == 'reset':
-                self.player.pos = data['args']['pos']
-                self.player.health = data['args']['health']
-
-    def listeningUDP(self):
-        udp_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        udp_s.bind(('', PLAYER_PORT))
-        udp_s.sendto("Yo".encode(), (HOST, PORT))
-        while True:
-            data, address = udp_s.recvfrom(262144)
-
-            print(data)
-
-            udp_s.sendto("Yo".encode(), (HOST, PORT))
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -243,7 +222,6 @@ class GraphicsProgram3D:
 
     def program_loop(self):
         self.init_objects()
-        _thread.start_new_thread(self.listeningUDP, ())
         while not self.exiting:
 
             self.events()
@@ -252,6 +230,8 @@ class GraphicsProgram3D:
 
         # OUT OF GAME LOOP
         pygame.quit()
+
+        self.networking.stop()
 
     def start(self):
         self.program_loop()

@@ -3,7 +3,8 @@ import json
 import socket
 from dataclasses import dataclass
 
-from Core.Constants import *
+from Core.Constants import PLAYER_HEALTH
+from Networking.Constants import *
 
 connsUDP = {}
 connsTCP = {}
@@ -13,6 +14,7 @@ stats = {}
 bullets = {}
 players = {}
 
+id = 0
 
 @dataclass
 class Player:
@@ -81,6 +83,7 @@ def new_client(conn, addr, id):
 
 
 def listening_TCP():
+    print("TCP started!")
     global id
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
@@ -115,14 +118,14 @@ def listening_UDP(s):
             data, address = s.recvfrom(262144)
 
             print(data)
-            continue
-
             data = json.loads(data)
             connsUDP[data["id"]] = address
+            continue
             players[data["id"]] = data["player"]
             for bullet in data["bullets"]:
                 # print(bullet)
                 bullets[data["id"]].append(bullet)
+            continue
 
         except ConnectionResetError:
             pass
@@ -131,13 +134,20 @@ def listening_UDP(s):
 def run_game(s):
     print("Game Started!")
     while True:
-        print(connsUDP)
-        for id in connsUDP:
-            s.sendto(str("Yo!").encode(), connsUDP[id])
+        # print(connsUDP)
+        temp = connsUDP.copy()
+        for id in temp:
+
+            message = {
+                "players": [],
+                "rockets": []
+            }
+
+            s.sendto(json.dumps(message).encode(), connsUDP[id])
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((HOST, PORT))
+_thread.start_new_thread(listening_TCP, ())
 _thread.start_new_thread(listening_UDP, (s, ))
-# _thread.start_new_thread(listening_TCP, ())
 run_game(s)
