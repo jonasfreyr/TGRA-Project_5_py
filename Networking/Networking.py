@@ -18,8 +18,10 @@ class Networking:
         self.tcp_process = None
         self.udp_process = None
 
+        self.event = multiprocessing.Event()
+
     @staticmethod
-    def listeningUDP(id):
+    def listeningUDP(id, event):
         from Networking.Constants import PLAYER_PORT
         udp_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         udp_s.bind(('', PLAYER_PORT))
@@ -27,10 +29,8 @@ class Networking:
             'id': id.value
         }
         udp_s.sendto(json.dumps(message).encode(), (HOST, PORT))
-        while True:
+        while not event.is_set():
             data, address = udp_s.recvfrom(262144)
-
-            print(data)
 
             message = {
                 'id': id.value
@@ -38,14 +38,22 @@ class Networking:
 
             udp_s.sendto(json.dumps(message).encode(), (HOST, PORT))
 
+        udp_s.close()
+
     @staticmethod
-    def listeningTCP(id):
+    def listeningTCP(id, event):
         tcp_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         tcp_s.connect((HOST, PORT))
-
         id.value = int(tcp_s.recv(1024).decode())
-        while True:
-            data = tcp_s.recv(204888)
+        tcp_s.setblocking(False)
+        tcp_s.settimeout(0.5)
+        while not event.is_set():
+            try:
+                data = tcp_s.recv(204888)
+            except TimeoutError:
+                continue
+
+            print(data)
 
             data = json.load(data)
 
@@ -58,20 +66,33 @@ class Networking:
                 # self.player.pos = data['args']['pos']
                 # self.player.health = data['args']['health']
 
+        tcp_s.close()
+
+    def send(self, message: dict):
+        if not self.active: return
+
+        message['id'] = self.id
+
+        ## Todo Share message to UDP socket
+
+
     def start(self):
         self.id = multiprocessing.Value('i', -1)
+        self.message = multiprocessing.Array
 
-        self.tcp_process = multiprocessing.Process(target=self.listeningTCP, args=(self.id, ))
+        self.tcp_process = multiprocessing.Process(target=self.listeningTCP, args=(self.id, self.event))
         self.tcp_process.start()
 
         while self.id.value == -1: pass  # Wait for the server to assign player Id
 
-        self.udp_process = multiprocessing.Process(target=self.listeningUDP, args=(self.id, ))
+        self.udp_process = multiprocessing.Process(target=self.listeningUDP, args=(self.id, self.event))
         self.udp_process.start()
 
         self.active = True
 
     def stop(self):
+        self.event.set()
+
         if self.tcp_process:
             self.tcp_process.join()
 

@@ -131,6 +131,8 @@ class GraphicsProgram3D:
             else:
                 bullet.update(delta_time)
 
+        self.networking.send({'pos': self.player.pos.to_array()})
+
         # pygame.mouse.set_pos((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
         self.fired = False
 

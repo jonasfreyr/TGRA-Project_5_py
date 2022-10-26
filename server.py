@@ -117,15 +117,15 @@ def listening_UDP(s):
         try:
             data, address = s.recvfrom(262144)
 
-            print(data)
             data = json.loads(data)
             connsUDP[data["id"]] = address
-            continue
+            print(data)
+            '''
             players[data["id"]] = data["player"]
             for bullet in data["bullets"]:
                 # print(bullet)
                 bullets[data["id"]].append(bullet)
-            continue
+            '''
 
         except ConnectionResetError:
             pass
