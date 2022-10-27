@@ -97,17 +97,16 @@ class GraphicsProgram3D:
         self.player.gun = rpg
 
         self.bullets = []
+        self.new_rocket = None
         self.fired = False
 
         self.networking.start()
 
     def create_rocket(self, look_pos):
-        if not self.networking.active:
-            new_rocket = Rocket(self.player.top_pos, look_pos, Vector(5, 5, 5), self.rock_model)
-            self.bullets.append(new_rocket)
+        new_rocket = Rocket(self.player.top_pos, look_pos, Vector(5, 5, 5), self.rock_model)
+        self.bullets.append(new_rocket)
 
         self.fired = True
-
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -119,19 +118,36 @@ class GraphicsProgram3D:
             self.fr_sum = 0
             self.fr_ticker = 0
 
+        self.networking.receive()
+
         self.cube.update(delta_time)
         self.teeth.update(delta_time)
         self.player.update(delta_time, self.keys)
         self.player_light.pos = self.player.top_pos
 
-        temp = self.bullets.copy()
-        for bullet in temp:
-            if bullet.kill:
-                self.bullets.remove(bullet)
-            else:
-                bullet.update(delta_time)
+        if not self.networking.active:
+            temp = self.bullets.copy()
+            for bullet in temp:
+                if bullet.kill:
+                    self.bullets.remove(bullet)
+                else:
+                    bullet.update(delta_time)
 
-        self.networking.send({'pos': self.player.pos.to_array()})
+        else:
+            message = {'pos': self.player.pos.to_array(), 'rot': (self.player.x_rotation, self.player.y_rotation)}
+
+            rockets = []
+            for rocket in self.bullets:
+                r = {'pos': rocket.pos.to_array(),
+                     'rot': rocket.rotation.to_array()}
+
+                rockets.append(r)
+
+            self.bullets.clear()
+
+            message['rockets'] = rockets
+
+            self.networking.send(message)
 
         # pygame.mouse.set_pos((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
         self.fired = False

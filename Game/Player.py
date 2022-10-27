@@ -123,7 +123,6 @@ class Player:
 
         if mouse_click and self.fire_time >= ROCKET_FIRE_RATE:
             self.fire_time = 0
-            print("Fire!")
 
             look_pos = Vector(0, 0, -1)
             look_pos.rotate2dXAxis(self.y_rotation)

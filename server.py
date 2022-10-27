@@ -4,6 +4,8 @@ import socket
 from dataclasses import dataclass
 
 from Core.Constants import PLAYER_HEALTH
+from Core.Vector import Vector
+from Game.Gun import Rocket
 from Networking.Constants import *
 
 connsUDP = {}
@@ -11,8 +13,8 @@ connsTCP = {}
 TCPaddress = {}
 
 stats = {}
-bullets = {}
 players = {}
+rockets = []
 
 id = 0
 
@@ -29,8 +31,6 @@ def remove_client(id):
             del connsTCP[id]
         if id in players:
             del players[id]
-        if id in bullets:
-            del bullets[id]
         if id in TCPaddress:
             del TCPaddress[id]
         if id in stats:
@@ -96,8 +96,6 @@ def listening_TCP():
             connsTCP[id] = conn
             TCPaddress[id] = addr
 
-            bullets[id] = []
-
             stats[id] = {
                 "kills": 0,
                 "deaths": 0
@@ -119,13 +117,14 @@ def listening_UDP(s):
 
             data = json.loads(data)
             connsUDP[data["id"]] = address
-            print(data)
-            '''
-            players[data["id"]] = data["player"]
-            for bullet in data["bullets"]:
-                # print(bullet)
-                bullets[data["id"]].append(bullet)
-            '''
+
+            players[data['id']] = {'pos': data['pos'], 'rot': data['rot']}
+
+            for rocket in data['rockets']:
+                pos = Vector(rocket['pos'][0], rocket['pos'][1], rocket['pos'][2])
+                rot = Vector(rocket['rot'][0], rocket['rot'][1], rocket['rot'][2])
+
+                rockets.append(Rocket(pos, rot, Vector(1, 1, 1), None))
 
         except ConnectionResetError:
             pass
@@ -143,7 +142,10 @@ def run_game(s):
                 "rockets": []
             }
 
-            s.sendto(json.dumps(message).encode(), connsUDP[id])
+            try:
+                s.sendto(json.dumps(message).encode(), temp[id])
+            except:
+                continue
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
