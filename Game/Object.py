@@ -120,3 +120,10 @@ class RotatingCube(ObjectCube):
     def update(self, delta_time):
         self.rotation.x += 100 * delta_time
         self.rotation.y += 100 * delta_time
+
+
+class NetworkPlayer(Object):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model):
+        super(NetworkPlayer, self).__init__(pos, rotation, scale, object_model)
+
+        self.updated = True
