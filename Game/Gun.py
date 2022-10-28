@@ -24,6 +24,8 @@ class Rocket(Object):
         self.life_time = 0
         self.kill = False
 
+        self.updated = True
+
     def update(self, delta_time):
         if self.life_time >= ROCKET_LIFE_TIME:
             self.kill = True

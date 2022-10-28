@@ -2,6 +2,9 @@ import multiprocessing
 import json
 import select
 import socket
+
+from Core.Vector import Vector
+from Game.Gun import Rocket
 from Networking.Constants import *
 
 
@@ -19,15 +22,40 @@ class Networking:
     def receive(self):
         if not self.active: return
 
-        ready, _ , _ = select.select([self.udp_s], [], [], 0)
+        data = None
+        try:
+            while True: data, _ = self.udp_s.recvfrom(262144)
+        except:
+            pass
 
-        if len(ready) == 0: return
-
-        data, address = ready[0].recvfrom(262144)
+        if data is None: return
 
         data = json.loads(data)
 
         print(data)
+
+        for rocket in data['rockets']:
+            id = rocket['id']
+            if id in self.game.network_rockets:
+                r = self.game.network_rockets[id]
+
+                new_pos = rocket['pos']
+                new_rot = rocket['rot']
+
+                r.pos.x = new_pos[0]
+                r.pos.y = new_pos[1]
+                r.pos.z = new_pos[2]
+
+                r.rotation.x = new_rot[0]
+                r.rotation.y = new_rot[1]
+                r.rotation.z = new_rot[2]
+            else:
+                new_pos = rocket['pos']
+                new_rot = rocket['rot']
+                pos = Vector(new_pos[0], new_pos[1], new_pos[2])
+                rot = Vector(new_rot[0], new_rot[1], new_rot[2])
+
+                self.game.create_network_rocket(id, pos, rot)
 
     def send(self, message: dict):
         if not self.active: return
@@ -46,6 +74,7 @@ class Networking:
         print("Got Id:", self.id)
 
         self.udp_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udp_s.setblocking(False)
         self.udp_s.bind(('', PLAYER_PORT))
 
         self.active = True

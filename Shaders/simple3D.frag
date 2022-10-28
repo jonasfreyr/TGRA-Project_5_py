@@ -35,12 +35,12 @@ void main(void)
     }
     if (u_using_specular_texture == 1.0) material_specular *= texture2D(u_tex02, v_uv);
 
-    vec4 color = vec4(0, 0, 0, 0);
+    vec4 color = vec4(0, 0, 0, 1);
     float lambert;
-    vec4 diffuse_color = vec4(0, 0, 0, 0);
+    vec4 diffuse_color = vec4(0, 0, 0, 1);
     float phong;
-    vec4 specular_color = vec4(0, 0, 0, 0);
-    vec4 ambient_color = vec4(0, 0, 0, 0);
+    vec4 specular_color = vec4(0, 0, 0, 1);
+    vec4 ambient_color = vec4(0, 0, 0, 1);
     vec4 normal_normal_normal = normalize(normal_normal);
     for(int i = 0; i < light_amount; i++){
         if (length(lights_s[i]) < u_light_dists[i]){

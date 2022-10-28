@@ -3,6 +3,8 @@ import json
 import socket
 from dataclasses import dataclass
 
+import pygame
+
 from Core.Constants import PLAYER_HEALTH
 from Core.Vector import Vector
 from Game.Gun import Rocket
@@ -14,9 +16,10 @@ TCPaddress = {}
 
 stats = {}
 players = {}
-rockets = []
+rockets = {}
 
 id = 0
+rocket_id = 0
 
 @dataclass
 class Player:
@@ -110,6 +113,7 @@ def listening_TCP():
 
 
 def listening_UDP(s):
+    global rocket_id
     print("UDP started!")
     while True:
         try:
@@ -124,7 +128,12 @@ def listening_UDP(s):
                 pos = Vector(rocket['pos'][0], rocket['pos'][1], rocket['pos'][2])
                 rot = Vector(rocket['rot'][0], rocket['rot'][1], rocket['rot'][2])
 
-                rockets.append(Rocket(pos, rot, Vector(1, 1, 1), None))
+                rockets[rocket_id] = Rocket(pos, rot, Vector(1, 1, 1), None)
+
+                rocket_id += 1
+
+                if rocket_id >= 5000:
+                    rocket_id = 0
 
         except ConnectionResetError:
             pass
@@ -132,18 +141,50 @@ def listening_UDP(s):
 
 def run_game(s):
     print("Game Started!")
+    clock = pygame.time.Clock()
+    clock.tick(60)
+
+    tick_time = 0
     while True:
+        delta_time = clock.tick(60) / 1000.0
+        tick_time += delta_time
+
+        temp = rockets.copy()
+        for id, rocket in temp.items():
+            if rocket.kill: del rockets[id]
+            else: rocket.update(delta_time)
+
+
+
+
+
+
+
+
         # print(connsUDP)
+        message = {
+            "players": {},
+            "rockets": []
+        }
+
+        temp_players = players.copy()
+        for player_id in temp_players:
+            message['players'][player_id] = temp_players[player_id]
+
+        temp_rockets = rockets.copy()
+        for id, rocket in temp_rockets.items():
+            rock = {'id': id, 'pos': rocket.pos.to_array(), 'rot': rocket.rotation.to_array()}
+            message['rockets'].append(rock)
+
         temp = connsUDP.copy()
         for id in temp:
-
-            message = {
-                "players": [],
-                "rockets": []
-            }
+            message_to_send = message.copy()
+            if id in message_to_send['players']:
+                del message_to_send['players'][id]
 
             try:
-                s.sendto(json.dumps(message).encode(), temp[id])
+                # print(message_to_send)
+                s.sendto(json.dumps(message_to_send).encode(), temp[id])
             except:
                 continue
 

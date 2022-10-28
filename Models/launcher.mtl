@@ -1,12 +1,22 @@
-# Blender 3.3.1 MTL File: 'launcher.blend'
+# Blender 3.3.1 MTL File: 'launcher-with-rocket.blend'
 # www.blender.org
 
-newmtl Material.006
+newmtl green
 Ns 250.000000
-Kd 1.000000 1.000000 1.000000
 Ka 1.000000 1.000000 1.000000
+Kd 0.013132 0.162645 0.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
+d 1.000000
 illum 2
-map_Kd ./Textures/rpg_wood_tex.jpg
+
+newmtl wheel
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2

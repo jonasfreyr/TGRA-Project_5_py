@@ -34,6 +34,9 @@ class GraphicsProgram3D:
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_BLEND)
+        glEnable(GL_DEPTH_TEST)
+        glClearColor(0.0, 0.0, 0.0, 1.0)
+        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
         self.shader = Shader3D()
         self.shader.use()
@@ -56,7 +59,8 @@ class GraphicsProgram3D:
 
         self.keys = defaultdict(lambda: False)
 
-        self.teeth_object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "mouth.obj")
+        # self.teeth_object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "mouth.obj")
+        self.rocket_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "rocket.obj")
         self.grass_object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "grass_with_texture.obj")
         self.grass_patch_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "grass_patch.obj")
         self.rock_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "rock.obj")
@@ -81,7 +85,7 @@ class GraphicsProgram3D:
 
     def init_objects(self):
         cube = Cube()
-        self.cube = RotatingCube(Vector(-3, 0, -3), Vector(1, 1, 1), self.tex_id_cock, self.tex_id_aids, cube)
+        # self.cube = RotatingCube(Vector(-3, 0, -3), Vector(1, 1, 1), self.tex_id_cock, self.tex_id_aids, cube)
 
         self.sphere = Sphere(24, 48)
 
@@ -91,7 +95,8 @@ class GraphicsProgram3D:
 
         self.level = Level(self.grass_patch_model, self.ground_model)
 
-        self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
+        # self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
+        # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
         rpg = Gun(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
         self.player.gun = rpg
@@ -100,10 +105,15 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        self.networking.start()
+        self.networking.start()  # Comment this out, if testing locally
+        self.network_rockets = {}
 
-    def create_rocket(self, look_pos):
-        new_rocket = Rocket(self.player.top_pos, look_pos, Vector(5, 5, 5), self.rock_model)
+    def create_network_rocket(self, id, pos, rot):
+        new_rocket = Rocket(pos, rot, Vector(1, 1, 1), self.rocket_model)
+        self.network_rockets[id] = new_rocket
+
+    def shoot(self, look_pos):
+        new_rocket = Rocket(self.player.top_pos, look_pos, Vector(1, 1, 1), self.rocket_model)
         self.bullets.append(new_rocket)
 
         self.fired = True
@@ -120,8 +130,8 @@ class GraphicsProgram3D:
 
         self.networking.receive()
 
-        self.cube.update(delta_time)
-        self.teeth.update(delta_time)
+        # self.cube.update(delta_time)
+        # self.teeth.update(delta_time)
         self.player.update(delta_time, self.keys)
         self.player_light.pos = self.player.top_pos
 
@@ -152,63 +162,15 @@ class GraphicsProgram3D:
         # pygame.mouse.set_pos((WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
         self.fired = False
 
-    def draw_cube_objects(self):
-        self.cube.draw(self.shader)
-
-    def draw_rotating_spheres(self):
-        for i in range(8):
-            self.model_matrix.push_matrix()
-            self.model_matrix.add_rotation(self.rotation * 0.73 + (i*100) * pi / 4.0, 0, 0)
-            self.model_matrix.add_translation(0, 5, 0)
-            self.model_matrix.add_scale(1.0, 1.0, 1.0)
-            self.model_matrix.add_rotation(-(self.rotation * 0.73 + (i*100) * pi / 4.0), 0, 0)
-            self.shader.set_model_matrix(self.model_matrix.matrix)
-
-            self.shader.set_material_diffuse_color(Color(1.0, 1.0, 1.0))
-            self.shader.set_material_ambient_color(Color(0.1, 0.1, 0.1))
-            self.sphere.draw(self.shader)
-            self.model_matrix.pop_matrix()
-
     def draw_models(self):
         self.level.draw(self.shader)
-        self.teeth.draw(self.shader)
         self.rock.draw(self.shader)
 
         for bullet in self.bullets:
             bullet.draw(self.shader)
 
-    def draw_sphere_objects(self):
-        self.shader.set_using_diffuse_texture(1.0)
-        self.shader.set_using_specular_texture(1.0)
-
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_scale(3, 3, 3)
-        self.model_matrix.add_rotation(0, self.rotation * 0.2, 180)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse_color(Color(1, 1, 1))
-        self.shader.set_material_specular_color(Color(1, 1, 1))
-        self.shader.set_material_ambient_color(Color(0, 0, 0))
-        self.shader.set_shininess(50)
-
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_earth)
-        self.shader.set_texture_diffuse(0)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, self.tex_id_earth_spec)
-        self.shader.set_texture_specular(1)
-
-        self.sphere.draw(self.shader)
-        self.model_matrix.pop_matrix()
-
-        self.draw_rotating_spheres()
-
     def display(self):
-        glEnable(GL_DEPTH_TEST)
-
-        glClearColor(0.0, 0.0, 0.0, 1.0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
 
         self.player.draw(self.shader)
 
@@ -218,8 +180,6 @@ class GraphicsProgram3D:
 
         self.shader.set_light_amount(len(lights))
 
-        self.draw_cube_objects()
-        # self.draw_sphere_objects()
         self.draw_models()
 
         pygame.display.flip()
@@ -241,7 +201,6 @@ class GraphicsProgram3D:
     def program_loop(self):
         self.init_objects()
         while not self.exiting:
-
             self.events()
             self.update()
             self.display()

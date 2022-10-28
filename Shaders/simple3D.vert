@@ -54,8 +54,7 @@ void main(void)
 
 	if (u_draw_view_mat == 1.0)
 		position = u_view_matrix * position;
-
-	position = u_projection_matrix * position;
+		position = u_projection_matrix * position;
 
 	gl_Position = position;
 }
