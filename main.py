@@ -66,6 +66,9 @@ class GraphicsProgram3D:
         self.rock_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "rock.obj")
         self.ground_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "grass-plain.obj")
         self.rpg_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "launcher.obj")
+        self.fence_leftpost_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "fence-leftpost.obj")
+        self.player_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "playermodel.obj")
+        self.houses_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "houses-test.obj")
 
         self.tex_id_cock = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test.png")
         self.tex_id_vag = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test2.png")
@@ -92,11 +95,16 @@ class GraphicsProgram3D:
         self.lights = [Light(Vector(-3, 50, -3), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
                        Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0)]
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
+        self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model)
+        self.player_object = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
+        self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model)
 
-        self.level = Level(self.grass_patch_model, self.ground_model)
+
+        self.level = Level(self.grass_patch_model, self.ground_model,self.fence_leftpost_model)
 
         # self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
         # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
+
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
         rpg = Gun(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
         self.player.gun = rpg
@@ -105,7 +113,7 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        self.networking.start()  # Comment this out, if testing locally
+        #self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
 
     def create_network_rocket(self, id, pos, rot):
@@ -163,9 +171,10 @@ class GraphicsProgram3D:
         self.fired = False
 
     def draw_models(self):
+        #self.player_object.draw(self.shader)
+        self.houses.draw(self.shader)
         self.level.draw(self.shader)
         self.rock.draw(self.shader)
-
         for bullet in self.bullets:
             bullet.draw(self.shader)
 
