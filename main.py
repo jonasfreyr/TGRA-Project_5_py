@@ -95,9 +95,9 @@ class GraphicsProgram3D:
         self.lights = [Light(Vector(-3, 50, -3), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
                        Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0)]
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
-        self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model)
+        self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model, static=True)
         self.player_object = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
-        self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model)
+        self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model, static=True)
 
 
         self.level = Level(self.grass_patch_model, self.ground_model,self.fence_leftpost_model)
@@ -113,7 +113,7 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        self.networking.start()  # Comment this out, if testing locally
+        # self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
         self.network_players = {}
 
@@ -183,8 +183,6 @@ class GraphicsProgram3D:
         self.houses.draw(self.shader)
         self.level.draw(self.shader)
         self.rock.draw(self.shader)
-        for bullet in self.bullets:
-            bullet.draw(self.shader)
 
         if not self.networking.active:
             for bullet in self.bullets:
