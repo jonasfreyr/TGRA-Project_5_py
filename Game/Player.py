@@ -102,6 +102,11 @@ class Player:
         self.x_rotation += del_x * PLAYER_MOUSE_SPEED * delta_time
         self.y_rotation -= del_y * PLAYER_MOUSE_SPEED * delta_time
 
+        if self.x_rotation < -360:
+            self.x_rotation += 360
+        elif self.x_rotation > 360:
+            self.x_rotation -= 360
+
         if self.y_rotation > PLAYER_MOUSE_MAX_MIN_Y_VALUE:
             self.y_rotation = PLAYER_MOUSE_MAX_MIN_Y_VALUE
         elif self.y_rotation < -PLAYER_MOUSE_MAX_MIN_Y_VALUE:

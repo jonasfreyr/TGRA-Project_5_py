@@ -108,7 +108,7 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        # self.networking.start()  # Comment this out, if testing locally
+        self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
         self.network_players = {}
 
@@ -121,11 +121,9 @@ class GraphicsProgram3D:
         self.network_players[id] = new_player
 
     def shoot(self, look_pos, x_rot, y_rot):
-        new_rocket = Rocket(self.player.top_pos, Vector(y_rot, -x_rot - 90, 0), Vector(1, 1, 1), self.rocket_model)
+        new_rocket = Rocket(self.player.top_pos, Vector(0, -x_rot - 90, -y_rot), Vector(1, 1, 1), self.rocket_model)
+        new_rocket.set_vel(look_pos)
 
-        # new_rocket.set_vel(look_pos) # Pain
-
-        print(x_rot, y_rot)
         self.bullets.append(new_rocket)
 
         self.fired = True
@@ -161,7 +159,8 @@ class GraphicsProgram3D:
             rockets = []
             for rocket in self.bullets:
                 r = {'pos': rocket.pos.to_array(),
-                     'rot': rocket.rotation.to_array()}
+                     'rot': rocket.rotation.to_array(),
+                     'vel': rocket.vel.to_array()}
 
                 rockets.append(r)
 

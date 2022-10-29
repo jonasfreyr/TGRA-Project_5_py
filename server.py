@@ -127,8 +127,11 @@ def listening_UDP(s):
             for rocket in data['rockets']:
                 pos = Vector(rocket['pos'][0], rocket['pos'][1], rocket['pos'][2])
                 rot = Vector(rocket['rot'][0], rocket['rot'][1], rocket['rot'][2])
+                vel = Vector(rocket['vel'][0], rocket['vel'][1], rocket['vel'][2])
 
-                rockets[rocket_id] = Rocket(pos, rot, Vector(1, 1, 1), None)
+                r = Rocket(pos, rot, Vector(1, 1, 1), None)
+                r.set_vel(vel)
+                rockets[rocket_id] = r
 
                 rocket_id += 1
 
