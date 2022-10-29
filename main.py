@@ -108,7 +108,7 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        self.networking.start()  # Comment this out, if testing locally
+        # self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
         self.network_players = {}
 
@@ -120,8 +120,12 @@ class GraphicsProgram3D:
         new_player = NetworkPlayer(pos, rot, Vector(5, 5, 5), self.rock_model)
         self.network_players[id] = new_player
 
-    def shoot(self, look_pos):
-        new_rocket = Rocket(self.player.top_pos, look_pos, Vector(1, 1, 1), self.rocket_model)
+    def shoot(self, look_pos, x_rot, y_rot):
+        new_rocket = Rocket(self.player.top_pos, Vector(y_rot, -x_rot - 90, 0), Vector(1, 1, 1), self.rocket_model)
+
+        # new_rocket.set_vel(look_pos) # Pain
+
+        print(x_rot, y_rot)
         self.bullets.append(new_rocket)
 
         self.fired = True
@@ -132,7 +136,7 @@ class GraphicsProgram3D:
         self.fr_sum += delta_time
         self.fr_ticker += 1
         if self.fr_sum > 1.0:
-            print(self.fr_ticker / self.fr_sum)
+            # print(self.fr_ticker / self.fr_sum)
             self.fr_sum = 0
             self.fr_ticker = 0
 

@@ -142,11 +142,11 @@ def listening_UDP(s):
 def run_game(s):
     print("Game Started!")
     clock = pygame.time.Clock()
-    clock.tick(60)
+    clock.tick(120)
 
     tick_time = 0
     while True:
-        delta_time = clock.tick(60) / 1000.0
+        delta_time = clock.tick(120) / 1000.0
         tick_time += delta_time
 
         temp = rockets.copy()
