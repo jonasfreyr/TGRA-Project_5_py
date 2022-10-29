@@ -12,7 +12,7 @@ from collections import defaultdict
 from Core.Light import Light
 from Game.Gun import Gun, Rocket
 from Game.Level import Level
-from Game.Object import Teeth, RotatingCube, Object
+from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer
 from Game.Player import FlyingPlayer, Player
 from Networking.Networking import Networking
 from OpenGLCore.Shaders import *
@@ -113,15 +113,24 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        #self.networking.start()  # Comment this out, if testing locally
+        self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
+        self.network_players = {}
 
     def create_network_rocket(self, id, pos, rot):
         new_rocket = Rocket(pos, rot, Vector(1, 1, 1), self.rocket_model)
         self.network_rockets[id] = new_rocket
 
-    def shoot(self, look_pos):
-        new_rocket = Rocket(self.player.top_pos, look_pos, Vector(1, 1, 1), self.rocket_model)
+    def create_network_player(self, id, pos, rot):
+        new_player = NetworkPlayer(pos, rot, Vector(5, 5, 5), self.rock_model)
+        self.network_players[id] = new_player
+
+    def shoot(self, look_pos, x_rot, y_rot):
+        new_rocket = Rocket(self.player.top_pos, Vector(y_rot, -x_rot - 90, 0), Vector(1, 1, 1), self.rocket_model)
+
+        # new_rocket.set_vel(look_pos) # Pain
+
+        print(x_rot, y_rot)
         self.bullets.append(new_rocket)
 
         self.fired = True
@@ -177,6 +186,25 @@ class GraphicsProgram3D:
         self.rock.draw(self.shader)
         for bullet in self.bullets:
             bullet.draw(self.shader)
+
+        if not self.networking.active:
+            for bullet in self.bullets:
+                bullet.draw(self.shader)
+
+        else:
+            temp = self.network_rockets.copy()
+            for id, rocket in temp.items():
+                if rocket.updated:
+                    rocket.draw(self.shader)
+                else:
+                    del self.network_rockets[id]
+
+            temp = self.network_players.copy()
+            for id, player in temp.items():
+                if player.updated:
+                    player.draw(self.shader)
+                else:
+                    del self.network_players[id]
 
     def display(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)

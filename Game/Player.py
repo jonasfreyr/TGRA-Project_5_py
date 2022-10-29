@@ -128,7 +128,7 @@ class Player:
             look_pos.rotate2dXAxis(self.y_rotation)
             look_pos.rotate2d(self.x_rotation)
 
-            self.game.shoot(look_pos)
+            self.game.shoot(look_pos, self.x_rotation, self.y_rotation)
 
         move_vec.rotate2d(self.x_rotation)
 

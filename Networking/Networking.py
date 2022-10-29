@@ -34,8 +34,35 @@ class Networking:
 
         print(data)
 
-        for rocket in data['rockets']:
-            id = rocket['id']
+        for id, player in data['players'].items():
+            if id in self.game.network_players:
+                p = self.game.network_players[id]
+
+                new_pos = player['pos']
+                new_rot = player['rot']
+
+                p.pos.x = new_pos[0]
+                p.pos.y = new_pos[1]
+                p.pos.z = new_pos[2]
+
+                # p.rotation.x = new_rot[0]
+                # p.rotation.y = new_rot[1]
+
+            else:
+                new_pos = player['pos']
+                new_rot = player['rot']
+
+                pos = Vector(new_pos[0], new_pos[1], new_pos[2])
+                # rot = Vector(new_rot[0], new_rot[1], 0)
+
+                rot = Vector(0, 0, 0)
+
+                self.game.create_network_player(id, pos, rot)
+
+        for id, player in self.game.network_players.items():
+            if id not in data['players']: player.updated = False
+
+        for id, rocket in data['rockets'].items():
             if id in self.game.network_rockets:
                 r = self.game.network_rockets[id]
 
@@ -49,6 +76,7 @@ class Networking:
                 r.rotation.x = new_rot[0]
                 r.rotation.y = new_rot[1]
                 r.rotation.z = new_rot[2]
+
             else:
                 new_pos = rocket['pos']
                 new_rot = rocket['rot']
@@ -56,6 +84,9 @@ class Networking:
                 rot = Vector(new_rot[0], new_rot[1], new_rot[2])
 
                 self.game.create_network_rocket(id, pos, rot)
+
+        for id, rocket in self.game.network_rockets.items():
+            if id not in data['rockets']: rocket.updated = False
 
     def send(self, message: dict):
         if not self.active: return

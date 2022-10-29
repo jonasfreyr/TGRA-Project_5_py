@@ -17,14 +17,17 @@ class Rocket(Object):
     def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model):
         super(Rocket, self).__init__(pos, rotation, scale, object_model)
 
-        self.vel = rotation.copy()
-        self.vel.normalize()
-        self.vel *= ROCKET_SPEED
+        self.vel = Vector(0, 0, 0)
 
         self.life_time = 0
         self.kill = False
 
         self.updated = True
+
+    def set_vel(self, look_pos):
+        self.vel = look_pos.copy()
+        self.vel.normalize()
+        self.vel *= ROCKET_SPEED
 
     def update(self, delta_time):
         if self.life_time >= ROCKET_LIFE_TIME:

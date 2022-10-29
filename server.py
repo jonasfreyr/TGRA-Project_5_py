@@ -142,11 +142,11 @@ def listening_UDP(s):
 def run_game(s):
     print("Game Started!")
     clock = pygame.time.Clock()
-    clock.tick(60)
+    clock.tick(120)
 
     tick_time = 0
     while True:
-        delta_time = clock.tick(60) / 1000.0
+        delta_time = clock.tick(120) / 1000.0
         tick_time += delta_time
 
         temp = rockets.copy()
@@ -154,17 +154,10 @@ def run_game(s):
             if rocket.kill: del rockets[id]
             else: rocket.update(delta_time)
 
-
-
-
-
-
-
-
         # print(connsUDP)
         message = {
             "players": {},
-            "rockets": []
+            "rockets": {}
         }
 
         temp_players = players.copy()
@@ -173,17 +166,18 @@ def run_game(s):
 
         temp_rockets = rockets.copy()
         for id, rocket in temp_rockets.items():
-            rock = {'id': id, 'pos': rocket.pos.to_array(), 'rot': rocket.rotation.to_array()}
-            message['rockets'].append(rock)
+            rock = {'pos': rocket.pos.to_array(), 'rot': rocket.rotation.to_array()}
+            message['rockets'][id] = rock
 
         temp = connsUDP.copy()
         for id in temp:
-            message_to_send = message.copy()
-            if id in message_to_send['players']:
-                del message_to_send['players'][id]
+            message_to_send = dict(message)
+            players_to_send = dict(message_to_send['players'])
+            if id in players_to_send:
+                del players_to_send[id]
 
             try:
-                # print(message_to_send)
+                message_to_send['players'] = players_to_send
                 s.sendto(json.dumps(message_to_send).encode(), temp[id])
             except:
                 continue
