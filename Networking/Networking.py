@@ -24,7 +24,7 @@ class Networking:
 
         data = None
         try:
-            while True: data, _ = self.udp_s.recvfrom(262144)
+            while True: data, _ = self.udp_s.recvfrom(222262144)
         except BlockingIOError:
             pass
 
