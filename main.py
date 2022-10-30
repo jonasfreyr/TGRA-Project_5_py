@@ -92,7 +92,7 @@ class GraphicsProgram3D:
     def init_objects(self):
         self.sphere = Sphere(24, 48)
 
-        self.lights = [Light(Vector(-3, 50, -3), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
+        self.lights = [Light(Vector(0, 80, 0), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
                        Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0)]
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
         self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model,
@@ -100,7 +100,7 @@ class GraphicsProgram3D:
         self.player_object = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
         # self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model,static=True)
 
-        self.map = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(1, 1, 1), self.map_model,
+        self.map = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
         self.skybox_model = Cube()
 
@@ -162,7 +162,9 @@ class GraphicsProgram3D:
                     bullet.update(delta_time)
 
         else:
-            message = {'pos': self.player.pos.to_array(), 'rot': (self.player.x_rotation, self.player.y_rotation)}
+            message = {'pos': self.player.pos.to_array(),
+                       'rot': (self.player.x_rotation, self.player.y_rotation),
+                       'health': self.player.health}
 
             rockets = []
             for rocket in self.bullets:

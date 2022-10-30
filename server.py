@@ -5,9 +5,10 @@ from dataclasses import dataclass
 
 import pygame
 
-from Core.Constants import PLAYER_HEALTH
+from Core.Constants import *
 from Core.Vector import Vector
 from Game.Gun import Rocket
+from Game.Object import Collider
 from Networking.Constants import *
 
 connsUDP = {}
@@ -122,7 +123,7 @@ def listening_UDP(s):
             data = json.loads(data)
             connsUDP[data["id"]] = address
 
-            players[data['id']] = {'pos': data['pos'], 'rot': data['rot']}
+            players[data['id']] = {'pos': data['pos'], 'rot': data['rot'], 'health': data['health']}
 
             for rocket in data['rockets']:
                 pos = Vector(rocket['pos'][0], rocket['pos'][1], rocket['pos'][2])
@@ -142,6 +143,10 @@ def listening_UDP(s):
             pass
 
 
+def collision(rockets, player):
+    pass
+
+
 def run_game(s):
     print("Game Started!")
     clock = pygame.time.Clock()
@@ -157,6 +162,14 @@ def run_game(s):
             if rocket.kill: del rockets[id]
             else: rocket.update(delta_time)
 
+        for player_id in players:
+            if players[player_id]['health'] > 0:
+                pos = Vector(players[player_id]['pos'][0], players[player_id]['pos'][1], players[player_id]['pos'][2])
+                size = Vector(PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_DEPTH)
+                player_collider = Collider(pos, size)
+
+
+
         # print(connsUDP)
         message = {
             "players": {},
@@ -165,7 +178,8 @@ def run_game(s):
 
         temp_players = players.copy()
         for player_id in temp_players:
-            message['players'][player_id] = temp_players[player_id]
+            if temp_players[player_id]['health'] > 0:
+                message['players'][player_id] = temp_players[player_id]
 
         temp_rockets = rockets.copy()
         for id, rocket in temp_rockets.items():
@@ -173,6 +187,7 @@ def run_game(s):
             message['rockets'][id] = rock
 
         temp = connsUDP.copy()
+
         for id in temp:
             message_to_send = dict(message)
             players_to_send = dict(message_to_send['players'])

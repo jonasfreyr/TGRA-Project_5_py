@@ -35,7 +35,7 @@ class Object:
         pass
 
     def collide(self, pos, radius):
-        return self.collider.collide(pos, radius)
+        return self.collider.collide_player(pos, radius)
 
     def draw(self, shader):
         if not self.static:
@@ -64,29 +64,32 @@ class Collider:
 
     @property
     def minX(self):
-        return self.pos.x
+        return self.pos.x - self.size.x / 2
 
     @property
     def maxX(self):
-        return self.pos.x + self.size.x
+        return self.pos.x + self.size.x / 2
 
     @property
     def minY(self):
-        return self.pos.y
+        return self.pos.y - self.size.y / 2
 
     @property
     def maxY(self):
-        return self.pos.y + self.size.y
+        return self.pos.y + self.size.y / 2
 
     @property
     def minZ(self):
-        return self.pos.z
+        return self.pos.z - self.size.z / 2
 
     @property
     def maxZ(self):
-        return self.pos.z + self.size.z
-    
-    def collide(self, pos, radius):
+        return self.pos.z + self.size.z / 2
+
+    def collide_collider(self, yes):
+        pass
+
+    def collide_player(self, pos: Vector, radius: float):
         x = max(self.minX, min(pos.x, self.maxX))
         y = max(self.minY, min(pos.y, self.maxY))
         z = max(self.minZ, min(pos.z, self.maxZ))
