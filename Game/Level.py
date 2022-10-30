@@ -31,10 +31,9 @@ class Level:
         self.generate_fences(fence_model)
 
     def generate_floor(self, grass_plane_model, fence_model):
-
         for i in range(WORLD_WIDTH):
             new_fence = Object(
-                    Vector(i * self.plane_scale+ 0.8, 0, 0),
+                    Vector(i * self.plane_scale + 0.8, 0, 0),
                     Vector(0, 0, 0),
                     Vector(0.39, 0.39, 0.39),
                     fence_model,
@@ -51,7 +50,7 @@ class Level:
                     static=True
                 )
                 if (k == WORLD_DEPTH-1 ):
-                    new_fence = new_floor_tile = Object(
+                    new_fence = Object(
                         Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale -1.5 ),
                         Vector(0, 0, 0),
                         Vector(0.39, 0.39, 0.39),
@@ -59,7 +58,7 @@ class Level:
                         static=True
                     )
                 elif(i == 0):
-                    new_fence = new_floor_tile = Object(
+                    new_fence = Object(
                         Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale - 1.5),
                         Vector(0, 90, 0),
                         Vector(0.39, 0.39, 0.39),
@@ -67,14 +66,14 @@ class Level:
                         static=True
                     )
                 elif (i == WORLD_WIDTH - 1):
-                    new_fence = new_floor_tile = Object(
+                    new_fence = Object(
                         Vector(i * self.plane_scale - 0.8, 0, k * self.plane_scale - 1.5),
                         Vector(0, 90, 0),
                         Vector(0.39, 0.39, 0.39),
                         fence_model,
                         static=True
                     )
-                    self.fence_array.append(new_fence)
+                self.fence_array.append(new_fence)
 
                 self.floor_tile_array.append(new_floor_tile)
 

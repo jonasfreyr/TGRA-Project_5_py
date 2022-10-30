@@ -98,9 +98,10 @@ class GraphicsProgram3D:
         self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model, static=True)
         self.player_object = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
         self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model, static=True)
+        self.ground = Cube()
 
 
-        self.level = Level(self.grass_patch_model, self.ground_model,self.fence_leftpost_model)
+        self.level = Level(self.grass_patch_model, self.ground,self.fence_leftpost_model)
 
         # self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
         # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
