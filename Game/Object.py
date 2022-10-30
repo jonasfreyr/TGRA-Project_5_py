@@ -9,7 +9,7 @@ from OpenGLCore.Base3DObjects import Cube
 
 
 class Object:
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, collider=None ,static=False, do_rotation_first=False):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, collider: "Collider"=None ,static=False, do_rotation_first=False):
         self.pos = pos
         self.rotation = rotation
         self.scale = scale
@@ -56,15 +56,40 @@ class Object:
             shader.set_model_matrix(self.model_matrix.matrix)
             self.object_model.draw(shader)
 
-'''
+
 class Collider:
-    def __init__(self, pos: Vector, size):
-        
+    def __init__(self, pos: Vector, size: Vector):
+        self.pos = pos
+        self.size = size
+
+    @property
+    def minX(self):
+        return self.pos.x
+
+    @property
+    def maxX(self):
+        return self.pos.x + self.size.x
+
+    @property
+    def minY(self):
+        return self.pos.y
+
+    @property
+    def maxY(self):
+        return self.pos.y + self.size.y
+
+    @property
+    def minZ(self):
+        return self.pos.z
+
+    @property
+    def maxZ(self):
+        return self.pos.z + self.size.z
     
     def collide(self, pos, radius):
-        x = max(cube.minX, min(pos.x, cube.maxX))
-        y = max(cube.minY, min(pos.y, cube.maxY))
-        z = max(cube.minZ, min(pos.z, cube.maxZ))
+        x = max(self.minX, min(pos.x, self.maxX))
+        y = max(self.minY, min(pos.y, self.maxY))
+        z = max(self.minZ, min(pos.z, self.maxZ))
 
         distance = math.sqrt(
             (x - pos.x) * (x - pos.x) +
@@ -83,7 +108,7 @@ class Collider:
 
             return Vector(x, y, z), vec
         return pos, Vector(0, 0, 0)
-'''
+
 
 class Teeth(Object):
     def __init__(self, pos, rotation, scale, object_model):

@@ -76,7 +76,7 @@ class Player:
         self.projection_matrix = ProjectionMatrix()
 
         self.view_matrix.slide(pos.x, pos.y + height, pos.z)
-        self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
+        self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 80)
 
         self.__landed = True
         self.jump_vel = 0
@@ -92,7 +92,15 @@ class Player:
         temp.y += self.height
         return temp
 
-    def update(self, delta_time, keys):
+    def collision(self, colliders, pos):
+        for obj in colliders:
+            closest_pos, move_vec = obj.collide(pos, self.radius)
+
+            pos = closest_pos + move_vec
+
+        return pos
+
+    def update(self, delta_time, keys, colliders):
         move_vec = Vector(0, 0, 0)
 
         mouse_click, _, _ = pygame.mouse.get_pressed()
@@ -146,6 +154,8 @@ class Player:
             self.pos.y = 0
             self.jump_vel = 0
             self.__landed = True
+
+        self.collision(colliders, self.pos.copy())
 
         self.update_camera()
 

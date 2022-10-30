@@ -37,11 +37,11 @@ class Level:
 
     def createSkybox(self, skybox_model, skybox_texture):
         self.skybox = ObjectCube(Vector(10, 0.3, 10), Vector(0, 0, 0),
-                                 Vector(0.5, 0.5, 0.5),
+                                 Vector(80, 80, 80),
                                  Color(1, 1, 1),
                                  Color(1, 1, 1),
                                  Color(1, 1, 1),
-                                 0.2,
+                                 50,
                                  skybox_model,
                                  diffuse_texture_id=skybox_texture, static=True)
 
@@ -54,42 +54,42 @@ class Level:
                 fence_model,
                 static=True
             )
-        for k in range(WORLD_DEPTH):
-            # pos, rotation, scale, object_model
-            new_floor_tile = Object(
-                Vector(i * self.plane_scale, 0, k * self.plane_scale),
-                Vector(0, 0, 0),
-                Vector(0.6666, 0.6666, 0.6666),
-                grass_plane_model,
-                static=True
-            )
-            if (k == WORLD_DEPTH - 1):
-                new_fence = Object(
-                    Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale - 1.5),
+            for k in range(WORLD_DEPTH):
+                # pos, rotation, scale, object_model
+                new_floor_tile = Object(
+                    Vector(i * self.plane_scale, 0, k * self.plane_scale),
                     Vector(0, 0, 0),
-                    Vector(0.39, 0.39, 0.39),
-                    fence_model,
+                    Vector(0.6666, 0.6666, 0.6666),
+                    grass_plane_model,
                     static=True
                 )
-            elif (i == 0):
-                new_fence = Object(
-                    Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale - 1.5),
-                    Vector(0, 90, 0),
-                    Vector(0.39, 0.39, 0.39),
-                    fence_model,
-                    static=True
-                )
-            elif (i == WORLD_WIDTH - 1):
-                new_fence = Object(
-                    Vector(i * self.plane_scale - 0.8, 0, k * self.plane_scale - 1.5),
-                    Vector(0, 90, 0),
-                    Vector(0.39, 0.39, 0.39),
-                    fence_model,
-                    static=True
-                )
-            self.fence_array.append(new_fence)
+                if (k == WORLD_DEPTH - 1):
+                    new_fence = Object(
+                        Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale - 1.5),
+                        Vector(0, 0, 0),
+                        Vector(0.39, 0.39, 0.39),
+                        fence_model,
+                        static=True
+                    )
+                elif (i == 0):
+                    new_fence = Object(
+                        Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale - 1.5),
+                        Vector(0, 90, 0),
+                        Vector(0.39, 0.39, 0.39),
+                        fence_model,
+                        static=True
+                    )
+                elif (i == WORLD_WIDTH - 1):
+                    new_fence = Object(
+                        Vector(i * self.plane_scale - 0.8, 0, k * self.plane_scale - 1.5),
+                        Vector(0, 90, 0),
+                        Vector(0.39, 0.39, 0.39),
+                        fence_model,
+                        static=True
+                    )
+                self.fence_array.append(new_fence)
 
-            self.floor_tile_array.append(new_floor_tile)
+                self.floor_tile_array.append(new_floor_tile)
 
     def generate_grass(self, grass_patch_model):
         # add random rotation
@@ -109,7 +109,9 @@ class Level:
         pass
 
     def draw(self, shader):
+        shader.set_calculate_lights(0.0)
         self.skybox.draw(shader)
+        shader.set_calculate_lights(1.0)
         for tile in self.floor_tile_array:
             tile.draw(shader)
 

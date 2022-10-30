@@ -147,7 +147,7 @@ class GraphicsProgram3D:
 
         # self.cube.update(delta_time)
         # self.teeth.update(delta_time)
-        self.player.update(delta_time, self.keys)
+        self.player.update(delta_time, self.keys, [])
         self.player_light.pos = self.player.top_pos
 
         if not self.networking.active:
@@ -205,6 +205,8 @@ class GraphicsProgram3D:
 
     def display(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        self.shader.set_calculate_lights(1.0)
 
         self.player.draw(self.shader)
 

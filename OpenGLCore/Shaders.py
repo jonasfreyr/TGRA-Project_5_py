@@ -79,6 +79,8 @@ class Shader3D:
 
         self.setViewLoc = glGetUniformLocation(self.renderingProgramID, "u_draw_view_mat")
 
+        self.setCalcLights = glGetUniformLocation(self.renderingProgramID, "u_calculate_lights")
+
     def use(self):
         try:
             glUseProgram(self.renderingProgramID)
@@ -151,6 +153,7 @@ class Shader3D:
 
     def set_material_specular(self, r, g, b):
         glUniform4f(self.matSpecLoc, r, g, b, 1.0)
+
     def set_material_specular_color(self, color):
         glUniform4f(self.matSpecLoc, color.r, color.g, color.b, 1.0)
 
@@ -183,3 +186,6 @@ class Shader3D:
 
     def set_view(self, i):
         glUniform1f(self.setViewLoc, i)
+
+    def set_calculate_lights(self, i):
+        glUniform1f(self.setCalcLights, i)
