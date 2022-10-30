@@ -29,14 +29,13 @@ class FlyingPlayer:
         return temp
 
     def update(self, delta_time, keys, colliders):
-        if keys[K_UP]:
-            self.view_matrix.pitch(100 * delta_time)
-        elif keys[K_DOWN]:
-            self.view_matrix.pitch(-100 * delta_time)
-        if keys[K_LEFT]:
-            self.view_matrix.yaw(-100 * delta_time)
-        elif keys[K_RIGHT]:
-            self.view_matrix.yaw(100 * delta_time)
+        del_x, del_y = pygame.mouse.get_rel()
+
+        x_rotation = del_x * PLAYER_MOUSE_SPEED * delta_time
+        y_rotation = del_y * PLAYER_MOUSE_SPEED * delta_time
+
+        self.view_matrix.pitch(-y_rotation)
+        self.view_matrix.yaw(x_rotation)
 
         if keys[K_w]:
             self.view_matrix.slide(0, 0, -10 * delta_time)

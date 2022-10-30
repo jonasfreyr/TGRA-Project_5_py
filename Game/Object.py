@@ -57,6 +57,9 @@ class Collider:
                               Color(1, 1, 1,), Color(1, 1, 1),
                               Color(1, 1, 1,), 10, Cube())
 
+    def __str__(self):
+        return f"Vector({self.pos.x}, {self.pos.y}, {self.pos.z}), Vector({self.size.x}, {self.size.y}, {self.size.z})"
+
     @property
     def minX(self):
         return self.pos.x - self.size.x / 2

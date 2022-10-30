@@ -110,11 +110,20 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        self.colliders = [Collider(Vector(-25, 0, 0), Vector(0.5, 5, 55)),
-                          Collider(Vector(25, 0, 0), Vector(0.5, 5, 55)),
+        self.current = Collider(Vector(0, 0, 0), Vector(1, 1, 1))
 
-                          Collider(Vector(0, 0, -23.8), Vector(55, 5, 0.5)),
-                          Collider(Vector(0, 2, 25.2), Vector(55, 5, 0.5)),
+        self.colliders = [
+                        # Fences
+                        Collider(Vector(-25, 0, 0), Vector(0.5, 5, 55)),
+                        Collider(Vector(25, 0, 0), Vector(0.5, 5, 55)),
+                        Collider(Vector(0, 0, -23.8), Vector(55, 5, 0.5)),
+                        Collider(Vector(0, 2, 25.2), Vector(55, 5, 0.5)),
+
+                        # House
+                        Collider(Vector(-0.9890000000000153, 0.9039999999999999, -5.564),
+                     Vector(6.597999999999904, 1.98999999999999, 1.677000000000001)),
+                Collider(Vector(0.09999999999999999, 0.09200000000000007, 0),
+                     Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
                          ]
 
         # self.networking.start()  # Comment this out, if testing locally
@@ -144,15 +153,50 @@ class GraphicsProgram3D:
         self.fr_sum += delta_time
         self.fr_ticker += 1
         if self.fr_sum > 1.0:
-            print(self.fr_ticker / self.fr_sum)
+            # print(self.fr_ticker / self.fr_sum)
             self.fr_sum = 0
             self.fr_ticker = 0
 
         self.networking.receive()
 
+        if not self.keys[K_LSHIFT]:
+            if self.keys[K_LEFT] and not self.keys[K_LCTRL]:
+                self.current.pos.x -= 1 * delta_time
+            elif self.keys[K_RIGHT] and not self.keys[K_LCTRL]:
+                self.current.pos.x += 1 * delta_time
+
+            if self.keys[K_LEFT] and self.keys[K_LCTRL]:
+                self.current.pos.z -= 1 * delta_time
+            elif self.keys[K_RIGHT] and self.keys[K_LCTRL]:
+                self.current.pos.z += 1 * delta_time
+
+            if self.keys[K_DOWN]:
+                self.current.pos.y -= 1 * delta_time
+            elif self.keys[K_UP]:
+                self.current.pos.y += 1 * delta_time
+
+        else:
+            if self.keys[K_LEFT] and not self.keys[K_LCTRL]:
+                self.current.size.x -= 1 * delta_time
+            elif self.keys[K_RIGHT] and not self.keys[K_LCTRL]:
+                self.current.size.x += 1 * delta_time
+
+            if self.keys[K_LEFT] and self.keys[K_LCTRL]:
+                self.current.size.z -= 1 * delta_time
+            elif self.keys[K_RIGHT] and self.keys[K_LCTRL]:
+                self.current.size.z += 1 * delta_time
+
+            if self.keys[K_DOWN]:
+                self.current.size.y -= 1 * delta_time
+            elif self.keys[K_UP]:
+                self.current.size.y += 1 * delta_time
+
+        if self.keys[K_LEFT] or self.keys[K_RIGHT] or self.keys[K_DOWN] or self.keys[K_UP]:
+            print(self.current)
+
         # self.cube.update(delta_time)
         # self.teeth.update(delta_time)
-        self.player.update(delta_time, self.keys, self.colliders)
+        self.player.update(delta_time, self.keys, [*self.colliders, self.current])
         self.player_light.pos = self.player.top_pos
 
         if not self.networking.active:
@@ -194,6 +238,7 @@ class GraphicsProgram3D:
 
         for collider in self.colliders:
             collider.draw(self.shader)
+        self.current.draw(self.shader)
 
         if not self.networking.active:
             for bullet in self.bullets:
