@@ -69,6 +69,7 @@ class GraphicsProgram3D:
         self.fence_leftpost_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "fence-leftpost.obj")
         self.player_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "playermodel.obj")
         self.houses_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "houses-test.obj")
+        self.map_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "whole-map.obj")
 
         self.tex_id_cock = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test.png")
         self.tex_id_vag = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test2.png")
@@ -97,12 +98,14 @@ class GraphicsProgram3D:
         self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model,
                                      static=True)
         self.player_object = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
-        self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model,
-                             static=True)
+        # self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model,static=True)
+
+        self.map = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(1, 1, 1), self.map_model,
+                          static=True)
         self.skybox_model = Cube()
 
-        self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
-                           self.tex_id_skybox)
+        # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
+        #                   self.tex_id_skybox)
         # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
 
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
@@ -180,8 +183,9 @@ class GraphicsProgram3D:
 
     def draw_models(self):
         # self.player_object.draw(self.shader)
-        self.houses.draw(self.shader)
-        self.level.draw(self.shader)
+        # self.houses.draw(self.shader)
+        # self.level.draw(self.shader)
+        self.map.draw(self.shader)
         self.rock.draw(self.shader)
 
         if not self.networking.active:
