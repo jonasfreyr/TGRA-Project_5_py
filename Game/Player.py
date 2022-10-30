@@ -69,6 +69,7 @@ class Player:
         self.height = height
         self.x_rotation = 0
         self.y_rotation = 0
+
         self.radius = radius
 
         self.game = game
@@ -95,7 +96,14 @@ class Player:
 
     def collision(self, colliders, pos):
         for obj in colliders:
-            closest_pos, move_vec = obj.collide(pos, self.radius)
+            closest_pos, move_vec = obj.sphere_collide(pos, self.radius)
+
+            if move_vec.y > 0:
+                self.__landed = True
+                self.jump_vel = 0
+
+            elif move_vec.y < 0:
+                self.jump_vel = 0
 
             pos = closest_pos + move_vec
 
@@ -158,6 +166,12 @@ class Player:
             self.pos.y = 0
             self.jump_vel = 0
             self.__landed = True
+
+        temp_pos = self.pos.copy()
+        temp_pos.y += self.height / 2
+        temp_pos = self.collision(colliders, temp_pos)
+        temp_pos.y -= self.height / 2
+        self.pos = temp_pos
 
         self.update_camera()
 

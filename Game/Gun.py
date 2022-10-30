@@ -24,12 +24,14 @@ class Rocket(Object):
         self.life_time = 0
         self.kill = False
 
+        # self.testing = ObjectCube(pos, rotation, Vector(ROCKET_WIDTH, ROCKET_HEIGHT, ROCKET_DEPTH), Color(1, 1, 1), Color(1, 1, 1), Color(.1, .1, .1), 10, Cube())
+
         self.updated = True
 
     def set_vel(self, look_pos):
-        self.vel = look_pos.copy()
-        self.vel.normalize()
-        self.vel *= ROCKET_SPEED
+        # self.vel = look_pos.copy()
+        # self.vel.normalize()
+        # self.vel *= ROCKET_SPEED
         pass
 
     def update(self, delta_time):
@@ -39,9 +41,14 @@ class Rocket(Object):
 
         self.pos += self.vel * delta_time
 
+        if self.pos.y <= 0:
+            self.kill = True
+
         self.life_time += delta_time
 
     def draw(self, shader):
         if self.kill: return
         super(Rocket, self).draw(shader)
+
+        # self.testing.draw(shader)
 

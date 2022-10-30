@@ -40,6 +40,11 @@ class Vector:
     def __str__(self):
         return f"V(x: {self.x}, y: {self.y}, z: {self.z})"
 
+    def mul(self, scalar):
+        self.x *= scalar
+        self.y *= scalar
+        self.z *= scalar
+
     def angle(self, other: "Vector"):
         return math.degrees(math.acos((self.x * other.x + self.y * other.y + self.z * other.z) / (math.sqrt(self.x**2 + self.y**2 + self.z**2) * math.sqrt(other.x**2 + other.y**2 + other.z**2))))
 

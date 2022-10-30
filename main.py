@@ -12,7 +12,7 @@ from collections import defaultdict
 from Core.Light import Light
 from Game.Gun import Gun, Rocket
 from Game.Level import Level
-from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer, ObjectCube
+from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer, ObjectCube, Collider
 from Game.Player import FlyingPlayer, Player
 from Networking.Networking import Networking
 from OpenGLCore.Shaders import *
@@ -46,7 +46,7 @@ class GraphicsProgram3D:
         # self.projection_view_matrix = ProjectionViewMatrix()
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
-        self.player = Player(Vector(0, 0, 0), 1, 1, None, self)
+        self.player = Player(Vector(0, 0, 0), 1, .5, None, self)
         # self.player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
         self.shader.set_projection_matrix(self.player.projection_matrix.get_matrix())
 
@@ -71,13 +71,6 @@ class GraphicsProgram3D:
         self.houses_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "houses-test.obj")
         self.map_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "whole-map.obj")
 
-        self.tex_id_cock = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test.png")
-        self.tex_id_vag = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test2.png")
-        self.tex_id_tits = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test3.png")
-        self.tex_id_aids = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test4.png")
-        self.tex_id_phobos = ojb_3D_loading.load_texture(TEXTURES_PATH + "/phobos.png")
-        self.tex_id_earth = ojb_3D_loading.load_texture(TEXTURES_PATH + "/earth.jpg")
-        self.tex_id_earth_spec = ojb_3D_loading.load_texture(TEXTURES_PATH + "/earth_spec.png")
         self.tex_id_skybox2 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
         self.tex_id_skybox = ojb_3D_loading.load_texture(TEXTURES_PATH + "/space.png")
 
@@ -100,7 +93,7 @@ class GraphicsProgram3D:
         self.player_object = Object(Vector(-5, 0, -5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
         # self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model,static=True)
 
-        self.map = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
+        self.map = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
         self.skybox_model = Cube()
 
@@ -117,9 +110,17 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        self.networking.start()  # Comment this out, if testing locally
+        self.colliders = [Collider(Vector(-25, 0, 0), Vector(0.5, 5, 55)),
+                          Collider(Vector(25, 0, 0), Vector(0.5, 5, 55)),
+
+                          Collider(Vector(0, 0, -23.8), Vector(55, 5, 0.5)),
+                          Collider(Vector(0, 2, 25.2), Vector(55, 5, 0.5)),
+                         ]
+
+        # self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
-        self.network_players = {}
+        self.network_players = {1: NetworkPlayer(Vector(-5, 0, -5), Vector(0, 0, 0),
+                                                 Vector(.5, .5, .5), self.player_model)}
 
     def create_network_rocket(self, id, pos, rot):
         new_rocket = Rocket(pos, rot, Vector(1, 1, 1), self.rocket_model)
@@ -151,7 +152,7 @@ class GraphicsProgram3D:
 
         # self.cube.update(delta_time)
         # self.teeth.update(delta_time)
-        self.player.update(delta_time, self.keys, [])
+        self.player.update(delta_time, self.keys, self.colliders)
         self.player_light.pos = self.player.top_pos
 
         if not self.networking.active:
@@ -185,11 +186,15 @@ class GraphicsProgram3D:
         self.fired = False
 
     def draw_models(self):
-        self.player_object.draw(self.shader)
+        # self.player_object.draw(self.shader)
         # self.houses.draw(self.shader)
         # self.level.draw(self.shader)
         self.map.draw(self.shader)
         self.rock.draw(self.shader)
+
+        for collider in self.colliders:
+            collider.draw(self.shader)
+
         if not self.networking.active:
             for bullet in self.bullets:
                 bullet.draw(self.shader)

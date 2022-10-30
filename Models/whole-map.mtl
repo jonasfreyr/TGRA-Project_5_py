@@ -1,6 +1,6 @@
 # Blender 3.3.1 MTL File: 'whole-map.blend'
 # www.blender.org
-
+# ./Textures/stone_wall.jpg ./Textures/sliding_door.png ./Textures/normal_door.png ./Textures/dry_ground_01_diff_4k.jpg ./Textures/rpg_wood_tex.jpg
 newmtl DIRT
 Ns 360.000000
 Ka 1.000000 1.000000 1.000000
@@ -14,7 +14,6 @@ illum 2
 newmtl door
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
@@ -25,7 +24,6 @@ map_Kd ./Textures/normal_door.png
 newmtl fence_wood
 Ns 360.000000
 Ka 1.000000 1.000000 1.000000
-Kd 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
@@ -42,12 +40,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd ./Textures/dry_ground_01_diff_4k.jpg
 
 newmtl house-wood
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
@@ -55,8 +51,16 @@ d 1.000000
 illum 2
 map_Kd ./Textures/rpg_wood_tex.jpg
 
+newmtl house-wood.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd ./Textures/rpg_wood_tex.jpg
 
-# ./Textures/stone_wall.jpg ./Textures/sliding_door.png ./Textures/normal_door.png ./Textures/dry_ground_01_diff_4k.jpg ./Textures/rpg_wood_tex.jpg
 newmtl roof-grass
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -80,18 +84,16 @@ illum 2
 newmtl sliding_door
 Ns 360.000000
 Ka 1.000000 1.000000 1.000000
-Kd 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd ./Textures/sliding_door.png
+map_Kd ./Textures/dry_ground_01_diff_4k.jpg
 
 newmtl stone_material
 Ns 360.000000
 Ka 1.000000 1.000000 1.000000
-Kd 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000

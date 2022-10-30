@@ -9,27 +9,21 @@ from OpenGLCore.Base3DObjects import Cube
 
 
 class Object:
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, collider: "Collider"=None ,static=False, do_rotation_first=False):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, collider: "Collider"=None, static=False):
         self.pos = pos
         self.rotation = rotation
         self.scale = scale
         self.object_model = object_model
         self.model_matrix = ModelMatrix()
 
-        self.do_rotation_first = do_rotation_first
         self.static = static
 
         self.collider = collider
 
         if static:
-            if not do_rotation_first:
-                self.model_matrix.add_translation(*self.pos.to_array())
-                self.model_matrix.add_scale(*self.scale.to_array())
-                self.model_matrix.add_rotation(*self.rotation.to_array())
-            else:
-                self.model_matrix.add_rotation(*self.rotation.to_array())
-                self.model_matrix.add_translation(*self.pos.to_array())
-                self.model_matrix.add_scale(*self.scale.to_array())
+            self.model_matrix.add_translation(*self.pos.to_array())
+            self.model_matrix.add_rotation(*self.rotation.to_array())
+            self.model_matrix.add_scale(*self.scale.to_array())
 
     def update(self, delta_time):
         pass
@@ -40,14 +34,10 @@ class Object:
     def draw(self, shader):
         if not self.static:
             self.model_matrix.push_matrix()
-            if not self.do_rotation_first:
-                self.model_matrix.add_translation(*self.pos.to_array())
-                self.model_matrix.add_scale(*self.scale.to_array())
-                self.model_matrix.add_rotation(*self.rotation.to_array())
-            else:
-                self.model_matrix.add_rotation(*self.rotation.to_array())
-                self.model_matrix.add_translation(*self.pos.to_array())
-                self.model_matrix.add_scale(*self.scale.to_array())
+
+            self.model_matrix.add_translation(*self.pos.to_array())
+            self.model_matrix.add_rotation(*self.rotation.to_array())
+            self.model_matrix.add_scale(*self.scale.to_array())
 
             shader.set_model_matrix(self.model_matrix.matrix)
             self.object_model.draw(shader)
@@ -60,10 +50,12 @@ class Object:
 class Collider:
     def __init__(self, pos: Vector, size: Vector):
         self.pos = pos
+        # self.pos.y += size.y
         self.size = size
 
-        self.cube = ObjectCube(self.pos, Vector(0, 0, 0), self.size, Color(1, 1, 1),
-                               Color(1, 1, 1), Color(.1, .1, .1), 10, Cube())
+        self.yes = ObjectCube(pos, Vector(0, 0, 0), size,
+                              Color(1, 1, 1,), Color(1, 1, 1),
+                              Color(1, 1, 1,), 10, Cube())
 
     @property
     def minX(self):
@@ -75,11 +67,11 @@ class Collider:
 
     @property
     def minY(self):
-        return self.pos.y
+        return self.pos.y - self.size.y / 2
 
     @property
     def maxY(self):
-        return self.pos.y + self.size.y
+        return self.pos.y + self.size.y / 2
 
     @property
     def minZ(self):
@@ -89,10 +81,7 @@ class Collider:
     def maxZ(self):
         return self.pos.z + self.size.z / 2
 
-    def collide_collider(self, yes):
-        pass
-
-    def collide_player(self, pos: Vector, radius: float):
+    def sphere_collide(self, pos, radius):
         x = max(self.minX, min(pos.x, self.maxX))
         y = max(self.minY, min(pos.y, self.maxY))
         z = max(self.minZ, min(pos.z, self.maxZ))
@@ -115,12 +104,14 @@ class Collider:
             return Vector(x, y, z), vec
         return pos, Vector(0, 0, 0)
 
-    def update(self, pos):
-        self.pos = pos
-        self.cube.pos = self.pos
+    def collide(self, collider):
+        pass
+
+    def update(self, move_vec):
+        self.pos += move_vec
 
     def draw(self, shader):
-        self.cube.draw(shader)
+        self.yes.draw(shader)
 
 
 class Teeth(Object):
@@ -156,8 +147,8 @@ class ObjectCube:
 
         if static:
             self.model_matrix.add_translation(*self.pos.to_array())
-            self.model_matrix.add_scale(*self.scale.to_array())
             self.model_matrix.add_rotation(*self.rotation.to_array())
+            self.model_matrix.add_scale(*self.scale.to_array())
 
     def update(self, delta_time):
         pass
@@ -183,8 +174,8 @@ class ObjectCube:
         if not self.static:
             self.model_matrix.push_matrix()
             self.model_matrix.add_translation(*self.pos.to_array())
-            self.model_matrix.add_scale(*self.scale.to_array())
             self.model_matrix.add_rotation(*self.rotation.to_array())
+            self.model_matrix.add_scale(*self.scale.to_array())
             shader.set_model_matrix(self.model_matrix.matrix)
             shader.set_material_diffuse_color(self.diffuse_color)
             shader.set_material_specular_color(self.specular_color)
