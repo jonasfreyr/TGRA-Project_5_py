@@ -77,6 +77,7 @@ class GraphicsProgram3D:
         self.tex_id_phobos = ojb_3D_loading.load_texture(TEXTURES_PATH + "/phobos.png")
         self.tex_id_earth = ojb_3D_loading.load_texture(TEXTURES_PATH + "/earth.jpg")
         self.tex_id_earth_spec = ojb_3D_loading.load_texture(TEXTURES_PATH + "/earth_spec.png")
+        self.tex_id_skybox = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
 
         self.fr_ticker = 0
         self.fr_sum = 0
@@ -92,12 +93,15 @@ class GraphicsProgram3D:
         self.lights = [Light(Vector(-3, 50, -3), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
                        Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0)]
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
-        self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model, static=True)
+        self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model,
+                                     static=True)
         self.player_object = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
-        self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model, static=True)
-        self.ground = Cube()
+        self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model,
+                             static=True)
+        self.skybox_model = Cube()
 
-        self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model)
+        self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
+                           self.tex_id_skybox)
         # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
 
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
@@ -174,7 +178,7 @@ class GraphicsProgram3D:
         self.fired = False
 
     def draw_models(self):
-        #self.player_object.draw(self.shader)
+        # self.player_object.draw(self.shader)
         self.houses.draw(self.shader)
         self.level.draw(self.shader)
         self.rock.draw(self.shader)
