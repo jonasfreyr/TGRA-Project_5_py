@@ -1,3 +1,5 @@
+import math
+
 from Core.Color import Color
 from Core.Matrices import ModelMatrix
 from Core.Vector import Vector
@@ -7,7 +9,7 @@ from OpenGLCore.Base3DObjects import Cube
 
 
 class Object:
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, static=False, do_rotation_first=False):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, collider=None ,static=False, do_rotation_first=False):
         self.pos = pos
         self.rotation = rotation
         self.scale = scale
@@ -16,6 +18,8 @@ class Object:
 
         self.do_rotation_first = do_rotation_first
         self.static = static
+
+        self.collider = collider
 
         if static:
             if not do_rotation_first:
@@ -29,6 +33,9 @@ class Object:
 
     def update(self, delta_time):
         pass
+
+    def collide(self, pos, radius):
+        return self.collider.collide(pos, radius)
 
     def draw(self, shader):
         if not self.static:
@@ -49,6 +56,34 @@ class Object:
             shader.set_model_matrix(self.model_matrix.matrix)
             self.object_model.draw(shader)
 
+'''
+class Collider:
+    def __init__(self, pos: Vector, size):
+        
+    
+    def collide(self, pos, radius):
+        x = max(cube.minX, min(pos.x, cube.maxX))
+        y = max(cube.minY, min(pos.y, cube.maxY))
+        z = max(cube.minZ, min(pos.z, cube.maxZ))
+
+        distance = math.sqrt(
+            (x - pos.x) * (x - pos.x) +
+            (y - pos.y) * (y - pos.y) +
+            (z - pos.z) * (z - pos.z)
+        )
+
+        if distance < radius:
+            vec = pos - Vector(x, y, z)
+            try:
+                vec.normalize()
+            except ZeroDivisionError:
+                pass
+
+            vec.mul(radius)
+
+            return Vector(x, y, z), vec
+        return pos, Vector(0, 0, 0)
+'''
 
 class Teeth(Object):
     def __init__(self, pos, rotation, scale, object_model):
