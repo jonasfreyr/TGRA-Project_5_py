@@ -87,9 +87,6 @@ class GraphicsProgram3D:
         self.networking = Networking(self)
 
     def init_objects(self):
-        cube = Cube()
-        # self.cube = RotatingCube(Vector(-3, 0, -3), Vector(1, 1, 1), self.tex_id_cock, self.tex_id_aids, cube)
-
         self.sphere = Sphere(24, 48)
 
         self.lights = [Light(Vector(-3, 50, -3), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
@@ -100,10 +97,7 @@ class GraphicsProgram3D:
         self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model, static=True)
         self.ground = Cube()
 
-
-        self.level = Level(self.grass_patch_model, self.ground,self.fence_leftpost_model)
-
-        # self.teeth = Teeth(Vector(-5, 0, 5), Vector(0, 0, 0), Vector(20, 20, 20), self.teeth_object_model)
+        self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model)
         # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
 
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
