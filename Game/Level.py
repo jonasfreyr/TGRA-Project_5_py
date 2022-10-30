@@ -39,7 +39,6 @@ class Level:
                     fence_model,
                     static=True
                 )
-            self.fence_array.append(new_fence)
             for k in range(WORLD_DEPTH):
                 # pos, rotation, scale, object_model
                 new_floor_tile = Object(
