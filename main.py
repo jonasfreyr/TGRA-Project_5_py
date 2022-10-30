@@ -77,7 +77,8 @@ class GraphicsProgram3D:
         self.tex_id_phobos = ojb_3D_loading.load_texture(TEXTURES_PATH + "/phobos.png")
         self.tex_id_earth = ojb_3D_loading.load_texture(TEXTURES_PATH + "/earth.jpg")
         self.tex_id_earth_spec = ojb_3D_loading.load_texture(TEXTURES_PATH + "/earth_spec.png")
-        self.tex_id_skybox = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
+        self.tex_id_skybox2 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
+        self.tex_id_skybox = ojb_3D_loading.load_texture(TEXTURES_PATH + "/space.png")
 
         self.fr_ticker = 0
         self.fr_sum = 0
