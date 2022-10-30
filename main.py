@@ -46,8 +46,11 @@ class GraphicsProgram3D:
         # self.projection_view_matrix = ProjectionViewMatrix()
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
-        self.player = Player(Vector(0, 0, 0), 1, .5, None, self)
-        # self.player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
+        self.non_flying_player = Player(Vector(0, 0, 0), 1, .5, None, self)
+        self.flying_player = FlyingPlayer(Vector(0, 0, 0), 1, 1)
+
+        self.player = self.non_flying_player
+
         self.shader.set_projection_matrix(self.player.projection_matrix.get_matrix())
 
         self.player.draw(self.shader)
@@ -285,6 +288,19 @@ class GraphicsProgram3D:
                 if event.key == K_ESCAPE:
                     print("Escaping!")
                     self.exiting = True
+
+                if event.key == K_v:
+                    if self.player == self.flying_player:
+                        self.non_flying_player.pos = self.player.pos
+                        self.non_flying_player.x_rotation = self.player.x_rotation
+                        self.non_flying_player.y_rotation = self.player.y_rotation
+                        self.player = self.non_flying_player
+                    else:
+                        self.flying_player.pos = self.player.pos
+                        self.flying_player.x_rotation = self.player.x_rotation
+                        self.flying_player.y_rotation = self.player.y_rotation
+                        self.player = self.flying_player
+
                 self.keys[event.key] = True
 
             elif event.type == pygame.KEYUP:
