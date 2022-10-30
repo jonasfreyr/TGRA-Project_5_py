@@ -1,9 +1,10 @@
 import _thread
+import itertools
 import json
 
 # from OpenGL.GL import *
 # from OpenGL.GLU import *
-
+import numpy as np
 import pygame
 from pygame.locals import *
 
@@ -12,7 +13,7 @@ from collections import defaultdict
 from Core.Light import Light
 from Game.Gun import Gun, Rocket
 from Game.Level import Level
-from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer, ObjectCube
+from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer, ObjectCube, Collider
 from Game.Player import FlyingPlayer, Player
 from Networking.Networking import Networking
 from OpenGLCore.Shaders import *
@@ -70,6 +71,8 @@ class GraphicsProgram3D:
         self.player_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "playermodel.obj")
         self.houses_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "houses-test.obj")
         self.map_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "whole-map.obj")
+        self.map_model_colliders = ojb_3D_loading.find_colliders(MODELS_PATH, "whole-map.obj")
+        print("count: " + str(len(self.map_model_colliders)))
 
         self.tex_id_cock = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test.png")
         self.tex_id_vag = ojb_3D_loading.load_texture(TEXTURES_PATH + "/test2.png")
@@ -102,8 +105,10 @@ class GraphicsProgram3D:
 
         self.map = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
-        self.skybox_model = Cube()
 
+        self.collider_list = self.local_to_global_collisions(self.map_model_colliders, self.map)
+
+        self.skybox_model = Cube()
 
         # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
         #                   self.tex_id_skybox)
@@ -117,16 +122,46 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        self.networking.start()  # Comment this out, if testing locally
+        # self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
         self.network_players = {}
 
+    def local_to_global_collisions(self, collision_dict, object):
+        collider_list = []
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(*object.pos.to_array())
+        self.model_matrix.add_scale(*object.scale.to_array())
+        self.model_matrix.add_rotation(*object.rotation.to_array())
+        collision_model_matrix = self.model_matrix.matrix
+        collision_model_numpy = np.array([collision_model_matrix[0:3],
+                                          collision_model_matrix[3:6],
+                                          collision_model_matrix[6:9]])
+        self.model_matrix.pop_matrix()
+        for mesh_id, vertex_array in collision_dict.items():
+            for i in range(0, len(vertex_array) - 1):
+                vertex_numpy = np.array([vertex_array[i].x, vertex_array[i].y, vertex_array[i].z])
+                global_vertex = collision_model_numpy.dot(vertex_numpy)
+
+                collision_dict[mesh_id][i] = Point(global_vertex[0], global_vertex[1], global_vertex[2])
+            print("\n\n")
+            print(len(collision_dict[mesh_id]))
+            new_collider = Collider(collision_dict[mesh_id])
+            collider_list.append(new_collider)
+            return collider_list
+
+    # for mesh_id, vertex_array in mesh_model.vertex_arrays.items():
+    #    pass
+
     def create_network_rocket(self, id, pos, rot):
+
         new_rocket = Rocket(pos, rot, Vector(1, 1, 1), self.rocket_model)
         self.network_rockets[id] = new_rocket
 
     def create_network_player(self, id, pos, rot):
+
         new_player = NetworkPlayer(pos, rot, Vector(.5, .5, .5), self.player_model)
+
         self.network_players[id] = new_player
 
     def shoot(self, look_pos, x_rot, y_rot):

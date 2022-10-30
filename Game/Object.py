@@ -4,12 +4,14 @@ from Core.Color import Color
 from Core.Matrices import ModelMatrix
 from Core.Vector import Vector
 from OpenGL.GL import *
+from Core.Vector import *
 
 from OpenGLCore.Base3DObjects import Cube
 
 
 class Object:
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, collider: "Collider"=None ,static=False, do_rotation_first=False):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, collider: "Collider" = None,
+                 static=False, do_rotation_first=False):
         self.pos = pos
         self.rotation = rotation
         self.scale = scale
@@ -58,41 +60,54 @@ class Object:
 
 
 class Collider:
-    def __init__(self, pos: Vector, size: Vector):
-        self.pos = pos
-        self.size = size
+    def __init__(self, vertex_array):
+        self.vertex_array = vertex_array
+        # self.pos = pos
 
-        self.cube = ObjectCube(self.pos, Vector(0, 0, 0), self.size, Color(1, 1, 1),
-                               Color(1, 1, 1), Color(.1, .1, .1), 10, Cube())
+        # self.size = size
 
-    @property
-    def minX(self):
-        return self.pos.x - self.size.x / 2
+        # self.yes = ObjectCube(pos, Vector(0, 0, 0), size,
+        #                      Color(1, 1, 1, ), Color(1, 1, 1),
+        #                      Color(1, 1, 1, ), 10, Cube())
 
-    @property
-    def maxX(self):
-        return self.pos.x + self.size.x / 2
+        self.max_points = self.find_max()
+        self.min_points = self.find_min()
 
-    @property
-    def minY(self):
-        return self.pos.y
+        self.minX = self.min_points.x
+        self.minY = self.min_points.y
+        self.minZ = self.min_points.z
 
-    @property
-    def maxY(self):
-        return self.pos.y + self.size.y
+        self.maxX = self.max_points.x
+        self.maxY = self.max_points.y
+        self.maxZ = self.max_points.z
 
-    @property
-    def minZ(self):
-        return self.pos.z - self.size.z / 2
+    def find_max(self):
+        maxX = Point(0, 0, 0)
+        maxY = Point(0, 0, 0)
+        maxZ = Point(0, 0, 0)
+        for point in self.vertex_array:
+            if point.x > maxX.x:
+                maxX = point
+            if point.y > maxY.y:
+                maxY = point
+            if point.z > maxZ.z:
+                maxZ = point
+        return Point(maxX, maxY, maxZ)
 
-    @property
-    def maxZ(self):
-        return self.pos.z + self.size.z / 2
+    def find_min(self):
+        minX = Point(0, 0, 0)
+        minY = Point(0, 0, 0)
+        minZ = Point(0, 0, 0)
+        for point in self.vertex_array:
+            if point.x < minX.x:
+                minX = point
+            if point.y < minY.y:
+                minY = point
+            if point.z < minZ.z:
+                minZ = point
+        return Point(minX, minY, minZ)
 
-    def collide_collider(self, yes):
-        pass
-
-    def collide_player(self, pos: Vector, radius: float):
+    def sphere_collide(self, pos, radius):
         x = max(self.minX, min(pos.x, self.maxX))
         y = max(self.minY, min(pos.y, self.maxY))
         z = max(self.minZ, min(pos.z, self.maxZ))
@@ -115,12 +130,14 @@ class Collider:
             return Vector(x, y, z), vec
         return pos, Vector(0, 0, 0)
 
-    def update(self, pos):
-        self.pos = pos
-        self.cube.pos = self.pos
+    def collide(self, collider):
+        pass
+
+    def update(self, move_vec):
+        self.pos += move_vec
 
     def draw(self, shader):
-        self.cube.draw(shader)
+        self.yes.draw(shader)
 
 
 class Teeth(Object):
@@ -133,8 +150,8 @@ class Teeth(Object):
 
 class ObjectCube:
     def __init__(self, pos: Vector, rotation: Vector, scale: Vector,
-                        diffuse_color: Color, specular_color: Color, ambient_color: Color, shininess: float,
-                        cube: Cube, diffuse_texture_id: int = None, specular_texture_id: int = None, static=False):
+                 diffuse_color: Color, specular_color: Color, ambient_color: Color, shininess: float,
+                 cube: Cube, diffuse_texture_id: int = None, specular_texture_id: int = None, static=False):
 
         self.pos = pos
         self.rotation = rotation
@@ -203,7 +220,8 @@ class ObjectCube:
 
 class RotatingCube(ObjectCube):
     def __init__(self, pos, scale, diffuse_texture_id: int, specular_texture_id: int, cube: Cube):
-        super(RotatingCube, self).__init__(pos, Vector(0, 0, 0), scale, Color(1, 1, 1), Color(1, 1, 1), Color(.1, .1, .1), 10, cube, diffuse_texture_id, specular_texture_id)
+        super(RotatingCube, self).__init__(pos, Vector(0, 0, 0), scale, Color(1, 1, 1), Color(1, 1, 1),
+                                           Color(.1, .1, .1), 10, cube, diffuse_texture_id, specular_texture_id)
 
     def update(self, delta_time):
         self.rotation.x += 100 * delta_time
