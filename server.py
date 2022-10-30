@@ -158,12 +158,6 @@ def run_game(s):
             if rocket.kill: del rockets[id]
             else: rocket.update(delta_time)
 
-        for player_id in players:
-            if players[player_id]['health'] > 0:
-                pos = Vector(players[player_id]['pos'][0], players[player_id]['pos'][1], players[player_id]['pos'][2])
-                size = Vector(PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_DEPTH)
-                player_collider = Collider(pos, size)
-
         # print(connsUDP)
         message = {
             "players": {},
