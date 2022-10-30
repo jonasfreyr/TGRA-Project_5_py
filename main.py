@@ -12,7 +12,7 @@ from collections import defaultdict
 from Core.Light import Light
 from Game.Gun import Gun, Rocket
 from Game.Level import Level
-from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer
+from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer, ObjectCube
 from Game.Player import FlyingPlayer, Player
 from Networking.Networking import Networking
 from OpenGLCore.Shaders import *
@@ -97,16 +97,17 @@ class GraphicsProgram3D:
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
         self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model,
                                      static=True)
-        self.player_object = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
+        self.player_object = Object(Vector(-5, 0, -5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
         # self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model,static=True)
 
         self.map = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
         self.skybox_model = Cube()
 
+
         # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
         #                   self.tex_id_skybox)
-        # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
+        self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
 
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
         rpg = Gun(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
@@ -116,7 +117,7 @@ class GraphicsProgram3D:
         self.new_rocket = None
         self.fired = False
 
-        # self.networking.start()  # Comment this out, if testing locally
+        self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
         self.network_players = {}
 
@@ -125,7 +126,7 @@ class GraphicsProgram3D:
         self.network_rockets[id] = new_rocket
 
     def create_network_player(self, id, pos, rot):
-        new_player = NetworkPlayer(pos, rot, Vector(5, 5, 5), self.rock_model)
+        new_player = NetworkPlayer(pos, rot, Vector(.5, .5, .5), self.player_model)
         self.network_players[id] = new_player
 
     def shoot(self, look_pos, x_rot, y_rot):
@@ -184,12 +185,11 @@ class GraphicsProgram3D:
         self.fired = False
 
     def draw_models(self):
-        # self.player_object.draw(self.shader)
+        self.player_object.draw(self.shader)
         # self.houses.draw(self.shader)
         # self.level.draw(self.shader)
         self.map.draw(self.shader)
         self.rock.draw(self.shader)
-
         if not self.networking.active:
             for bullet in self.bullets:
                 bullet.draw(self.shader)

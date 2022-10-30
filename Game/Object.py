@@ -62,6 +62,9 @@ class Collider:
         self.pos = pos
         self.size = size
 
+        self.cube = ObjectCube(self.pos, Vector(0, 0, 0), self.size, Color(1, 1, 1),
+                               Color(1, 1, 1), Color(.1, .1, .1), 10, Cube())
+
     @property
     def minX(self):
         return self.pos.x - self.size.x / 2
@@ -72,11 +75,11 @@ class Collider:
 
     @property
     def minY(self):
-        return self.pos.y - self.size.y / 2
+        return self.pos.y
 
     @property
     def maxY(self):
-        return self.pos.y + self.size.y / 2
+        return self.pos.y + self.size.y
 
     @property
     def minZ(self):
@@ -111,6 +114,13 @@ class Collider:
 
             return Vector(x, y, z), vec
         return pos, Vector(0, 0, 0)
+
+    def update(self, pos):
+        self.pos = pos
+        self.cube.pos = self.pos
+
+    def draw(self, shader):
+        self.cube.draw(shader)
 
 
 class Teeth(Object):

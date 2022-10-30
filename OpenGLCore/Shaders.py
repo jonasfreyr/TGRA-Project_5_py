@@ -134,8 +134,8 @@ class Shader3D:
         loc = glGetUniformLocation(self.renderingProgramID, f"u_light_positions[{i}]")
         glUniform4f(loc, x, y, z, 1.0)
 
-    def set_material_diffuse(self, r, g, b):
-        glUniform4f(self.matDifLoc, r, g, b, 1.0)
+    def set_material_diffuse(self, r, g, b, a=1.0):
+        glUniform4f(self.matDifLoc, r, g, b, a)
     def set_material_diffuse_color(self, color):
         glUniform4f(self.matDifLoc, color.r, color.g, color.b, 1.0)
 

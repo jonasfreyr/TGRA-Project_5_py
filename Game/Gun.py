@@ -1,6 +1,8 @@
-from Core.Constants import ROCKET_SPEED, ROCKET_LIFE_TIME
+from Core.Color import Color
+from Core.Constants import *
 from Core.Vector import Vector
-from Game.Object import Object
+from Game.Object import Object, Collider, ObjectCube
+from OpenGLCore.Base3DObjects import Cube
 
 
 class Gun(Object):
@@ -28,6 +30,7 @@ class Rocket(Object):
         self.vel = look_pos.copy()
         self.vel.normalize()
         self.vel *= ROCKET_SPEED
+        pass
 
     def update(self, delta_time):
         if self.life_time >= ROCKET_LIFE_TIME:
@@ -41,3 +44,4 @@ class Rocket(Object):
     def draw(self, shader):
         if self.kill: return
         super(Rocket, self).draw(shader)
+

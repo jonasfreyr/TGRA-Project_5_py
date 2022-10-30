@@ -53,9 +53,7 @@ class Networking:
                 new_rot = player['rot']
 
                 pos = Vector(new_pos[0], new_pos[1], new_pos[2])
-                # rot = Vector(new_rot[0], new_rot[1], 0)
-
-                rot = Vector(0, 0, 0)
+                rot = Vector(new_rot[1], 0, new_rot[0])
 
                 self.game.create_network_player(id, pos, rot)
 

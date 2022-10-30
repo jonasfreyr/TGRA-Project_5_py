@@ -143,10 +143,6 @@ def listening_UDP(s):
             pass
 
 
-def collision(rockets, player):
-    pass
-
-
 def run_game(s):
     print("Game Started!")
     clock = pygame.time.Clock()
@@ -167,8 +163,6 @@ def run_game(s):
                 pos = Vector(players[player_id]['pos'][0], players[player_id]['pos'][1], players[player_id]['pos'][2])
                 size = Vector(PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_DEPTH)
                 player_collider = Collider(pos, size)
-
-
 
         # print(connsUDP)
         message = {

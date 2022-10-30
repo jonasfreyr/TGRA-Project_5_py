@@ -5,6 +5,7 @@ from Core.Vector import Vector
 from Core.Constants import *
 from Core.Matrices import ViewMatrix, ProjectionMatrix
 from Game.Gun import Rocket
+from Game.Object import Collider
 
 
 class FlyingPlayer:
@@ -27,7 +28,7 @@ class FlyingPlayer:
         temp.y += self.height
         return temp
 
-    def update(self, delta_time, keys):
+    def update(self, delta_time, keys, colliders):
         if keys[K_UP]:
             self.view_matrix.pitch(100 * delta_time)
         elif keys[K_DOWN]:
@@ -100,6 +101,9 @@ class Player:
 
         return pos
 
+    def rocket_collision(self, rocket):
+        pass
+
     def update(self, delta_time, keys, colliders):
         move_vec = Vector(0, 0, 0)
 
@@ -154,8 +158,6 @@ class Player:
             self.pos.y = 0
             self.jump_vel = 0
             self.__landed = True
-
-        self.collision(colliders, self.pos.copy())
 
         self.update_camera()
 
