@@ -47,41 +47,40 @@ class Level:
                     fence_model,
                     static=True
                 )
-                self.fence_array.append(new_fence)
-                for k in range(WORLD_DEPTH):
-                    # pos, rotation, scale, object_model
-                    new_floor_tile = Object(
-                        Vector(i * self.plane_scale, 0, k * self.plane_scale),
+            for k in range(WORLD_DEPTH):
+                # pos, rotation, scale, object_model
+                new_floor_tile = Object(
+                    Vector(i * self.plane_scale, 0, k * self.plane_scale),
+                    Vector(0, 0, 0),
+                    Vector(0.6666, 0.6666, 0.6666),
+                    grass_plane_model,
+                    static=True
+                )
+                if (k == WORLD_DEPTH-1 ):
+                    new_fence = Object(
+                        Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale -1.5 ),
                         Vector(0, 0, 0),
-                        Vector(0.6666, 0.6666, 0.6666),
-                        grass_plane_model,
+                        Vector(0.39, 0.39, 0.39),
+                        fence_model,
                         static=True
                     )
-                    if (k == WORLD_DEPTH - 1):
-                        new_fence = Object(
-                            Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale - 1.5),
-                            Vector(0, 0, 0),
-                            Vector(0.39, 0.39, 0.39),
-                            fence_model,
-                            static=True
-                        )
-                    elif (i == 0):
-                        new_fence = Object(
-                            Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale - 1.5),
-                            Vector(0, 90, 0),
-                            Vector(0.39, 0.39, 0.39),
-                            fence_model,
-                            static=True
-                        )
-                    elif (i == WORLD_WIDTH - 1):
-                        new_fence = Object(
-                            Vector(i * self.plane_scale - 0.8, 0, k * self.plane_scale - 1.5),
-                            Vector(0, 90, 0),
-                            Vector(0.39, 0.39, 0.39),
-                            fence_model,
-                            static=True
-                        )
-                    self.fence_array.append(new_fence)
+                elif(i == 0):
+                    new_fence = Object(
+                        Vector(i * self.plane_scale + 0.8, 0, k * self.plane_scale - 1.5),
+                        Vector(0, 90, 0),
+                        Vector(0.39, 0.39, 0.39),
+                        fence_model,
+                        static=True
+                    )
+                elif (i == WORLD_WIDTH - 1):
+                    new_fence = Object(
+                        Vector(i * self.plane_scale - 0.8, 0, k * self.plane_scale - 1.5),
+                        Vector(0, 90, 0),
+                        Vector(0.39, 0.39, 0.39),
+                        fence_model,
+                        static=True
+                    )
+                self.fence_array.append(new_fence)
 
                     self.floor_tile_array.append(new_floor_tile)
 
@@ -111,3 +110,6 @@ class Level:
 
             for grass in self.grass_array:
                 grass.draw(shader)
+
+
+

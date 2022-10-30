@@ -61,7 +61,7 @@ class Teeth(Object):
 class ObjectCube:
     def __init__(self, pos: Vector, rotation: Vector, scale: Vector,
                         diffuse_color: Color, specular_color: Color, ambient_color: Color, shininess: float,
-                        cube: Cube, diffuse_texture_id: int = None, specular_texture_id: int = None):
+                        cube: Cube, diffuse_texture_id: int = None, specular_texture_id: int = None, static=False):
 
         self.pos = pos
         self.rotation = rotation
@@ -78,6 +78,13 @@ class ObjectCube:
         self.model_matrix = ModelMatrix()
 
         self.cube = cube
+
+        self.static = static
+
+        if static:
+            self.model_matrix.add_translation(*self.pos.to_array())
+            self.model_matrix.add_scale(*self.scale.to_array())
+            self.model_matrix.add_rotation(*self.rotation.to_array())
 
     def update(self, delta_time):
         pass
@@ -100,17 +107,25 @@ class ObjectCube:
         else:
             shader.set_using_specular_texture(0.0)
 
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(*self.pos.to_array())
-        self.model_matrix.add_scale(*self.scale.to_array())
-        self.model_matrix.add_rotation(*self.rotation.to_array())
-        shader.set_model_matrix(self.model_matrix.matrix)
-        shader.set_material_diffuse_color(self.diffuse_color)
-        shader.set_material_specular_color(self.specular_color)
-        shader.set_material_ambient_color(self.ambient_color)
-        shader.set_shininess(self.shininess)
-        self.cube.draw(shader)
-        self.model_matrix.pop_matrix()
+        if not self.static:
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(*self.pos.to_array())
+            self.model_matrix.add_scale(*self.scale.to_array())
+            self.model_matrix.add_rotation(*self.rotation.to_array())
+            shader.set_model_matrix(self.model_matrix.matrix)
+            shader.set_material_diffuse_color(self.diffuse_color)
+            shader.set_material_specular_color(self.specular_color)
+            shader.set_material_ambient_color(self.ambient_color)
+            shader.set_shininess(self.shininess)
+            self.cube.draw(shader)
+            self.model_matrix.pop_matrix()
+        else:
+            shader.set_model_matrix(self.model_matrix.matrix)
+            shader.set_material_diffuse_color(self.diffuse_color)
+            shader.set_material_specular_color(self.specular_color)
+            shader.set_material_ambient_color(self.ambient_color)
+            shader.set_shininess(self.shininess)
+            self.cube.draw(shader)
 
 
 class RotatingCube(ObjectCube):
