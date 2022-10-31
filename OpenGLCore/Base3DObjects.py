@@ -3,6 +3,53 @@ from math import *
 import numpy
 from OpenGL.GL import *
 from Core.Color import Material
+class SkyboxCube:
+    def __init__(self):                                                    # x    y
+        vertex_array = [    -0.5, -0.5, -0.5,       0.0, 0.0, -1.0,         0.0, 1/3, #2
+                            -0.5, 0.5, -0.5,        0.0, 0.0, -1.0,         0.0, 2/3,
+                            0.5, 0.5, -0.5,         0.0, 0.0, -1.0,         1/4, 1/3,
+                            0.5, -0.5, -0.5,        0.0, 0.0, -1.0,         1/4, 2/3,
+
+                            -0.5, -0.5, 0.5,        0.0, 0.0, 1.0,          1/4, 2/3, #4
+                            -0.5, 0.5, 0.5,         0.0, 0.0, 1.0,          1/4, 1.0,
+                            0.5, 0.5, 0.5,          0.0, 0.0, 1.0,          2/4, 2/3,
+                            0.5, -0.5, 0.5,         0.0, 0.0, 1.0,          2/4, 1.0,
+
+                            -0.5, -0.5, -0.5,       0.0, -1.0, 0.0,         1/4, 1/3, #1
+                            0.5, -0.5, -0.5,        0.0, -1.0, 0.0,         1/4, 2/3,
+                            0.5, -0.5, 0.5,         0.0, -1.0, 0.0,         2/4, 1/3,
+                            -0.5, -0.5, 0.5,        0.0, -1.0, 0.0,         2/4, 2/3,
+
+                            -0.5, 0.5, -0.5,        0.0, 1.0, 0.0,          1/4, 0.0, #3
+                            0.5, 0.5, -0.5,         0.0, 1.0, 0.0,          1/4, 1/3,
+                            0.5, 0.5, 0.5,          0.0, 1.0, 0.0,          2/4, 0.0,
+                            -0.5, 0.5, 0.5,         0.0, 1.0, 0.0,          2/4, 1/3,
+
+                            -0.5, -0.5, -0.5,       -1.0, 0.0, 0.0,         2/4, 1/3, #5
+                            -0.5, -0.5, 0.5,        -1.0, 0.0, 0.0,         2/4, 2/3,
+                            -0.5, 0.5, 0.5,         -1.0, 0.0, 0.0,         3/4, 1/3,
+                            -0.5, 0.5, -0.5,        -1.0, 0.0, 0.0,         3/4, 2/3,
+
+                            0.5, -0.5, -0.5,        1.0, 0.0, 0.0,          3/4, 1/3,
+                            0.5, -0.5, 0.5,         1.0, 0.0, 0.0,          3/4, 2/3,
+                            0.5, 0.5, 0.5,          1.0, 0.0, 0.0,          1.0, 1/3,
+                            0.5, 0.5, -0.5,         1.0, 0.0, 0.0,          1.0, 2/3]
+
+        self.vertex_buffer_id = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vertex_buffer_id)
+        glBufferData(GL_ARRAY_BUFFER, numpy.array(vertex_array, dtype='float32'), GL_STATIC_DRAW)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+    def draw(self, shader):
+        shader.set_attribute_buffer_with_uv(self.vertex_buffer_id)
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
+        glDrawArrays(GL_TRIANGLE_FAN, 4, 4)
+        glDrawArrays(GL_TRIANGLE_FAN, 8, 4)
+        glDrawArrays(GL_TRIANGLE_FAN, 12, 4)
+        glDrawArrays(GL_TRIANGLE_FAN, 16, 4)
+        glDrawArrays(GL_TRIANGLE_FAN, 20, 4)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
 
 class Cube:
     def __init__(self):

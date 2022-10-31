@@ -22,6 +22,8 @@ class FlyingPlayer:
         self.view_matrix.slide(pos.x, pos.y + height, pos.z)
         self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
 
+        # sounds
+        self.walk_sound = pygame.mixer.Sound('./Sounds/tank_moving.wav')
     @property
     def top_pos(self):
         temp = self.pos.copy()
@@ -39,6 +41,7 @@ class FlyingPlayer:
 
         if keys[K_w]:
             self.view_matrix.slide(0, 0, -10 * delta_time)
+            self.walk_sound.play()
         elif keys[K_s]:
             self.view_matrix.slide(0, 0, 10 * delta_time)
         if keys[K_a]:

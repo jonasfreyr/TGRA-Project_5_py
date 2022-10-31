@@ -10,7 +10,7 @@ from Core.Color import Color
 from Core.Light import Light
 from Core.Matrices import *
 from Game.Gun import Gun, Rocket
-from Game.Object import Object, NetworkPlayer, Collider
+from Game.Object import Object, NetworkPlayer, Collider, ObjectCube
 from Game.Player import FlyingPlayer, Player
 from Networking.Constants import USE_NETWORKING
 from Networking.Networking import Networking
@@ -64,8 +64,10 @@ class GraphicsProgram3D:
         self.houses_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "houses-test.obj")
         self.map_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "whole-map.obj")
 
-        self.tex_id_skybox2 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
+
         self.tex_id_skybox = ojb_3D_loading.load_texture(TEXTURES_PATH + "/space.png")
+        self.tex_id_skybox2 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
+        self.tex_id_skybox3 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/cubemap.png")
 
         self.fr_ticker = 0
         self.fr_sum = 0
@@ -74,6 +76,8 @@ class GraphicsProgram3D:
         self.exiting = False
 
         self.networking = Networking(self)
+        background_music = pygame.mixer.music.load('./Sounds/background_music.mp3')
+        pygame.mixer.music.play(-1)
 
     def init_objects(self):
         self.sphere = Sphere(24, 48)
@@ -89,6 +93,34 @@ class GraphicsProgram3D:
         self.map = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
         self.skybox_model = Cube()
+        self.skybox3_model = SkyboxCube()
+
+        self.skybox = ObjectCube(Vector(10, 0.3, 10), Vector(0, 0, 0),
+                                 Vector(80, 80, 80),
+                                 Color(1, 1, 1),
+                                 Color(1, 1, 1),
+                                 Color(1, 1, 1),
+                                 50,
+                                 self.skybox_model,
+                                 diffuse_texture_id=self.tex_id_skybox, static=True)
+
+        self.skybox2 = ObjectCube(Vector(10, 0.3, 10), Vector(0, 0, 0),
+                                 Vector(80, 80, 80),
+                                 Color(1, 1, 1),
+                                 Color(1, 1, 1),
+                                 Color(1, 1, 1),
+                                 50,
+                                 self.skybox_model,
+                                 diffuse_texture_id=self.tex_id_skybox2, static=True)
+
+        self.skybox3 = ObjectCube(Vector(10, 0.3, 10), Vector(0, 0, 0),
+                                  Vector(80, 80, 80),
+                                  Color(1, 1, 1),
+                                  Color(1, 1, 1),
+                                  Color(1, 1, 1),
+                                  50,
+                                  self.skybox3_model,
+                                  diffuse_texture_id=self.tex_id_skybox3, static=True)
 
         # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
         #                   self.tex_id_skybox)
@@ -459,6 +491,8 @@ class GraphicsProgram3D:
                      Vector(8.854999999999997, 5.152000000000002, 0.17500000000000032)),
             Collider(Vector(0.011000000000000787, 7.0070000000000014, 13.230000000000004),
                      Vector(8.854999999999997, 5.152000000000002, 0.17500000000000032)),
+            Collider(Vector(-4.337000000000004, 8.029000000000005, 9.801999999999996),
+                     Vector(0.36000000000000054, 1.9060000000000006, 2.5630000000000006)),
 
             #House2 stairs
             Collider(Vector(3.1490000000000005, 0.47600000000000003, 9.543),
@@ -511,6 +545,45 @@ class GraphicsProgram3D:
                      Vector(1.7590000000000001, -0.0719999999999998, 0.3560000000000007)),
             Collider(Vector(-3.3779999999999992, 4.344999999999999, 9.073999999999979),
                      Vector(1.7590000000000001, -0.0719999999999998, 0.4490000000000007)),
+
+            #Súlur
+
+            Collider(Vector(2.3560000000000008, 1.8990000000000002, -2.2899999999999996),
+                     Vector(0.5580000000000002, 3.7000000000000006, 0.5620000000000002)),
+            Collider(Vector(-2.544, 1.9880000000000002, 10.927000000000001),
+                     Vector(0.5580000000000002, 3.7830000000000004, 0.5620000000000002)),
+
+            #Fixes og svona hurð og ehv haha ég veit ekki..
+            Collider(Vector(4.6530000000000005, 3.5490000000000004, 0.05500000000000044),
+                     Vector(0.2510000000000002, 1.6300000000000003, 2.5930000000000004)),
+            Collider(Vector(4.558000000000001, 7.627000000000002, -0.04499999999999957),
+                     Vector(0.2540000000000002, 1.2630000000000006, 3.1510000000000002)),
+            Collider(Vector(4.562, 7.627000000000002, 9.690999999999992),
+                     Vector(0.2540000000000002, 1.2630000000000006, 3.1510000000000002)),
+            Collider(Vector(4.866, 4.333000000000001, 9.738999999999997),
+                     Vector(0.26900000000000024, 0.4420000000000007, 6.84)),
+            Collider(Vector(4.866, 4.333000000000001, 0.09199999999999392),
+                     Vector(0.26900000000000024, 0.4420000000000007, 9.005)),
+            Collider(Vector(4.601999999999999, 7.918, 9.786000000000001),
+                     Vector(0.3750000000000002, 1.768000000000001, 2.7389999999999994)),
+            Collider(Vector(2.708000000000001, 0.8029999999999988, 5.275999999999999),
+                     Vector(0.19700000000000026, 1.768000000000001, 1.5049999999999992)),
+            Collider(Vector(-2.5829999999999997, 0.8029999999999988, 5.376),
+                     Vector(0.19700000000000026, 2.145000000000001, 1.5049999999999992)),
+            Collider(Vector(5.264999999999997, 1.2919999999999983, -2.160999999999999),
+                     Vector(0.8710000000000004, 2.249000000000001, 0.25499999999999956)),
+            Collider(Vector(5.170999999999997, 1.2919999999999983, -2.060999999999999),
+                     Vector(0.8710000000000004, 2.249000000000001, 0.25499999999999956)),
+            Collider(Vector(4.976999999999997, 1.2919999999999983, -1.8569999999999989),
+                     Vector(0.8710000000000004, 2.249000000000001, 0.25499999999999956)),
+            Collider(Vector(4.687999999999997, 1.2889999999999981, -1.4549999999999987),
+                     Vector(0.47900000000000054, 2.249000000000001, 0.25499999999999956)),
+            Collider(Vector(4.877999999999997, 1.2889999999999981, 1.4930000000000014),
+                     Vector(0.47900000000000054, 2.249000000000001, 0.25499999999999956)),
+            Collider(Vector(5.163999999999997, 1.2889999999999981, 1.6980000000000015),
+                     Vector(0.47900000000000054, 2.249000000000001, 0.25499999999999956)),
+            Collider(Vector(5.5589999999999975, 1.2889999999999981, 1.8950000000000016),
+                     Vector(0.47900000000000054, 2.249000000000001, 0.25499999999999956)),
 
 
         ]
@@ -636,6 +709,7 @@ class GraphicsProgram3D:
         # self.player_object.draw(self.shader)
         # self.houses.draw(self.shader)
         # self.level.draw(self.shader)
+        self.skybox3.draw(self.shader)
         self.map.draw(self.shader)
         self.rock.draw(self.shader)
         # self.testing_player.draw(self.shader)
