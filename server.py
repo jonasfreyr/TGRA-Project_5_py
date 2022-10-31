@@ -52,7 +52,7 @@ class GraphicsProgram3D:
         pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF)
 
         pygame.mouse.set_visible(False)
-        # pygame.event.set_grab(True)
+        pygame.event.set_grab(True)
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_BLEND)
@@ -231,7 +231,7 @@ class GraphicsProgram3D:
 
                 # {'pos': data['pos'], 'rot': data['rot'], 'health': data['health']}
                 pos = Vector(data['pos'][0], data['pos'][1], data['pos'][2])
-                rot = Vector(0, -data['rot'][0]+90, 0)
+                rot = Vector(0, data['rot'][0], 0)
                 self.players[data['id']] = NetworkPlayer(pos, rot, Vector(NETWORK_PLAYER_MODEL_WIDTH, NETWORK_PLAYER_MODEL_HEIGHT, NETWORK_PLAYER_MODE_DEPTH), self.player_model, is_server=True)
 
                 for rocket in data['rockets']:
@@ -282,7 +282,7 @@ class GraphicsProgram3D:
         for player_id, player in temp_players.items():
             if player.health > 0:
                 player_simple = {'pos': (player.pos.x, player.pos.y, player.pos.z),
-                                 'rot': (player.rotation.x, 0),
+                                 'rot': (player.rotation.y, 0),
                                  'health': player.health}
                 message['players'][player_id] = player_simple
 

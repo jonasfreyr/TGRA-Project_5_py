@@ -1,6 +1,7 @@
 import math
 from math import sqrt
 
+
 class Point:
     def __init__(self, x, y, z):
         self.x = x
@@ -18,6 +19,7 @@ class Point:
 
     def copy(self):
         return Point(self.x, self.y, self.z)
+
 
 class Vector:
     def __init__(self, x, y, z):
