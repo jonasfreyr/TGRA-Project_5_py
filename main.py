@@ -77,8 +77,9 @@ class GraphicsProgram3D:
 
         self.networking = Networking(self)
         pygame.mixer.init()
-        background_music = pygame.mixer.Sound('./Sounds/background_music.mp3')
-        background_music.set_volume(0.1)
+        #background_music = pygame.mixer.Sound('./Sounds/background_music.mp3')
+        background_music = pygame.mixer.Sound('./Sounds/background_music_arabian.mp3')
+        background_music.set_volume(0.2)
         background_music.play(-1)
 
         #background_music = pygame.mixer.music.load('./Sounds/background_music.mp3')
