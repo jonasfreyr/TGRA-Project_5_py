@@ -127,7 +127,7 @@ class GraphicsProgram3D:
                                 Vector(6.597999999999904, 1.98999999999999, 1.677000000000001)),
                         Collider(Vector(0.09999999999999999, 0.09200000000000007, 0),
                                 Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
-                         ]
+                        ]
 
         # self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
@@ -326,7 +326,7 @@ class GraphicsProgram3D:
         self.networking.stop()
 
         for collider in self.colliders:
-            print(collider)
+            print(str(collider) + ",")
 
     def start(self):
         self.program_loop()
