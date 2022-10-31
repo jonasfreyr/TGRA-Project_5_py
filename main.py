@@ -129,7 +129,7 @@ class GraphicsProgram3D:
                                 Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
                          ]
 
-        self.networking.start()  # Comment this out, if testing locally
+        # self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
         self.network_players = {1: NetworkPlayer(Vector(-5, 0, -5), Vector(0, 0, 0),
                                                  Vector(.5, .5, .5), self.player_model)}
@@ -195,7 +195,8 @@ class GraphicsProgram3D:
                 self.current.size.y += 1 * delta_time
 
         if self.keys[K_LEFT] or self.keys[K_RIGHT] or self.keys[K_DOWN] or self.keys[K_UP]:
-            print(self.current)
+            # print(self.current)
+            pass
 
         # self.cube.update(delta_time)
         # self.teeth.update(delta_time)
@@ -208,7 +209,7 @@ class GraphicsProgram3D:
                 if bullet.kill:
                     self.bullets.remove(bullet)
                 else:
-                    bullet.update(delta_time, self.colliders)
+                    bullet.update(delta_time, [*self.colliders, self.current])
 
         else:
             message = {'pos': self.player.pos.to_array(),
@@ -301,6 +302,12 @@ class GraphicsProgram3D:
                         self.flying_player.y_rotation = self.player.y_rotation
                         self.player = self.flying_player
 
+                elif event.key == K_RETURN:
+                    self.colliders.append(self.current.copy())
+
+                elif event.key == K_BACKSPACE:
+                    self.current = self.colliders.pop(-1)
+
                 self.keys[event.key] = True
 
             elif event.type == pygame.KEYUP:
@@ -317,6 +324,9 @@ class GraphicsProgram3D:
         pygame.quit()
 
         self.networking.stop()
+
+        for collider in self.colliders:
+            print(collider)
 
     def start(self):
         self.program_loop()

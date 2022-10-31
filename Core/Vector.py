@@ -54,6 +54,22 @@ class Vector:
     def length2D(self):
         return sqrt(self.x * self.x + self.z * self.z)
 
+    def rotate(self, x, y, z):
+        x = math.radians(x)
+        y = math.radians(y)
+        z = math.radians(z)
+
+        x_cos = math.cos(x)
+        x_sin = math.sin(x)
+
+        y_cos = math.cos(y)
+        y_sin = math.sin(y)
+
+        z_cos = math.cos(z)
+        z_sin = math.sin(z)
+
+
+
     def rotate2dXAxis(self, angle):
         rad = math.radians(angle)
 

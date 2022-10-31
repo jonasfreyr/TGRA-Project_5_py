@@ -29,13 +29,21 @@ class Rocket(Object):
         self.updated = True
 
     def set_vel(self, look_pos):
-        self.vel = look_pos.copy()
-        self.vel.normalize()
-        self.vel *= ROCKET_SPEED
+        # self.vel = look_pos.copy()
+        # self.vel.normalize()
+        # self.vel *= ROCKET_SPEED
         pass
 
     @property
     def corners(self):
+        front_pos = Vector(ROCKET_WIDTH, 0, -ROCKET_DEPTH)
+        front_pos.rotate(self.rotation.x, self.rotation.y, self.rotation.z)
+
+        # front_pos *= ROCKET_DEPTH
+
+        print(front_pos)
+
+        front_pos += self.pos
         return [self.pos]
 
     def update(self, delta_time, colliders):
