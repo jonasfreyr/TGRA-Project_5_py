@@ -79,18 +79,16 @@ class GraphicsProgram3D:
         self.sphere = Sphere(24, 48)
 
         self.lights = [Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0),
-                       Light(Vector(0, 80, 0), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0)]#
+                       Light(Vector(0, 80, 0), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0)]
 
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
         self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model,
                                      static=True)
         self.player_object = Object(Vector(-5, 0, -5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
-        # self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model,static=True)
 
         self.map = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
         self.skybox_model = Cube()
-
 
         # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
         #                   self.tex_id_skybox)
@@ -120,7 +118,7 @@ class GraphicsProgram3D:
                         ]
 
         if USE_NETWORKING:
-            self.networking.start()  # Comment this out, if testing locally
+            self.networking.start()
 
         self.network_rockets = {}
         self.network_players = {}
