@@ -86,10 +86,11 @@ class GraphicsProgram3D:
         #pygame.mixer.music.play(-1)
 
     def init_objects(self):
-        self.sphere = Sphere(24, 48)
-
         self.lights = [Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0),
-                       Light(Vector(0, 80, 0), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0)]
+                       Light(Vector(-30, 80, -30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(30, 80, -30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(30, 80, 30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(-30, 80, 30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0)]
 
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
         self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model,
@@ -105,7 +106,7 @@ class GraphicsProgram3D:
                                  Vector(80, 80, 80),
                                  Color(1, 1, 1),
                                  Color(1, 1, 1),
-                                 Color(1, 1, 1),
+                                 Color(0, 0, 0),
                                  50,
                                  self.skybox_model,
                                  diffuse_texture_id=self.tex_id_skybox, static=True)
@@ -114,7 +115,7 @@ class GraphicsProgram3D:
                                  Vector(80, 80, 80),
                                  Color(1, 1, 1),
                                  Color(1, 1, 1),
-                                 Color(1, 1, 1),
+                                 Color(0, 0, 0),
                                  50,
                                  self.skybox_model,
                                  diffuse_texture_id=self.tex_id_skybox2, static=True)
@@ -123,7 +124,7 @@ class GraphicsProgram3D:
                                   Vector(80, 80, 80),
                                   Color(1, 1, 1),
                                   Color(1, 1, 1),
-                                  Color(1, 1, 1),
+                                  Color(.1, .1, .1),
                                   50,
                                   self.skybox3_model,
                                   diffuse_texture_id=self.tex_id_skybox3, static=True)
