@@ -244,9 +244,10 @@ class GraphicsProgram3D:
         self.rock.draw(self.shader)
         # self.testing_player.draw(self.shader)
 
-        for collider in self.colliders:
-            collider.draw(self.shader)
-        self.current.draw(self.shader)
+        if DRAW_COLLIDERS:
+            for collider in self.colliders:
+                collider.draw(self.shader)
+            self.current.draw(self.shader)
 
         if not self.networking.active:
             for bullet in self.bullets:

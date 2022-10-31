@@ -50,8 +50,8 @@ class Collider:
 
         if not is_server:
             self.yes = ObjectCube(pos, Vector(0, 0, 0), size,
-                                  Color(1, 1, 1,), Color(1, 1, 1),
-                                  Color(1, 1, 1,), 10, Cube())
+                                  Color(1, 1, 1), Color(1, 1, 1),
+                                  Color(0, 0, 0), 10, Cube())
 
 
     def __str__(self):
