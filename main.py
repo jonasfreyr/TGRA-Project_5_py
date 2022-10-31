@@ -63,11 +63,13 @@ class GraphicsProgram3D:
         self.player_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "playermodel.obj")
         self.houses_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "houses-test.obj")
         self.map_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "whole-map.obj")
+        self.explosion_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "explosion.obj")
 
 
         self.tex_id_skybox = ojb_3D_loading.load_texture(TEXTURES_PATH + "/space.png")
         self.tex_id_skybox2 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
         self.tex_id_skybox3 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/cubemap.png")
+        self.tex_id_explosion = ojb_3D_loading.load_texture(TEXTURES_PATH + "/explosion.png")
 
         self.fr_ticker = 0
         self.fr_sum = 0
@@ -129,6 +131,22 @@ class GraphicsProgram3D:
                                   50,
                                   self.skybox3_model,
                                   diffuse_texture_id=self.tex_id_skybox3, static=True)
+
+        self.explosionSphereModel = Sphere()
+
+        self.explosion = Object(Vector(2, 0, 2), Vector(0, 0, 0), Vector(0.1, 0.1,0.1), self.explosion_model,
+                          static=True)
+
+        self.explosionSphere = ObjectCube(Vector(2, 0, 2), Vector(0, 0, 0),
+                                  Vector(1, 1, 1),
+                                  Color(1, 1, 1),
+                                  Color(1, 1, 1),
+                                  Color(.1, .1, .1),
+                                  50,
+                                  self.explosionSphereModel,
+                                  diffuse_texture_id=self.tex_id_explosion, static=True)
+
+
 
         # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
         #                   self.tex_id_skybox)
@@ -712,9 +730,12 @@ class GraphicsProgram3D:
         # self.player_object.draw(self.shader)
         # self.houses.draw(self.shader)
         # self.level.draw(self.shader)
+
+        #self.explosion.draw(self.shader)
         self.skybox3.draw(self.shader)
         self.map.draw(self.shader)
         self.rock.draw(self.shader)
+
         # self.testing_player.draw(self.shader)
 
         if DRAW_COLLIDERS:
@@ -741,7 +762,8 @@ class GraphicsProgram3D:
                     player.collider.draw(self.shader)
                 else:
                     del self.network_players[id]
-
+        self.explosion.draw(self.shader)
+        #self.explosionSphere.draw(self.shader)
     def display(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
