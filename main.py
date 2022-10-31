@@ -124,7 +124,7 @@ class GraphicsProgram3D:
                                   Vector(80, 80, 80),
                                   Color(1, 1, 1),
                                   Color(1, 1, 1),
-                                  Color(.1, .1, .1),
+                                  Color(0, 0, 0),
                                   50,
                                   self.skybox3_model,
                                   diffuse_texture_id=self.tex_id_skybox3, static=True)

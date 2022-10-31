@@ -53,7 +53,8 @@ class Rocket(Object):
 
         for collider in colliders:
             for corner in self.corners:
-                if collider.is_in_collider(corner):
+                _, move_vec = collider.sphere_collide(corner, ROCKET_RADIUS)
+                if move_vec.__len__() > 0:
                     self.kill = True
                     return
 
