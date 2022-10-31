@@ -24,7 +24,7 @@ class Rocket(Object):
         self.life_time = 0
         self.kill = False
 
-        self.testing = ObjectCube(pos, rotation, Vector(ROCKET_WIDTH, ROCKET_HEIGHT, ROCKET_DEPTH), Color(1, 1, 1), Color(1, 1, 1), Color(.1, .1, .1), 10, Cube())
+        # self.testing = ObjectCube(pos, rotation, Vector(ROCKET_WIDTH, ROCKET_HEIGHT, ROCKET_DEPTH), Color(1, 1, 1), Color(1, 1, 1), Color(.1, .1, .1), 10, Cube())
 
         self.updated = True
 
@@ -60,5 +60,5 @@ class Rocket(Object):
         if self.kill: return
         super(Rocket, self).draw(shader)
 
-        self.testing.draw(shader)
+        # self.testing.draw(shader)
 

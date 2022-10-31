@@ -107,6 +107,20 @@ class GraphicsProgram3D:
         self.map = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
 
+        self.colliders = [
+                        # Fences
+                        Collider(Vector(-25, 0, 0), Vector(0.5, 5, 55)),
+                        Collider(Vector(25, 0, 0), Vector(0.5, 5, 55)),
+                        Collider(Vector(0, 0, -23.8), Vector(55, 5, 0.5)),
+                        Collider(Vector(0, 2, 25.2), Vector(55, 5, 0.5)),
+
+                        # House
+                        Collider(Vector(-0.9890000000000153, 0.9039999999999999, -5.564),
+                                Vector(6.597999999999904, 1.98999999999999, 1.677000000000001)),
+                        Collider(Vector(0.09999999999999999, 0.09200000000000007, 0),
+                                Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
+                         ]
+
         self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
 
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
@@ -220,7 +234,7 @@ class GraphicsProgram3D:
             if rocket.kill:
                 del self.rockets[id]
             else:
-                rocket.update(delta_time)
+                rocket.update(delta_time, self.colliders)
 
         # {'pos': (x, y, z), 'rot': (x, y), 'health': 100}
         for id, player in self.players.items():

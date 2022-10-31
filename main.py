@@ -129,7 +129,7 @@ class GraphicsProgram3D:
                                 Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
                          ]
 
-        # self.networking.start()  # Comment this out, if testing locally
+        self.networking.start()  # Comment this out, if testing locally
         self.network_rockets = {}
         self.network_players = {1: NetworkPlayer(Vector(-5, 0, -5), Vector(0, 0, 0),
                                                  Vector(.5, .5, .5), self.player_model)}
