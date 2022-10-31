@@ -7,6 +7,7 @@ import pygame
 
 from Core.Constants import *
 from Core.Vector import Vector
+from Game.Explosion import Explosion
 from Game.Gun import Rocket
 from Game.Object import Collider
 from Networking.Constants import *
@@ -83,9 +84,11 @@ class GraphicsProgram3D:
         self.player_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "playermodel.obj")
         self.houses_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "houses-test.obj")
         self.map_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "whole-map.obj")
+        self.explosion_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "explosion.obj")
 
         self.tex_id_skybox2 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
         self.tex_id_skybox = ojb_3D_loading.load_texture(TEXTURES_PATH + "/space.png")
+        self.tex_id_skybox3 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/cubemap.png")
 
         self.fr_ticker = 0
         self.fr_sum = 0
@@ -120,7 +123,10 @@ class GraphicsProgram3D:
                                      static=True)
 
         self.lights = [Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0),
-                       Light(Vector(0, 80, 0), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0)]  #
+                       Light(Vector(-30, 30, -30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(30, 30, -30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(30, 30, 30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(-30, 30, 30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0)]  #
 
         self.player_object = Object(Vector(-5, 0, -5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
@@ -576,11 +582,19 @@ class GraphicsProgram3D:
 
         ]
 
-        # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
+        self.skybox3_model = SkyboxCube()
 
-        self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
+        self.skybox3 = ObjectCube(Vector(10, 0.3, 10), Vector(0, 0, 0),
+                                  Vector(80, 80, 80),
+                                  Color(1, 1, 1),
+                                  Color(0, 0, 0),
+                                  Color(0, 0, 0),
+                                  50,
+                                  self.skybox3_model,
+                                  diffuse_texture_id=self.tex_id_skybox3, static=True)
 
         self.bullets = []
+        self.explosions = []
         self.new_rocket = None
         self.fired = False
 
@@ -695,8 +709,17 @@ class GraphicsProgram3D:
         for id, rocket in temp.items():
             if rocket.kill:
                 del self.rockets[id]
+                self.explosions.append(
+                    Explosion(rocket.pos, Vector(0, 0, 0), Vector(1.3, 1.3, 1.3), self.explosion_model))
             else:
                 rocket.update(delta_time, colliders)
+
+        temp = self.explosions.copy()
+        for explosion in temp:
+            if explosion.kill:
+                self.explosions.remove(explosion)
+            else:
+                explosion.update(delta_time)
 
         self.player.update(delta_time, self.keys, colliders)
         self.player_light.pos = self.player.top_pos
@@ -708,7 +731,8 @@ class GraphicsProgram3D:
         # print(connsUDP)
         message = {
             "players": {},
-            "rockets": {}
+            "rockets": {},
+            "explosion": {}
         }
 
         temp_players = self.players.copy()
@@ -742,8 +766,8 @@ class GraphicsProgram3D:
         # self.player_object.draw(self.shader)
         # self.houses.draw(self.shader)
         # self.level.draw(self.shader)
+        self.skybox3.draw(self.shader)
         self.map.draw(self.shader)
-        self.rock.draw(self.shader)
         # self.testing_player.draw(self.shader)
 
 
@@ -755,6 +779,9 @@ class GraphicsProgram3D:
         for id, player in temp.items():
             player.draw(self.shader)
             player.collider.draw(self.shader)
+
+        for explosion in self.explosions:
+            explosion.draw(self.shader)
 
     def display(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)

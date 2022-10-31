@@ -9,6 +9,7 @@ from pygame.locals import *
 from Core.Color import Color
 from Core.Light import Light
 from Core.Matrices import *
+from Game.Explosion import Explosion
 from Game.Gun import Gun, Rocket
 from Game.Object import Object, NetworkPlayer, Collider, ObjectCube
 from Game.Player import FlyingPlayer, Player
@@ -90,10 +91,10 @@ class GraphicsProgram3D:
 
     def init_objects(self):
         self.lights = [Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0),
-                       Light(Vector(-30, 80, -30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
-                       Light(Vector(30, 80, -30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
-                       Light(Vector(30, 80, 30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
-                       Light(Vector(-30, 80, 30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0)]
+                       Light(Vector(-30, 30, -30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(30, 30, -30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(30, 30, 30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0),
+                       Light(Vector(-30, 30, 30), Color(.5, .5, .5), Color(.5, .5, .5), Color(0.5, 0.5, 0.25), 300.0)]
 
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
         self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model,
@@ -102,60 +103,29 @@ class GraphicsProgram3D:
 
         self.map = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
-        self.skybox_model = Cube()
+
         self.skybox3_model = SkyboxCube()
-
-        self.skybox = ObjectCube(Vector(10, 0.3, 10), Vector(0, 0, 0),
-                                 Vector(80, 80, 80),
-                                 Color(1, 1, 1),
-                                 Color(1, 1, 1),
-                                 Color(0, 0, 0),
-                                 50,
-                                 self.skybox_model,
-                                 diffuse_texture_id=self.tex_id_skybox, static=True)
-
-        self.skybox2 = ObjectCube(Vector(10, 0.3, 10), Vector(0, 0, 0),
-                                 Vector(80, 80, 80),
-                                 Color(1, 1, 1),
-                                 Color(1, 1, 1),
-                                 Color(0, 0, 0),
-                                 50,
-                                 self.skybox_model,
-                                 diffuse_texture_id=self.tex_id_skybox2, static=True)
 
         self.skybox3 = ObjectCube(Vector(10, 0.3, 10), Vector(0, 0, 0),
                                   Vector(80, 80, 80),
                                   Color(1, 1, 1),
-                                  Color(1, 1, 1),
+                                  Color(0, 0, 0),
                                   Color(0, 0, 0),
                                   50,
                                   self.skybox3_model,
                                   diffuse_texture_id=self.tex_id_skybox3, static=True)
 
-        self.explosionSphereModel = Sphere()
-
-        self.explosion = Object(Vector(10, 0, 2), Vector(0, 0, 0), Vector(1.3, 1.3,1.3), self.explosion_model,
-                          static=True)
-
-        self.explosionSphere = ObjectCube(Vector(2, 0, 2), Vector(0, 0, 0),
-                                  Vector(1, 1, 1),
-                                  Color(1, 1, 1),
-                                  Color(1, 1, 1),
-                                  Color(.1, .1, .1),
-                                  50,
-                                  self.explosionSphereModel,
-                                  diffuse_texture_id=self.tex_id_explosion, static=True)
-
+        # self.explosion = Explosion(Vector(10, 0, 2), Vector(0, 0, 0), Vector(1.3, 1.3,1.3), self.explosion_model)
 
 
         # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
         #                   self.tex_id_skybox)
 
-        self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
         rpg = Gun(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
         self.player.gun = rpg
 
         self.bullets = []
+        self.explosions = []
         self.new_rocket = None
         self.fired = False
 
@@ -605,6 +575,10 @@ class GraphicsProgram3D:
                      Vector(9.191999999999968, 0.13599999999999912, 7.178999999999979)),
             Collider(Vector(-4.427999999999994, 3.462999999999993, 9.785999999999984),
                      Vector(0.3539999999999993, 1.4439999999999995, 2.002999999999999)),
+            Collider(Vector(4.586999999999992, 6.1579999999999915, 5.405999999999994),
+                     Vector(0.3539999999999994, 3.255999999999993, 2.0299999999999985)),
+            Collider(Vector(-4.451999999999992, 6.1579999999999915, 5.405999999999994),
+                     Vector(0.3539999999999994, 3.255999999999993, 2.0299999999999985)),
 
         ]
 
@@ -696,13 +670,24 @@ class GraphicsProgram3D:
         self.player.update(delta_time, self.keys, colliders)
         self.player_light.pos = self.player.top_pos
 
+        # print(len(self.explosions))
+
         if not self.networking.active:
             temp = self.bullets.copy()
             for bullet in temp:
                 if bullet.kill:
                     self.bullets.remove(bullet)
+                    self.explosions.append(Explosion(bullet.pos, Vector(0, 0, 0), Vector(1.3, 1.3,1.3), self.explosion_model))
                 else:
                     bullet.update(delta_time, [*self.colliders, self.current])
+
+            temp = self.explosions.copy()
+            for explosion in temp:
+                if explosion.kill:
+                    self.explosions.remove(explosion)
+                else:
+                    explosion.update(delta_time)
+
 
         else:
             for id, player in self.network_players.items():
@@ -737,7 +722,6 @@ class GraphicsProgram3D:
         #self.explosion.draw(self.shader)
         self.skybox3.draw(self.shader)
         self.map.draw(self.shader)
-        self.rock.draw(self.shader)
 
         # self.testing_player.draw(self.shader)
 
@@ -765,7 +749,10 @@ class GraphicsProgram3D:
                     player.collider.draw(self.shader)
                 else:
                     del self.network_players[id]
-        self.explosion.draw(self.shader)
+
+        for explosion in self.explosions:
+            explosion.draw(self.shader)
+        # self.explosion.draw(self.shader)
         #self.explosionSphere.draw(self.shader)
     def display(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
