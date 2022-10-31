@@ -91,8 +91,10 @@ class Player:
 
         # sounds
         self.walk_sound = pygame.mixer.Sound('./Sounds/tank_moving.wav')
-        self.walk_sound.set_volume(0.2)
+        self.walk_sound.set_volume(0.1)
         self.walking = False
+        self.jump_sound = pygame.mixer.Sound('./Sounds/jump.mp3')
+        self.shooting_sound = pygame.mixer.Sound('./Sounds/shooting_sound.mp3')
 
     @property
     def top_pos(self):
@@ -162,8 +164,11 @@ class Player:
         if keys[K_SPACE] and self.__landed:
             self.__landed = False
             self.jump_vel = PLAYER_JUMP_FORCE
+            self.jump_sound.play()
 
         if mouse_click and self.fire_time >= ROCKET_FIRE_RATE:
+            self.shooting_sound.play()
+
             self.fire_time = 0
 
             look_pos = Vector(0, 0, -1)
