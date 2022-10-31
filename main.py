@@ -524,7 +524,11 @@ class GraphicsProgram3D:
         self.network_players[id] = new_player
 
     def shoot(self, look_pos, x_rot, y_rot):
-        new_rocket = Rocket(self.player.top_pos, Vector(0, -x_rot - 90, -y_rot), Vector(1, 1, 1), self.rocket_model)
+        offset = Vector(ROCKET_OFFSET[0], ROCKET_OFFSET[1], ROCKET_OFFSET[2])
+        offset.rotate2dXAxis(y_rot)
+        offset.rotate2d(x_rot)
+        pos = self.player.top_pos + offset
+        new_rocket = Rocket(pos, Vector(0, -x_rot - 90, -y_rot), Vector(1, 1, 1), self.rocket_model)
         new_rocket.set_vel(look_pos)
 
         self.bullets.append(new_rocket)
