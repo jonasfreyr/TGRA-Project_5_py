@@ -22,8 +22,8 @@ class FlyingPlayer:
         self.view_matrix.slide(pos.x, pos.y + height, pos.z)
         self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
 
-        # sounds
-        self.walk_sound = pygame.mixer.Sound('./Sounds/tank_moving.wav')
+
+
     @property
     def top_pos(self):
         temp = self.pos.copy()
@@ -41,7 +41,6 @@ class FlyingPlayer:
 
         if keys[K_w]:
             self.view_matrix.slide(0, 0, -10 * delta_time)
-            self.walk_sound.play()
         elif keys[K_s]:
             self.view_matrix.slide(0, 0, 10 * delta_time)
         if keys[K_a]:
@@ -90,6 +89,11 @@ class Player:
         self.gun = gun
         self.fire_time = ROCKET_FIRE_RATE
 
+        # sounds
+        self.walk_sound = pygame.mixer.Sound('./Sounds/tank_moving.wav')
+        self.walk_sound.set_volume(0.2)
+        self.walking = False
+
     @property
     def top_pos(self):
         temp = self.pos.copy()
@@ -114,6 +118,15 @@ class Player:
     def rocket_collision(self, rocket):
         pass
 
+    def play_walking_sound(self,keys):
+        if keys[K_w]:
+            if not self.walking:
+                self.walk_sound.play()
+                self.walking = True
+        else:
+            self.walking = False
+            self.walk_sound.stop()
+
     def update(self, delta_time, keys, colliders):
         move_vec = Vector(0, 0, 0)
 
@@ -133,6 +146,8 @@ class Player:
             self.y_rotation = PLAYER_MOUSE_MAX_MIN_Y_VALUE
         elif self.y_rotation < -PLAYER_MOUSE_MAX_MIN_Y_VALUE:
             self.y_rotation = -PLAYER_MOUSE_MAX_MIN_Y_VALUE
+
+        self.play_walking_sound(keys)
 
         if keys[K_w]:
             move_vec.z += -PLAYER_MOVEMENT_SPEED * delta_time

@@ -76,8 +76,14 @@ class GraphicsProgram3D:
         self.exiting = False
 
         self.networking = Networking(self)
-        background_music = pygame.mixer.music.load('./Sounds/background_music.mp3')
-        pygame.mixer.music.play(-1)
+        pygame.mixer.init()
+        background_music = pygame.mixer.Sound('./Sounds/background_music.mp3')
+        background_music.set_volume(0.1)
+        background_music.play(-1)
+
+        #background_music = pygame.mixer.music.load('./Sounds/background_music.mp3')
+        #background_music.
+        #pygame.mixer.music.play(-1)
 
     def init_objects(self):
         self.sphere = Sphere(24, 48)
