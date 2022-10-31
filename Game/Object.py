@@ -6,7 +6,7 @@ from Core.Matrices import ModelMatrix
 from Core.Vector import Vector
 from OpenGL.GL import *
 
-from OpenGLCore.Base3DObjects import Cube
+from OpenGLCore.Base3DObjects import *
 
 
 class Object:

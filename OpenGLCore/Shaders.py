@@ -136,6 +136,7 @@ class Shader3D:
 
     def set_material_diffuse(self, r, g, b, a=1.0):
         glUniform4f(self.matDifLoc, r, g, b, a)
+
     def set_material_diffuse_color(self, color):
         glUniform4f(self.matDifLoc, color.r, color.g, color.b, 1.0)
 

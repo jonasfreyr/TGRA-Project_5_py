@@ -43,6 +43,7 @@ class FlyingPlayer:
             self.view_matrix.slide(0, 0, -10 * delta_time)
         elif keys[K_s]:
             self.view_matrix.slide(0, 0, 10 * delta_time)
+
         if keys[K_a]:
             self.view_matrix.slide(-10 * delta_time, 0, 0)
         elif keys[K_d]:
@@ -121,7 +122,7 @@ class Player:
         pass
 
     def play_walking_sound(self,keys):
-        if keys[K_w]:
+        if keys[K_w] or keys[K_s]:
             if not self.walking:
                 self.walk_sound.play()
                 self.walking = True
@@ -155,12 +156,12 @@ class Player:
             move_vec.z += -PLAYER_MOVEMENT_SPEED * delta_time
         elif keys[K_s]:
             move_vec.z += PLAYER_MOVEMENT_SPEED * delta_time
-
+        '''
         if keys[K_a]:
             move_vec.x += -PLAYER_MOVEMENT_SPEED * delta_time
         elif keys[K_d]:
             move_vec.x += PLAYER_MOVEMENT_SPEED * delta_time
-
+        '''
         if keys[K_SPACE] and self.__landed:
             self.__landed = False
             self.jump_vel = PLAYER_JUMP_FORCE
