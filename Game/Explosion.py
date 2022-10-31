@@ -6,4 +6,8 @@ from OpenGLCore.Base3DObjects import Cube
 
 
 class Explosion(Object):
-    pass
+    def __init__(self):
+        pass
+
+    def explode(self):
+        pass

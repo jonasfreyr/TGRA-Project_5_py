@@ -134,7 +134,7 @@ class GraphicsProgram3D:
 
         self.explosionSphereModel = Sphere()
 
-        self.explosion = Object(Vector(2, 0, 2), Vector(0, 0, 0), Vector(0.1, 0.1,0.1), self.explosion_model,
+        self.explosion = Object(Vector(10, 0, 2), Vector(0, 0, 0), Vector(1.3, 1.3,1.3), self.explosion_model,
                           static=True)
 
         self.explosionSphere = ObjectCube(Vector(2, 0, 2), Vector(0, 0, 0),
