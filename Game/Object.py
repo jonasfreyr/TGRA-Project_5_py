@@ -1,6 +1,7 @@
 import math
 
 from Core.Color import Color
+from Core.Constants import NETWORK_PLAYER_HEIGHT
 from Core.Matrices import ModelMatrix
 from Core.Vector import Vector
 from OpenGL.GL import *
@@ -9,7 +10,7 @@ from OpenGLCore.Base3DObjects import Cube
 
 
 class Object:
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, collider: "Collider"=None, static=False):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, static=False):
         self.pos = pos
         self.rotation = rotation
         self.scale = scale
@@ -17,8 +18,6 @@ class Object:
         self.model_matrix = ModelMatrix()
 
         self.static = static
-
-        self.collider = collider
 
         if static:
             self.model_matrix.add_translation(*self.pos.to_array())
@@ -28,13 +27,9 @@ class Object:
     def update(self, delta_time):
         pass
 
-    def collide(self, pos, radius):
-        return self.collider.collide_player(pos, radius)
-
     def draw(self, shader):
         if not self.static:
             self.model_matrix.push_matrix()
-
             self.model_matrix.add_translation(*self.pos.to_array())
             self.model_matrix.add_rotation(*self.rotation.to_array())
             self.model_matrix.add_scale(*self.scale.to_array())
@@ -48,14 +43,16 @@ class Object:
 
 
 class Collider:
-    def __init__(self, pos: Vector, size: Vector):
+    def __init__(self, pos: Vector, size: Vector, is_server=False):
         self.pos = pos
-        # self.pos.y += size.y
         self.size = size
+        self.is_server = is_server
 
-        self.yes = ObjectCube(pos, Vector(0, 0, 0), size,
-                              Color(1, 1, 1,), Color(1, 1, 1),
-                              Color(1, 1, 1,), 10, Cube())
+        if not is_server:
+            self.yes = ObjectCube(pos, Vector(0, 0, 0), size,
+                                  Color(1, 1, 1), Color(1, 1, 1),
+                                  Color(0, 0, 0), 10, Cube())
+
 
     def __str__(self):
         return f"Collider(Vector({self.pos.x}, {self.pos.y}, {self.pos.z}), Vector({self.size.x}, {self.size.y}, {self.size.z}))"
@@ -87,6 +84,12 @@ class Collider:
     def maxZ(self):
         return self.pos.z + self.size.z / 2
 
+    def set_pos(self, pos):
+        self.pos = pos
+
+        if self.is_server:
+            self.yes.pos = pos
+
     def sphere_collide(self, pos, radius):
         x = max(self.minX, min(pos.x, self.maxX))
         y = max(self.minY, min(pos.y, self.maxY))
@@ -115,19 +118,9 @@ class Collider:
                 self.minY <= pos.y <= self.maxY and \
                 self.minZ <= pos.z <= self.maxZ
 
-    def update(self, move_vec):
-        self.pos += move_vec
-
     def draw(self, shader):
-        self.yes.draw(shader)
-
-
-class Teeth(Object):
-    def __init__(self, pos, rotation, scale, object_model):
-        super(Teeth, self).__init__(pos, rotation, scale, object_model)
-
-    def update(self, delta_time):
-        self.rotation.y += 10 * delta_time
+        if not self.is_server:
+            self.yes.draw(shader)
 
 
 class ObjectCube:
@@ -200,17 +193,29 @@ class ObjectCube:
             self.cube.draw(shader)
 
 
-class RotatingCube(ObjectCube):
-    def __init__(self, pos, scale, diffuse_texture_id: int, specular_texture_id: int, cube: Cube):
-        super(RotatingCube, self).__init__(pos, Vector(0, 0, 0), scale, Color(1, 1, 1), Color(1, 1, 1), Color(.1, .1, .1), 10, cube, diffuse_texture_id, specular_texture_id)
-
-    def update(self, delta_time):
-        self.rotation.x += 100 * delta_time
-        self.rotation.y += 100 * delta_time
-
-
 class NetworkPlayer(Object):
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, is_server=False):
         super(NetworkPlayer, self).__init__(pos, rotation, scale, object_model)
 
         self.updated = True
+
+        coll_pos = pos.copy()
+
+        coll_pos.y += NETWORK_PLAYER_HEIGHT
+
+        self.health = 100
+
+        self.collider = Collider(coll_pos, Vector(1, 1.5, 1), is_server)
+
+    def update(self, delta_time):
+        super(NetworkPlayer, self).update(delta_time)
+
+        coll_pos = self.pos.copy()
+        coll_pos.y += NETWORK_PLAYER_HEIGHT
+        # self.collider.pos = coll_pos
+        self.collider.set_pos(coll_pos)
+
+    def draw(self, shader):
+        super(NetworkPlayer, self).draw(shader)
+
+        self.collider.draw(shader)

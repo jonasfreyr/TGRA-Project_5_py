@@ -16,7 +16,7 @@ class Gun(Object):
 
 
 class Rocket(Object):
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, is_server=False):
         super(Rocket, self).__init__(pos, rotation, scale, object_model)
 
         self.vel = Vector(0, 0, 0)
@@ -29,9 +29,9 @@ class Rocket(Object):
         self.updated = True
 
     def set_vel(self, look_pos):
-        # self.vel = look_pos.copy()
-        # self.vel.normalize()
-        # self.vel *= ROCKET_SPEED
+        self.vel = look_pos.copy()
+        self.vel.normalize()
+        self.vel *= ROCKET_SPEED
         pass
 
     @property
@@ -41,7 +41,7 @@ class Rocket(Object):
 
         # front_pos *= ROCKET_DEPTH
 
-        print(front_pos)
+        # print(front_pos)
 
         front_pos += self.pos
         return [self.pos]

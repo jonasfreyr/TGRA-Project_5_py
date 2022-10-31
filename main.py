@@ -1,26 +1,21 @@
-import _thread
-import json
-
 # from OpenGL.GL import *
 # from OpenGL.GLU import *
+
+from collections import defaultdict
 
 import pygame
 from pygame.locals import *
 
-from collections import defaultdict
-
-from Core.Light import Light
-from Game.Gun import Gun, Rocket
-from Game.Level import Level
-from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer, ObjectCube, Collider
-from Game.Player import FlyingPlayer, Player
-from Networking.Networking import Networking
-from OpenGLCore.Shaders import *
-from Core.Matrices import *
-from OpenGLCore import ojb_3D_loading
-from Core.Constants import *
 from Core.Color import Color
-import socket
+from Core.Light import Light
+from Core.Matrices import *
+from Game.Gun import Gun, Rocket
+from Game.Object import Object, NetworkPlayer, Collider
+from Game.Player import FlyingPlayer, Player
+from Networking.Constants import USE_NETWORKING
+from Networking.Networking import Networking
+from OpenGLCore import ojb_3D_loading
+from OpenGLCore.Shaders import *
 
 
 class GraphicsProgram3D:
@@ -41,8 +36,6 @@ class GraphicsProgram3D:
         self.shader = Shader3D()
         self.shader.use()
 
-        self.model_matrix = ModelMatrix()
-
         # self.projection_view_matrix = ProjectionViewMatrix()
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
 
@@ -58,11 +51,8 @@ class GraphicsProgram3D:
         self.clock = pygame.time.Clock()
         self.clock.tick()
 
-        self.angle = 0
-
         self.keys = defaultdict(lambda: False)
 
-        # self.teeth_object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "mouth.obj")
         self.rocket_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "rocket.obj")
         self.grass_object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "grass_with_texture.obj")
         self.grass_patch_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "grass_patch.obj")
@@ -88,22 +78,20 @@ class GraphicsProgram3D:
     def init_objects(self):
         self.sphere = Sphere(24, 48)
 
-        self.lights = [Light(Vector(0, 80, 0), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0),
-                       Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0)]
+        self.lights = [Light(Vector(-0.3, 0, -0.3), Color(3, 3, 3), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 1.0),
+                       Light(Vector(0, 80, 0), Color(2, 2, 2), Color(2, 2, 0.5), Color(0.5, 0.5, 0.25), 300.0)]
+
         self.player_light = Light(Vector(0, 0, 0), Color(1, 1, 1), Color(1, 1, 1), Color(0.5, 0.5, 0.5), 5.0)
         self.fence_leftpost = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.fence_leftpost_model,
                                      static=True)
         self.player_object = Object(Vector(-5, 0, -5), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.player_model)
-        # self.houses = Object(Vector(10, 0.3, 10), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.houses_model,static=True)
 
         self.map = Object(Vector(0, 0, 0), Vector(0, 0, 0), Vector(0.5, 0.5, 0.5), self.map_model,
                           static=True)
         self.skybox_model = Cube()
 
-
         # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
         #                   self.tex_id_skybox)
-        self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
 
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
         rpg = Gun(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
@@ -527,17 +515,21 @@ class GraphicsProgram3D:
 
         ]
 
-        # self.networking.start()  # Comment this out, if testing locally
+        if USE_NETWORKING:
+            self.networking.start()
+
         self.network_rockets = {}
-        self.network_players = {1: NetworkPlayer(Vector(-5, 0, -5), Vector(0, 0, 0),
-                                                 Vector(.5, .5, .5), self.player_model)}
+        self.network_players = {}
+
+        self.testing_player = NetworkPlayer(Vector(-10, 0, -10), Vector(0, 0, 0),
+                                                 Vector(.5, .5, .5), self.player_model)
 
     def create_network_rocket(self, id, pos, rot):
         new_rocket = Rocket(pos, rot, Vector(1, 1, 1), self.rocket_model)
         self.network_rockets[id] = new_rocket
 
     def create_network_player(self, id, pos, rot):
-        new_player = NetworkPlayer(pos, rot, Vector(.5, .5, .5), self.player_model)
+        new_player = NetworkPlayer(pos, rot, Vector(NETWORK_PLAYER_MODEL_WIDTH, NETWORK_PLAYER_MODEL_HEIGHT, NETWORK_PLAYER_MODE_DEPTH), self.player_model)
         self.network_players[id] = new_player
 
     def shoot(self, look_pos, x_rot, y_rot):
@@ -554,11 +546,14 @@ class GraphicsProgram3D:
         self.fr_sum += delta_time
         self.fr_ticker += 1
         if self.fr_sum > 1.0:
-            # print(self.fr_ticker / self.fr_sum)
+            print(self.fr_ticker / self.fr_sum)
             self.fr_sum = 0
             self.fr_ticker = 0
 
         self.networking.receive()
+
+        # self.testing_player.pos.x += 1 * delta_time
+        # self.testing_player.update(delta_time)
 
         if not self.keys[K_LSHIFT]:
             if self.keys[K_LEFT] and not self.keys[K_LCTRL]:
@@ -592,13 +587,16 @@ class GraphicsProgram3D:
             elif self.keys[K_UP]:
                 self.current.size.y += 1 * delta_time
 
-        if self.keys[K_LEFT] or self.keys[K_RIGHT] or self.keys[K_DOWN] or self.keys[K_UP]:
-            # print(self.current)
-            pass
 
         # self.cube.update(delta_time)
         # self.teeth.update(delta_time)
-        self.player.update(delta_time, self.keys, [*self.colliders, self.current])
+        colliders = [*self.colliders, self.current]
+
+        if self.networking.active:
+            for _, player in self.network_players.items():
+                colliders.append(player.collider)
+
+        self.player.update(delta_time, self.keys, colliders)
         self.player_light.pos = self.player.top_pos
 
         if not self.networking.active:
@@ -610,6 +608,9 @@ class GraphicsProgram3D:
                     bullet.update(delta_time, [*self.colliders, self.current])
 
         else:
+            for id, player in self.network_players.items():
+                player.update(delta_time)
+
             message = {'pos': self.player.pos.to_array(),
                        'rot': (self.player.x_rotation, self.player.y_rotation),
                        'health': self.player.health}
@@ -637,10 +638,12 @@ class GraphicsProgram3D:
         # self.level.draw(self.shader)
         self.map.draw(self.shader)
         self.rock.draw(self.shader)
+        # self.testing_player.draw(self.shader)
 
-        for collider in self.colliders:
-            collider.draw(self.shader)
-        self.current.draw(self.shader)
+        if DRAW_COLLIDERS:
+            for collider in self.colliders:
+                collider.draw(self.shader)
+            self.current.draw(self.shader)
 
         if not self.networking.active:
             for bullet in self.bullets:
@@ -658,6 +661,7 @@ class GraphicsProgram3D:
             for id, player in temp.items():
                 if player.updated:
                     player.draw(self.shader)
+                    player.collider.draw(self.shader)
                 else:
                     del self.network_players[id]
 
