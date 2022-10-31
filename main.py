@@ -117,15 +117,6 @@ class GraphicsProgram3D:
                                 Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864)),
 
                         # Stairs1
-
-                        Collider(Vector(-25, 0, 0), Vector(0.5, 5, 55)),
-                        Collider(Vector(25, 0, 0), Vector(0.5, 5, 55)),
-            Collider(Vector(0, 0, -23.8), Vector(55, 5, 0.5)),
-            Collider(Vector(0, 2, 25.2), Vector(55, 5, 0.5)),
-            Collider(Vector(-0.9890000000000153, 0.9039999999999999, -5.564),
-                     Vector(6.597999999999904, 1.98999999999999, 1.677000000000001)),
-            Collider(Vector(0.09999999999999999, 0.09200000000000007, 0),
-                     Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864)),
             Collider(Vector(-3.1299999999999946, 0.30100000000000016, -0.5450000000000004),
                      Vector(1.7789999999999973, 0.02999999999999927, 0.38599999999999945)),
             Collider(Vector(-3.1299999999999946, 0.4820000000000003, -0.9060000000000007),
@@ -612,7 +603,7 @@ class GraphicsProgram3D:
                 player.update(delta_time)
 
             message = {'pos': self.player.pos.to_array(),
-                       'rot': (self.player.x_rotation, self.player.y_rotation),
+                       'rot': (-self.player.x_rotation+90, self.player.y_rotation),
                        'health': self.player.health}
 
             rockets = []

@@ -46,7 +46,7 @@ class Networking:
                 p.pos.z = new_pos[2]
 
 
-                p.rotation.y = new_rot[0] + 90
+                p.rotation.y = new_rot[0]
                 # p.rotation.z = new_rot[1]
 
             else:
@@ -54,7 +54,7 @@ class Networking:
                 new_rot = player['rot']
 
                 pos = Vector(new_pos[0], new_pos[1], new_pos[2])
-                rot = Vector(0, new_rot[0]+90, 0)
+                rot = Vector(0, new_rot[0], 0)
 
                 self.game.create_network_player(id, pos, rot)
 
