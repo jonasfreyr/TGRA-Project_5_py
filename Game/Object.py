@@ -107,8 +107,10 @@ class Collider:
             return Vector(x, y, z), vec
         return pos, Vector(0, 0, 0)
 
-    def collide(self, collider):
-        pass
+    def is_in_collider(self, pos):
+        return self.minX <= pos.x <= self.maxX and \
+                self.minY <= pos.y <= self.maxY and \
+                self.minZ <= pos.z <= self.maxZ
 
     def update(self, move_vec):
         self.pos += move_vec

@@ -124,9 +124,9 @@ class GraphicsProgram3D:
 
                         # House
                         Collider(Vector(-0.9890000000000153, 0.9039999999999999, -5.564),
-                     Vector(6.597999999999904, 1.98999999999999, 1.677000000000001)),
-                Collider(Vector(0.09999999999999999, 0.09200000000000007, 0),
-                     Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
+                                Vector(6.597999999999904, 1.98999999999999, 1.677000000000001)),
+                        Collider(Vector(0.09999999999999999, 0.09200000000000007, 0),
+                                Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
                          ]
 
         # self.networking.start()  # Comment this out, if testing locally
@@ -208,7 +208,7 @@ class GraphicsProgram3D:
                 if bullet.kill:
                     self.bullets.remove(bullet)
                 else:
-                    bullet.update(delta_time)
+                    bullet.update(delta_time, self.colliders)
 
         else:
             message = {'pos': self.player.pos.to_array(),

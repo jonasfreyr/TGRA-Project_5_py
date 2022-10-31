@@ -24,20 +24,30 @@ class Rocket(Object):
         self.life_time = 0
         self.kill = False
 
-        # self.testing = ObjectCube(pos, rotation, Vector(ROCKET_WIDTH, ROCKET_HEIGHT, ROCKET_DEPTH), Color(1, 1, 1), Color(1, 1, 1), Color(.1, .1, .1), 10, Cube())
+        self.testing = ObjectCube(pos, rotation, Vector(ROCKET_WIDTH, ROCKET_HEIGHT, ROCKET_DEPTH), Color(1, 1, 1), Color(1, 1, 1), Color(.1, .1, .1), 10, Cube())
 
         self.updated = True
 
     def set_vel(self, look_pos):
-        # self.vel = look_pos.copy()
-        # self.vel.normalize()
-        # self.vel *= ROCKET_SPEED
+        self.vel = look_pos.copy()
+        self.vel.normalize()
+        self.vel *= ROCKET_SPEED
         pass
 
-    def update(self, delta_time):
+    @property
+    def corners(self):
+        return [self.pos]
+
+    def update(self, delta_time, colliders):
         if self.life_time >= ROCKET_LIFE_TIME:
             self.kill = True
             return
+
+        for collider in colliders:
+            for corner in self.corners:
+                if collider.is_in_collider(corner):
+                    self.kill = True
+                    return
 
         self.pos += self.vel * delta_time
 
@@ -50,5 +60,5 @@ class Rocket(Object):
         if self.kill: return
         super(Rocket, self).draw(shader)
 
-        # self.testing.draw(shader)
+        self.testing.draw(shader)
 
