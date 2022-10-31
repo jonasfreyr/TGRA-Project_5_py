@@ -1,26 +1,21 @@
-import _thread
-import json
-
 # from OpenGL.GL import *
 # from OpenGL.GLU import *
+
+from collections import defaultdict
 
 import pygame
 from pygame.locals import *
 
-from collections import defaultdict
-
-from Core.Light import Light
-from Game.Gun import Gun, Rocket
-from Game.Level import Level
-from Game.Object import Object, NetworkPlayer, ObjectCube, Collider
-from Game.Player import FlyingPlayer, Player
-from Networking.Networking import Networking
-from OpenGLCore.Shaders import *
-from Core.Matrices import *
-from OpenGLCore import ojb_3D_loading
-from Core.Constants import *
 from Core.Color import Color
-import socket
+from Core.Light import Light
+from Core.Matrices import *
+from Game.Gun import Gun, Rocket
+from Game.Object import Object, NetworkPlayer, Collider
+from Game.Player import FlyingPlayer, Player
+from Networking.Constants import USE_NETWORKING
+from Networking.Networking import Networking
+from OpenGLCore import ojb_3D_loading
+from OpenGLCore.Shaders import *
 
 
 class GraphicsProgram3D:
@@ -30,7 +25,7 @@ class GraphicsProgram3D:
         pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF)
 
         pygame.mouse.set_visible(False)
-        # pygame.event.set_grab(True)
+        pygame.event.set_grab(True)
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_BLEND)
@@ -40,8 +35,6 @@ class GraphicsProgram3D:
 
         self.shader = Shader3D()
         self.shader.use()
-
-        self.model_matrix = ModelMatrix()
 
         # self.projection_view_matrix = ProjectionViewMatrix()
         # self.shader.set_projection_view_matrix(self.projection_view_matrix.get_matrix())
@@ -58,11 +51,8 @@ class GraphicsProgram3D:
         self.clock = pygame.time.Clock()
         self.clock.tick()
 
-        self.angle = 0
-
         self.keys = defaultdict(lambda: False)
 
-        # self.teeth_object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "mouth.obj")
         self.rocket_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "rocket.obj")
         self.grass_object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "grass_with_texture.obj")
         self.grass_patch_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "grass_patch.obj")
@@ -104,7 +94,6 @@ class GraphicsProgram3D:
 
         # self.level = Level(self.grass_patch_model, self.ground_model, self.fence_leftpost_model, self.skybox_model,
         #                   self.tex_id_skybox)
-        self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
 
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
         rpg = Gun(Vector(0.3, -0.1, -0.2), Vector(0, -90, 0), Vector(0.5, 0.5, 0.5), self.rpg_model)
@@ -130,7 +119,9 @@ class GraphicsProgram3D:
                                 Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
                         ]
 
-        self.networking.start()  # Comment this out, if testing locally
+        if USE_NETWORKING:
+            self.networking.start()  # Comment this out, if testing locally
+
         self.network_rockets = {}
         self.network_players = {}
 
@@ -142,7 +133,7 @@ class GraphicsProgram3D:
         self.network_rockets[id] = new_rocket
 
     def create_network_player(self, id, pos, rot):
-        new_player = NetworkPlayer(pos, rot, Vector(.5, .5, .5), self.player_model)
+        new_player = NetworkPlayer(pos, rot, Vector(NETWORK_PLAYER_MODEL_WIDTH, NETWORK_PLAYER_MODEL_HEIGHT, NETWORK_PLAYER_MODE_DEPTH), self.player_model)
         self.network_players[id] = new_player
 
     def shoot(self, look_pos, x_rot, y_rot):
@@ -200,9 +191,6 @@ class GraphicsProgram3D:
             elif self.keys[K_UP]:
                 self.current.size.y += 1 * delta_time
 
-        if self.keys[K_LEFT] or self.keys[K_RIGHT] or self.keys[K_DOWN] or self.keys[K_UP]:
-            # print(self.current)
-            pass
 
         # self.cube.update(delta_time)
         # self.teeth.update(delta_time)

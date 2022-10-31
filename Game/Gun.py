@@ -16,7 +16,7 @@ class Gun(Object):
 
 
 class Rocket(Object):
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, is_server=False):
         super(Rocket, self).__init__(pos, rotation, scale, object_model)
 
         self.vel = Vector(0, 0, 0)

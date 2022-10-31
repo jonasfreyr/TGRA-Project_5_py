@@ -43,13 +43,15 @@ class Object:
 
 
 class Collider:
-    def __init__(self, pos: Vector, size: Vector):
+    def __init__(self, pos: Vector, size: Vector, is_server=False):
         self.pos = pos
         self.size = size
+        self.is_server = is_server
 
-        self.yes = ObjectCube(pos, Vector(0, 0, 0), size,
-                              Color(1, 1, 1,), Color(1, 1, 1),
-                              Color(1, 1, 1,), 10, Cube())
+        if not is_server:
+            self.yes = ObjectCube(pos, Vector(0, 0, 0), size,
+                                  Color(1, 1, 1,), Color(1, 1, 1),
+                                  Color(1, 1, 1,), 10, Cube())
 
 
     def __str__(self):
@@ -85,8 +87,8 @@ class Collider:
     def set_pos(self, pos):
         self.pos = pos
 
-        self.yes.pos = pos
-
+        if self.is_server:
+            self.yes.pos = pos
 
     def sphere_collide(self, pos, radius):
         x = max(self.minX, min(pos.x, self.maxX))
@@ -117,8 +119,8 @@ class Collider:
                 self.minZ <= pos.z <= self.maxZ
 
     def draw(self, shader):
-
-        self.yes.draw(shader)
+        if not self.is_server:
+            self.yes.draw(shader)
 
 
 class ObjectCube:
@@ -192,7 +194,7 @@ class ObjectCube:
 
 
 class NetworkPlayer(Object):
-    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model):
+    def __init__(self, pos: Vector, rotation: Vector, scale: Vector, object_model, is_server=False):
         super(NetworkPlayer, self).__init__(pos, rotation, scale, object_model)
 
         self.updated = True
@@ -203,7 +205,7 @@ class NetworkPlayer(Object):
 
         self.health = 100
 
-        self.collider = Collider(coll_pos, Vector(1, 1.5, 1))
+        self.collider = Collider(coll_pos, Vector(1, 1.5, 1), is_server)
 
     def update(self, delta_time):
         super(NetworkPlayer, self).update(delta_time)
