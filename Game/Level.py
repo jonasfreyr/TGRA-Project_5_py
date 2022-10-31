@@ -6,7 +6,7 @@ from Core.Color import Material, Color
 from Core.Constants import *
 from OpenGLCore import ojb_3D_loading
 
-from Game.Object import Teeth, RotatingCube, Object, ObjectCube
+from Game.Object import Object, ObjectCube
 from Core.Vector import *
 
 

@@ -30,7 +30,7 @@ from collections import defaultdict
 from Core.Light import Light
 from Game.Gun import Gun, Rocket
 from Game.Level import Level
-from Game.Object import Teeth, RotatingCube, Object, NetworkPlayer, ObjectCube
+from Game.Object import Object, NetworkPlayer, ObjectCube
 from Game.Player import FlyingPlayer, Player
 from Networking.Networking import Networking
 from OpenGLCore.Shaders import *
@@ -119,9 +119,9 @@ class GraphicsProgram3D:
                                 Vector(6.597999999999904, 1.98999999999999, 1.677000000000001)),
                         Collider(Vector(0.09999999999999999, 0.09200000000000007, 0),
                                 Vector(9.050999999999839, 0.15099999999999922, 8.937999999999864))
-                         ]
+                        ]
 
-        self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
+        # self.boi = Object(Vector(5, 0, 5), Vector(0, 0, 0), Vector(1, 1, 1), self.player_model)
 
         self.rock = Object(Vector(0, 0, 5), Vector(0, 0, 0), Vector(10, 10, 10), self.rock_model)
 
@@ -207,7 +207,10 @@ class GraphicsProgram3D:
                 data = json.loads(data)
                 self.connsUDP[data["id"]] = address
 
-                self.players[data['id']] = {'pos': data['pos'], 'rot': data['rot'], 'health': data['health']}
+                # {'pos': data['pos'], 'rot': data['rot'], 'health': data['health']}
+                pos = Vector(data['pos'][0], data['pos'][1], data['pos'][2])
+                rot = Vector(0, data['rot'][0], 0)
+                self.players[data['id']] = NetworkPlayer(pos, rot, Vector(1, 1, 1), None)
 
                 for rocket in data['rockets']:
                     pos = Vector(rocket['pos'][0], rocket['pos'][1], rocket['pos'][2])
@@ -229,16 +232,20 @@ class GraphicsProgram3D:
     def update(self, s):
         delta_time = self.clock.tick(120) / 1000.0
 
+        colliders = [*self.colliders]
+        for id, player in self.players.items():
+            colliders.append(player.collider)
+
         temp = self.rockets.copy()
         for id, rocket in temp.items():
             if rocket.kill:
                 del self.rockets[id]
             else:
-                rocket.update(delta_time, self.colliders)
+                rocket.update(delta_time, colliders)
 
         # {'pos': (x, y, z), 'rot': (x, y), 'health': 100}
-        for id, player in self.players.items():
-            pass
+        # for id, player in self.players.items():
+        #    pass
 
         # print(connsUDP)
         message = {
@@ -247,9 +254,12 @@ class GraphicsProgram3D:
         }
 
         temp_players = self.players.copy()
-        for player_id in temp_players:
-            if temp_players[player_id]['health'] > 0:
-                message['players'][player_id] = temp_players[player_id]
+        for player_id, player in temp_players.items():
+            if player.health > 0:
+                player_simple = {'pos': (player.pos.x, player.pos.y, player.pos.z),
+                                 'rot': (player.rotation.x, 0),
+                                 'health': player.health}
+                message['players'][player_id] = player_simple
 
         temp_rockets = self.rockets.copy()
         for id, rocket in temp_rockets.items():
