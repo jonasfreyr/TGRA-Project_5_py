@@ -94,8 +94,11 @@ class Player:
         self.walk_sound = pygame.mixer.Sound('./Sounds/tank_moving.wav')
         self.walk_sound.set_volume(0.1)
         self.walking = False
+        self.backing_up = False
         self.jump_sound = pygame.mixer.Sound('./Sounds/jump.mp3')
         self.shooting_sound = pygame.mixer.Sound('./Sounds/shooting_sound.mp3')
+        self.backing_up_sound = pygame.mixer.Sound('./Sounds/back_up_sound.mp3')
+        self.backing_up_sound.set_volume(0.2)
 
     @property
     def top_pos(self):
@@ -122,13 +125,25 @@ class Player:
         pass
 
     def play_walking_sound(self,keys):
-        if keys[K_w] or keys[K_s]:
+        if keys[K_s]:
             if not self.walking:
                 self.walk_sound.play()
                 self.walking = True
+            if not self.backing_up:
+                self.backing_up_sound.play()
+                self.backing_up = True
         else:
+            self.backing_up_sound.stop()
+            self.backing_up = False
+        if keys[K_w]:
+            if not self.walking:
+                self.walk_sound.play()
+                self.walking = True
+
+        if not keys[K_w] and keys[K_s]:
             self.walking = False
             self.walk_sound.stop()
+
 
     def update(self, delta_time, keys, colliders):
         move_vec = Vector(0, 0, 0)
