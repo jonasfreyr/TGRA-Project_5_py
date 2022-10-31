@@ -37,7 +37,7 @@ void main(void)
     }
     if (u_using_specular_texture == 1.0) material_specular *= texture2D(u_tex02, v_uv);
 
-    vec4 color = vec4(0, 0, 0, 1);
+    vec4 color = vec4(0, 0, 0, 0);
     if (u_calculate_lights == 1.0){
         float lambert;
         vec4 diffuse_color = vec4(0, 0, 0, 1);
