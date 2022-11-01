@@ -587,6 +587,7 @@ class GraphicsProgram3D:
 
         self.network_rockets = {}
         self.network_players = {}
+        self.network_explosions = {}
 
         self.testing_player = NetworkPlayer(Vector(-10, 0, -10), Vector(0, 0, 0),
                                                  Vector(.5, .5, .5), self.player_model)
@@ -598,6 +599,11 @@ class GraphicsProgram3D:
     def create_network_player(self, id, pos, rot):
         new_player = NetworkPlayer(pos, rot, Vector(NETWORK_PLAYER_MODEL_WIDTH, NETWORK_PLAYER_MODEL_HEIGHT, NETWORK_PLAYER_MODE_DEPTH), self.player_model)
         self.network_players[id] = new_player
+
+    def create_network_explosion(self, id, pos, life):
+        new_explosion = Explosion(pos, Vector(0, 0, 0), Vector(1.3, 1.3,1.3), self.explosion_model)
+        new_explosion.life_time = life
+        self.network_explosions[id] = new_explosion
 
     def shoot(self, look_pos, x_rot, y_rot):
         offset = Vector(ROCKET_OFFSET[0], ROCKET_OFFSET[1], ROCKET_OFFSET[2])
@@ -734,6 +740,9 @@ class GraphicsProgram3D:
             for bullet in self.bullets:
                 bullet.draw(self.shader)
 
+            for explosion in self.explosions:
+                explosion.draw(self.shader)
+
         else:
             temp = self.network_rockets.copy()
             for id, rocket in temp.items():
@@ -750,8 +759,13 @@ class GraphicsProgram3D:
                 else:
                     del self.network_players[id]
 
-        for explosion in self.explosions:
-            explosion.draw(self.shader)
+            temp = self.network_explosions.copy()
+            for id, explosion in temp.items():
+                if explosion.updated:
+                    explosion.draw(self.shader)
+                else:
+                    del self.network_explosions[id]
+
         # self.explosion.draw(self.shader)
         #self.explosionSphere.draw(self.shader)
     def display(self):

@@ -87,6 +87,31 @@ class Networking:
         for id, rocket in self.game.network_rockets.items():
             if id not in data['rockets']: rocket.updated = False
 
+        for id, explosion in data['explosion'].items():
+            if id in self.game.network_explosions:
+                r = self.game.network_explosions[id]
+
+                new_pos = explosion['pos']
+                new_life = explosion['life']
+
+                r.pos.x = new_pos[0]
+                r.pos.y = new_pos[1]
+                r.pos.z = new_pos[2]
+
+                r.life_time = new_life
+
+            else:
+                new_pos = explosion['pos']
+                new_life = explosion['life']
+
+                pos = Vector(new_pos[0], new_pos[1], new_pos[2])
+
+                self.game.create_network_explosion(id, pos, new_life)
+
+        for id, explosion in self.game.network_explosions.items():
+            if id not in data['explosion']: explosion.updated = False
+
+
     def send(self, message: dict):
         if not self.active: return
 

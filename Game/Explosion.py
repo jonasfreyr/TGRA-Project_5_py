@@ -11,6 +11,7 @@ class Explosion(Object):
 
         self.life_time = 0
         self.kill = False
+        self.updated = True
 
     def update(self, delta_time):
         self.life_time += delta_time

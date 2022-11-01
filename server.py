@@ -102,9 +102,11 @@ class GraphicsProgram3D:
         self.stats = {}
         self.players = {}
         self.rockets = {}
+        self.explosions = {}
 
         self.id = 0
         self.rocket_id = 0
+        self.explosion_id = 0
 
     def remove_client(self, id):
         if id in self.connsUDP:
@@ -593,8 +595,6 @@ class GraphicsProgram3D:
                                   self.skybox3_model,
                                   diffuse_texture_id=self.tex_id_skybox3, static=True)
 
-        self.bullets = []
-        self.explosions = []
         self.new_rocket = None
         self.fired = False
 
@@ -709,15 +709,15 @@ class GraphicsProgram3D:
         for id, rocket in temp.items():
             if rocket.kill:
                 del self.rockets[id]
-                self.explosions.append(
-                    Explosion(rocket.pos, Vector(0, 0, 0), Vector(1.3, 1.3, 1.3), self.explosion_model))
+                self.explosions[self.explosion_id] = Explosion(rocket.pos, Vector(0, 0, 0), Vector(1.3, 1.3, 1.3), self.explosion_model)
+                self.explosion_id+=1
             else:
                 rocket.update(delta_time, colliders)
 
         temp = self.explosions.copy()
-        for explosion in temp:
+        for id, explosion in temp.items():
             if explosion.kill:
-                self.explosions.remove(explosion)
+                del self.explosions[id]
             else:
                 explosion.update(delta_time)
 
@@ -748,8 +748,14 @@ class GraphicsProgram3D:
             rock = {'pos': rocket.pos.to_array(), 'rot': rocket.rotation.to_array()}
             message['rockets'][id] = rock
 
-        temp = self.connsUDP.copy()
+        for id, explosion in self.explosions.items():
+            simple_explotion = {
+                'pos': (explosion.pos.x, explosion.pos.y, explosion.pos.z),
+                'life': explosion.life_time
+            }
+            message['explosion'][id] = simple_explotion
 
+        temp = self.connsUDP.copy()
         for id in temp:
             message_to_send = dict(message)
             players_to_send = dict(message_to_send['players'])
@@ -770,7 +776,6 @@ class GraphicsProgram3D:
         self.map.draw(self.shader)
         # self.testing_player.draw(self.shader)
 
-
         temp = self.rockets.copy()
         for id, rocket in temp.items():
             rocket.draw(self.shader)
@@ -780,7 +785,7 @@ class GraphicsProgram3D:
             player.draw(self.shader)
             player.collider.draw(self.shader)
 
-        for explosion in self.explosions:
+        for id, explosion in self.explosions.items():
             explosion.draw(self.shader)
 
     def display(self):
