@@ -1,6 +1,7 @@
 <h3>How to run</h3>
 * Make sure you have python installed, tested with python 3.9 and 3.10
 * Make sure you have pygame and PyOpenGL installed
+* Run the main.py for  the player and server if you want multiplayer (Must be before client if not single player)
 
 <h3>Settings</h3>
 * To play single player set the boolean USE_NETWORKING to False that is located in Networking/Constants
