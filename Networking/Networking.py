@@ -22,6 +22,7 @@ class Networking:
     def receive(self):
         if not self.active: return
 
+        ### UDP
         data = None
         try:
             while True: data, _ = self.udp_s.recvfrom(262144)
@@ -31,8 +32,6 @@ class Networking:
         if data is None: return
 
         data = json.loads(data)
-
-        print(data)
 
         for id, player in data['players'].items():
             if id in self.game.network_players:
@@ -112,12 +111,33 @@ class Networking:
         for id, explosion in self.game.network_explosions.items():
             if id not in data['explosion']: explosion.updated = False
 
+        if data['dead'] and not self.game.dead:
+            self.game.switch_player()
+            self.game.dead = True
+
+        ### TCP
+        read_list, _, _ = select.select([self.tcp_s], [], [], 0)
+        if len(read_list) == 0: return
+
+        data = read_list[0].recv(1024).decode()
+        data = json.loads(data)
+
+        if data['command'] == 'reset':
+            pos = Vector(data['pos'][0], data['pos'][1], data['pos'][2])
+            self.game.switch_player()
+            self.game.player.pos = pos
+            self.game.dead = False
 
     def send(self, message: dict):
         if not self.active: return
 
         message['id'] = self.id
         self.udp_s.sendto(json.dumps(message).encode(), (HOST, PORT))
+
+    def send_respawn(self):
+        if not self.active: return
+
+        self.tcp_s.sendall('respawn'.encode())
 
     def start(self):
         self.tcp_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

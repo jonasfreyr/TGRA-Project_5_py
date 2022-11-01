@@ -592,6 +592,8 @@ class GraphicsProgram3D:
         self.testing_player = NetworkPlayer(Vector(-10, 0, -10), Vector(0, 0, 0),
                                                  Vector(.5, .5, .5), self.player_model)
 
+        self.dead = False
+
     def create_network_rocket(self, id, pos, rot):
         new_rocket = Rocket(pos, rot, Vector(1, 1, 1), self.rocket_model)
         self.network_rockets[id] = new_rocket
@@ -603,6 +605,18 @@ class GraphicsProgram3D:
     def create_network_explosion(self, id, pos, scale):
         new_explosion = Explosion(pos, Vector(0, 0, 0), scale, self.explosion_model)
         self.network_explosions[id] = new_explosion
+
+    def switch_player(self):
+        if self.player == self.flying_player:
+            self.non_flying_player.pos = self.player.pos.copy()
+            self.non_flying_player.x_rotation = self.player.x_rotation
+            self.non_flying_player.y_rotation = self.player.y_rotation
+            self.player = self.non_flying_player
+        else:
+            self.flying_player.pos = self.player.pos.copy()
+            self.flying_player.x_rotation = self.player.x_rotation
+            self.flying_player.y_rotation = self.player.y_rotation
+            self.player = self.flying_player
 
     def shoot(self, look_pos, x_rot, y_rot):
         offset = Vector(ROCKET_OFFSET[0], ROCKET_OFFSET[1], ROCKET_OFFSET[2])
@@ -630,43 +644,46 @@ class GraphicsProgram3D:
 
         # self.testing_player.pos.x += 1 * delta_time
         # self.testing_player.update(delta_time)
+        if DRAW_COLLIDERS:
+            if not self.keys[K_LSHIFT]:
+                if self.keys[K_LEFT] and not self.keys[K_LCTRL]:
+                    self.current.pos.x -= 1 * delta_time
+                elif self.keys[K_RIGHT] and not self.keys[K_LCTRL]:
+                    self.current.pos.x += 1 * delta_time
 
-        if not self.keys[K_LSHIFT]:
-            if self.keys[K_LEFT] and not self.keys[K_LCTRL]:
-                self.current.pos.x -= 1 * delta_time
-            elif self.keys[K_RIGHT] and not self.keys[K_LCTRL]:
-                self.current.pos.x += 1 * delta_time
+                if self.keys[K_LEFT] and self.keys[K_LCTRL]:
+                    self.current.pos.z -= 1 * delta_time
+                elif self.keys[K_RIGHT] and self.keys[K_LCTRL]:
+                    self.current.pos.z += 1 * delta_time
 
-            if self.keys[K_LEFT] and self.keys[K_LCTRL]:
-                self.current.pos.z -= 1 * delta_time
-            elif self.keys[K_RIGHT] and self.keys[K_LCTRL]:
-                self.current.pos.z += 1 * delta_time
+                if self.keys[K_DOWN]:
+                    self.current.pos.y -= 1 * delta_time
+                elif self.keys[K_UP]:
+                    self.current.pos.y += 1 * delta_time
 
-            if self.keys[K_DOWN]:
-                self.current.pos.y -= 1 * delta_time
-            elif self.keys[K_UP]:
-                self.current.pos.y += 1 * delta_time
+            else:
+                if self.keys[K_LEFT] and not self.keys[K_LCTRL]:
+                    self.current.size.x -= 1 * delta_time
+                elif self.keys[K_RIGHT] and not self.keys[K_LCTRL]:
+                    self.current.size.x += 1 * delta_time
 
-        else:
-            if self.keys[K_LEFT] and not self.keys[K_LCTRL]:
-                self.current.size.x -= 1 * delta_time
-            elif self.keys[K_RIGHT] and not self.keys[K_LCTRL]:
-                self.current.size.x += 1 * delta_time
+                if self.keys[K_LEFT] and self.keys[K_LCTRL]:
+                    self.current.size.z -= 1 * delta_time
+                elif self.keys[K_RIGHT] and self.keys[K_LCTRL]:
+                    self.current.size.z += 1 * delta_time
 
-            if self.keys[K_LEFT] and self.keys[K_LCTRL]:
-                self.current.size.z -= 1 * delta_time
-            elif self.keys[K_RIGHT] and self.keys[K_LCTRL]:
-                self.current.size.z += 1 * delta_time
-
-            if self.keys[K_DOWN]:
-                self.current.size.y -= 1 * delta_time
-            elif self.keys[K_UP]:
-                self.current.size.y += 1 * delta_time
+                if self.keys[K_DOWN]:
+                    self.current.size.y -= 1 * delta_time
+                elif self.keys[K_UP]:
+                    self.current.size.y += 1 * delta_time
 
 
         # self.cube.update(delta_time)
         # self.teeth.update(delta_time)
-        colliders = [*self.colliders, self.current]
+        if DRAW_COLLIDERS:
+            colliders = [*self.colliders, self.current]
+        else:
+            colliders = self.colliders.copy()
 
         if self.networking.active:
             for _, player in self.network_players.items():
@@ -675,14 +692,12 @@ class GraphicsProgram3D:
         self.player.update(delta_time, self.keys, colliders)
         self.player_light.pos = self.player.top_pos
 
-        # print(len(self.explosions))
-
         if not self.networking.active:
             temp = self.bullets.copy()
             for bullet in temp:
                 if bullet.kill:
                     self.bullets.remove(bullet)
-                    self.explosions.append(Explosion(bullet.pos, Vector(0, 0, 0), Vector(1.3, 1.3,1.3), self.explosion_model))
+                    self.explosions.append(Explosion(bullet.pos, Vector(0, 0, 0), Vector(EXPLOSION_MODEL_SIZE, EXPLOSION_MODEL_SIZE, EXPLOSION_MODEL_SIZE), self.explosion_model))
                 else:
                     bullet.update(delta_time, [*self.colliders, self.current])
 
@@ -693,14 +708,12 @@ class GraphicsProgram3D:
                 else:
                     explosion.update(delta_time)
 
-
         else:
             for id, player in self.network_players.items():
                 player.update(delta_time)
 
             message = {'pos': self.player.pos.to_array(),
-                       'rot': (-self.player.x_rotation+90, self.player.y_rotation),
-                       'health': self.player.health}
+                       'rot': (-self.player.x_rotation+90, self.player.y_rotation)}
 
             rockets = []
             for rocket in self.bullets:
@@ -754,7 +767,7 @@ class GraphicsProgram3D:
             for id, player in temp.items():
                 if player.updated:
                     player.draw(self.shader)
-                    player.collider.draw(self.shader)
+                    # player.collider.draw(self.shader)
                 else:
                     del self.network_players[id]
 
@@ -795,20 +808,14 @@ class GraphicsProgram3D:
                     self.exiting = True
 
                 if event.key == K_v:
-                    if self.player == self.flying_player:
-                        self.non_flying_player.pos = self.player.pos
-                        self.non_flying_player.x_rotation = self.player.x_rotation
-                        self.non_flying_player.y_rotation = self.player.y_rotation
-                        self.player = self.non_flying_player
-                    else:
-                        self.flying_player.pos = self.player.pos
-                        self.flying_player.x_rotation = self.player.x_rotation
-                        self.flying_player.y_rotation = self.player.y_rotation
-                        self.player = self.flying_player
+                    self.switch_player()
 
                 elif event.key == K_RETURN:
-                    self.colliders.append(self.current.copy())
-                    self.instance_colliders.append(self.current.copy())
+                    if DRAW_COLLIDERS:
+                        self.colliders.append(self.current.copy())
+                        self.instance_colliders.append(self.current.copy())
+
+                    self.networking.send_respawn()
 
                 elif event.key == K_BACKSPACE:
                     self.current = self.colliders.pop(-1)

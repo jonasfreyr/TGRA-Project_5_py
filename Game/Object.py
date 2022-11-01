@@ -1,7 +1,7 @@
 import math
 
 from Core.Color import Color
-from Core.Constants import NETWORK_PLAYER_HEIGHT
+from Core.Constants import NETWORK_PLAYER_HEIGHT, DRAW_COLLIDERS
 from Core.Matrices import ModelMatrix
 from Core.Vector import Vector
 from OpenGL.GL import *
@@ -48,7 +48,7 @@ class Collider:
         self.size = size
         self.is_server = is_server
 
-        if not is_server:
+        if not is_server and DRAW_COLLIDERS:
             self.yes = ObjectCube(pos, Vector(0, 0, 0), size,
                                   Color(1, 1, 1), Color(1, 1, 1),
                                   Color(0, 0, 0), 10, Cube())
@@ -87,7 +87,7 @@ class Collider:
     def set_pos(self, pos):
         self.pos = pos
 
-        if self.is_server:
+        if not self.is_server and DRAW_COLLIDERS:
             self.yes.pos = pos
 
     def sphere_collide(self, pos, radius):
@@ -119,7 +119,7 @@ class Collider:
                 self.minZ <= pos.z <= self.maxZ
 
     def draw(self, shader):
-        if not self.is_server:
+        if not self.is_server and DRAW_COLLIDERS:
             self.yes.draw(shader)
 
 
@@ -218,4 +218,4 @@ class NetworkPlayer(Object):
     def draw(self, shader):
         super(NetworkPlayer, self).draw(shader)
 
-        self.collider.draw(shader)
+        # self.collider.draw(shader)

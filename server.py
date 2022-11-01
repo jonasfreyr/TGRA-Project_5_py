@@ -620,12 +620,10 @@ class GraphicsProgram3D:
             if data == "respawn":
                 player = self.players[id]
                 player.health = PLAYER_HEALTH
-                player.dead = False
 
                 message = {
                     'command': 'reset',
-                    'args': {'pos': (0, 0, 0),
-                             'health': PLAYER_HEALTH}
+                    'pos': (0, 0, 0)
                 }
 
                 conn.sendall(json.dumps(message).encode())
@@ -641,6 +639,11 @@ class GraphicsProgram3D:
 
                 self.remove_client(id)
                 break
+
+    def damage_players(self, pos):
+        for id, player in self.players.items():
+            if (pos - player.pos).__len__() <= EXPLOSION_RADIUS:
+                player.health -= 100
 
     def listening_TCP(self):
         print("TCP started!")
@@ -679,7 +682,15 @@ class GraphicsProgram3D:
                 # {'pos': data['pos'], 'rot': data['rot'], 'health': data['health']}
                 pos = Vector(data['pos'][0], data['pos'][1], data['pos'][2])
                 rot = Vector(0, data['rot'][0], 0)
-                self.players[data['id']] = NetworkPlayer(pos, rot, Vector(NETWORK_PLAYER_MODEL_WIDTH, NETWORK_PLAYER_MODEL_HEIGHT, NETWORK_PLAYER_MODE_DEPTH), self.player_model, is_server=True)
+
+                if data['id'] not in self.players:
+                    self.players[data['id']] = NetworkPlayer(pos, rot, Vector(NETWORK_PLAYER_MODEL_WIDTH, NETWORK_PLAYER_MODEL_HEIGHT, NETWORK_PLAYER_MODE_DEPTH), self.player_model, is_server=True)
+                else:
+                    player = self.players[data['id']]
+                    player.pos = pos
+                    player.rotation = rot
+
+                if self.players[data['id']].health <= 0: continue
 
                 for rocket in data['rockets']:
                     pos = Vector(rocket['pos'][0], rocket['pos'][1], rocket['pos'][2])
@@ -703,14 +714,18 @@ class GraphicsProgram3D:
 
         colliders = [*self.colliders]
         for id, player in self.players.items():
+            player.update(delta_time)
             colliders.append(player.collider)
 
         temp = self.rockets.copy()
         for id, rocket in temp.items():
             if rocket.kill:
                 del self.rockets[id]
-                self.explosions[self.explosion_id] = Explosion(rocket.pos, Vector(0, 0, 0), Vector(1.3, 1.3, 1.3), self.explosion_model)
-                self.explosion_id+=1
+                self.explosions[self.explosion_id] = Explosion(rocket.pos, Vector(0, 0, 0), Vector(EXPLOSION_MODEL_SIZE, EXPLOSION_MODEL_SIZE, EXPLOSION_MODEL_SIZE), self.explosion_model)
+
+                self.damage_players(rocket.pos)
+
+                self.explosion_id += 1
             else:
                 rocket.update(delta_time, colliders)
 
@@ -730,6 +745,7 @@ class GraphicsProgram3D:
 
         # print(connsUDP)
         message = {
+            "dead": False,
             "players": {},
             "rockets": {},
             "explosion": {}
@@ -759,6 +775,9 @@ class GraphicsProgram3D:
         for id in temp:
             message_to_send = dict(message)
             players_to_send = dict(message_to_send['players'])
+
+            message_to_send['dead'] = id not in players_to_send
+
             if id in players_to_send:
                 del players_to_send[id]
 

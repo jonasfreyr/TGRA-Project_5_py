@@ -13,6 +13,7 @@ class Explosion(Object):
         self.kill = False
         self.updated = True
 
+
     def update(self, delta_time):
         self.life_time += delta_time
 
@@ -20,6 +21,6 @@ class Explosion(Object):
             self.kill = True
             return
 
-        scale = 1 - (self.life_time / EXPLOSION_LIFE_TIME)
+        scale = EXPLOSION_MODEL_SIZE * (1 - (self.life_time / EXPLOSION_LIFE_TIME))
 
         self.scale = Vector(scale, scale, scale)
