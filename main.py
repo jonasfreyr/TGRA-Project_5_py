@@ -808,7 +808,8 @@ class GraphicsProgram3D:
                     self.exiting = True
 
                 if event.key == K_v:
-                    self.switch_player()
+                    if not self.networking.active:
+                        self.switch_player()
 
                 elif event.key == K_RETURN:
                     if DRAW_COLLIDERS:

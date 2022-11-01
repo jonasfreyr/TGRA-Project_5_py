@@ -121,9 +121,6 @@ class Player:
 
         return pos
 
-    def rocket_collision(self, rocket):
-        pass
-
     def play_walking_sound(self,keys):
         if keys[K_s]:
             if not self.walking:
@@ -143,7 +140,6 @@ class Player:
         if not keys[K_w] and keys[K_s]:
             self.walking = False
             self.walk_sound.stop()
-
 
     def update(self, delta_time, keys, colliders):
         move_vec = Vector(0, 0, 0)
