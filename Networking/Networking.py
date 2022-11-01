@@ -92,21 +92,22 @@ class Networking:
                 r = self.game.network_explosions[id]
 
                 new_pos = explosion['pos']
-                new_life = explosion['life']
+                new_scale = explosion['scale']
 
                 r.pos.x = new_pos[0]
                 r.pos.y = new_pos[1]
                 r.pos.z = new_pos[2]
 
-                r.life_time = new_life
+                r.scale = Vector(new_scale, new_scale, new_scale)
 
             else:
                 new_pos = explosion['pos']
-                new_life = explosion['life']
+                new_scale = explosion['scale']
 
                 pos = Vector(new_pos[0], new_pos[1], new_pos[2])
+                scale = Vector(new_scale, new_scale, new_scale)
 
-                self.game.create_network_explosion(id, pos, new_life)
+                self.game.create_network_explosion(id, pos, scale)
 
         for id, explosion in self.game.network_explosions.items():
             if id not in data['explosion']: explosion.updated = False

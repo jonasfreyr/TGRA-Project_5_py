@@ -600,9 +600,8 @@ class GraphicsProgram3D:
         new_player = NetworkPlayer(pos, rot, Vector(NETWORK_PLAYER_MODEL_WIDTH, NETWORK_PLAYER_MODEL_HEIGHT, NETWORK_PLAYER_MODE_DEPTH), self.player_model)
         self.network_players[id] = new_player
 
-    def create_network_explosion(self, id, pos, life):
-        new_explosion = Explosion(pos, Vector(0, 0, 0), Vector(1.3, 1.3,1.3), self.explosion_model)
-        new_explosion.life_time = life
+    def create_network_explosion(self, id, pos, scale):
+        new_explosion = Explosion(pos, Vector(0, 0, 0), scale, self.explosion_model)
         self.network_explosions[id] = new_explosion
 
     def shoot(self, look_pos, x_rot, y_rot):

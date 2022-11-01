@@ -751,7 +751,7 @@ class GraphicsProgram3D:
         for id, explosion in self.explosions.items():
             simple_explotion = {
                 'pos': (explosion.pos.x, explosion.pos.y, explosion.pos.z),
-                'life': explosion.life_time
+                'scale': explosion.scale.x
             }
             message['explosion'][id] = simple_explotion
 
