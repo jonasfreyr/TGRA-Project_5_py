@@ -1,3 +1,46 @@
+# Blender MTL File: 'whole-map.blend'
+# Material Count: 12
+
+newmtl DIRT
+Ns 324.000026
+Ka 1.000000 1.000000 1.000000
+Kd 0.123710 0.049507 0.002751
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl house-wood.001
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd ./Textures/rpg_wood_tex.jpg
+
+newmtl house-wood.004
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd ./Textures/rpg_wood_tex.jpg
+
+newmtl None
+Ns 500
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
+illum 2
+
 # Blender 3.3.1 MTL File: 'whole-map.blend'
 # www.blender.org
 # ./Textures/stone_wall.jpg ./Textures/sliding_door.png ./Textures/normal_door.png ./Textures/dry_ground_01_diff_4k.jpg ./Textures/rpg_wood_tex.jpg

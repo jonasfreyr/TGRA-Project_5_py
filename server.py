@@ -83,7 +83,7 @@ class GraphicsProgram3D:
         self.fence_leftpost_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "fence-leftpost.obj")
         self.player_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "playermodel.obj")
         self.houses_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "houses-test.obj")
-        self.map_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "whole-map.obj")
+        self.map_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "new-whole-map.obj")
         self.explosion_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "explosion.obj")
 
         self.tex_id_skybox2 = ojb_3D_loading.load_texture(TEXTURES_PATH + "/sky.jpg")
