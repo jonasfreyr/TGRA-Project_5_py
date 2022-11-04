@@ -22,6 +22,8 @@ class FlyingPlayer:
         self.view_matrix.slide(pos.x, pos.y + height, pos.z)
         self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
 
+        self.death_sound1 = pygame.mixer.Sound('./Sounds/fnite.mp3')
+
 
 
     @property
@@ -99,6 +101,9 @@ class Player:
         self.shooting_sound = pygame.mixer.Sound('./Sounds/shooting_sound.mp3')
         self.backing_up_sound = pygame.mixer.Sound('./Sounds/back_up_sound.mp3')
         self.backing_up_sound.set_volume(0.2)
+
+        self.death_sound1 = pygame.mixer.Sound('./Sounds/fnite.mp3')
+        self.death_sound2 = pygame.mixer.Sound('./Sounds/goofy.mp3')
 
     @property
     def top_pos(self):

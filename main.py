@@ -85,6 +85,8 @@ class GraphicsProgram3D:
         background_music = pygame.mixer.Sound('./Sounds/background_music_arabian.mp3')
         background_music.set_volume(0.2)
         background_music.play(-1)
+        self.sound_wait = 0
+        self.goofysound = False
 
         #background_music = pygame.mixer.music.load('./Sounds/background_music.mp3')
         #background_music.
@@ -666,6 +668,8 @@ class GraphicsProgram3D:
             self.non_flying_player.y_rotation = self.player.y_rotation
             self.player = self.non_flying_player
         else:
+            self.player.death_sound2.play()
+            self.goofysound = True
             self.flying_player.pos = self.player.pos.copy()
             self.flying_player.x_rotation = self.player.x_rotation
             self.flying_player.y_rotation = self.player.y_rotation
@@ -684,7 +688,17 @@ class GraphicsProgram3D:
         self.fired = True
 
     def update(self):
+
         delta_time = self.clock.tick() / 1000.0
+
+        if self.goofysound:
+            if self.sound_wait > 2:
+                print("goofysound",self.sound_wait)
+                self.player.death_sound1.play(loops=0)
+                self.goofysound = False
+                self.sound_wait = 0
+            else:
+                self.sound_wait += delta_time
 
         self.fr_sum += delta_time
         self.fr_ticker += 1
