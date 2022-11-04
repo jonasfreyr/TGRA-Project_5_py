@@ -20,7 +20,7 @@ class FlyingPlayer:
         self.projection_matrix = ProjectionMatrix()
 
         self.view_matrix.slide(pos.x, pos.y + height, pos.z)
-        self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 50)
+        self.projection_matrix.set_perspective(FOV, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 100)
 
         self.death_sound1 = pygame.mixer.Sound('./Sounds/fnite.mp3')
 
