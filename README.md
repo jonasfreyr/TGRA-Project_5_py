@@ -14,5 +14,5 @@ Do the same for all the clients, they should all have the server IP as the HOST.
 
 * W,S - Forward and Backwards (Note: You are playing as a "tank", therefore no A and D)
 * Mouse1 - Shoot
-* R - Respawn, If multiplayer
+* Enter - Respawn, If multiplayer
 * V - Switch between flying and non-flying character, If single player

@@ -71,7 +71,7 @@ class GraphicsProgram3D:
         self.keys = defaultdict(lambda: False)
 
         self.clock = pygame.time.Clock()
-        self.clock.tick(120)
+        self.clock.tick(240)
 
         # self.teeth_object_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "mouth.obj")
         self.rocket_model = ojb_3D_loading.load_obj_file(MODELS_PATH, "rocket.obj")
@@ -138,6 +138,22 @@ class GraphicsProgram3D:
                           static=True)
 
         self.colliders = [
+            #  Rocks
+            Collider(Vector(3.8489999999999984, 2.424, 18.769000000000005),
+                     Vector(2.8890000000000033, 4.769, 2.6519999999999997)),
+            Collider(Vector(5.654999999999997, 2.424, 19.455000000000005),
+                     Vector(2.8890000000000033, 4.769, 2.6519999999999997)),
+            Collider(Vector(6.857999999999998, 2.424, 19.831000000000014),
+                     Vector(5.433000000000003, 4.86, 1.9739999999999995)),
+            Collider(Vector(4.800999999999998, 2.424, 21.847000000000016),
+                     Vector(5.433000000000003, 4.86, 1.9739999999999995)),
+            Collider(Vector(3.5529999999999995, 2.424, 20.507000000000012),
+                     Vector(3.158000000000002, 4.86, 0.8219999999999994)),
+            Collider(Vector(10.158000000000001, 0.6479999999999996, 17.560000000000013),
+                     Vector(1.369000000000002, 1.0770000000000004, 1.6879999999999997)),
+            Collider(Vector(10.154000000000002, 0.6419999999999996, -13.583999999999977),
+                     Vector(1.369000000000002, 1.0770000000000004, 1.6879999999999997)),
+
             # Fences
             Collider(Vector(-25, 0, 0), Vector(0.5, 5, 55)),
             Collider(Vector(25, 0, 0), Vector(0.5, 5, 55)),
@@ -748,7 +764,7 @@ class GraphicsProgram3D:
                 pass
 
     def update(self, s):
-        delta_time = self.clock.tick(120) / 1000.0
+        delta_time = self.clock.tick(240) / 1000.0
 
         colliders = [*self.colliders]
         for id, player in self.players.items():
