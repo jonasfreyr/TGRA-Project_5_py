@@ -122,6 +122,14 @@ class Player:
         return pos
 
     def play_walking_sound(self,keys):
+
+
+        if keys[K_w]:
+            if not self.walking:
+                self.walk_sound.play()
+                self.walking = True
+
+
         if keys[K_s]:
             if not self.walking:
                 self.walk_sound.play()
@@ -132,14 +140,13 @@ class Player:
         else:
             self.backing_up_sound.stop()
             self.backing_up = False
-        if keys[K_w]:
-            if not self.walking:
-                self.walk_sound.play()
-                self.walking = True
 
-        if not keys[K_w] and keys[K_s]:
+
+        if keys[K_s] == False and keys[K_w] == False:
             self.walking = False
             self.walk_sound.stop()
+
+
 
     def update(self, delta_time, keys, colliders):
         move_vec = Vector(0, 0, 0)
